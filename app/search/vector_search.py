@@ -28,11 +28,12 @@ class VectorSearchEngine:
 
         # TF-IDF 向量化器
         # 针对中文优化：使用字符级 ngram，不使用停用词
+        # min_df=1, max_df=1.0 保证在任何文档数量下都能工作
         self.vectorizer = TfidfVectorizer(
             max_features=5000,  # 最大特征数
             ngram_range=(1, 3),  # 1-3 gram，对中文更友好
             min_df=1,  # 最小文档频率
-            max_df=0.95,  # 最大文档频率（过滤常用词）
+            max_df=1.0,  # 最大文档频率（不过滤，避免小数据集冲突）
             sublinear_tf=True,  # 使用对数 TF 缩放
             analyzer='char_wb',  # 字符级分析，支持中文
             stop_words=None  # 不使用停用词（支持多语言）
