@@ -1,0 +1,22 @@
+# ClawRiver - Minimal Production Requirements
+# For Render Free Tier (512MB RAM)
+# Only includes what's needed to START and SERVE requests
+
+# Core web framework
+fastapi==0.115.0
+uvicorn==0.30.0
+pydantic==2.9.0
+
+# Database
+sqlalchemy==2.0.35
+aiosqlite==0.20.0
+
+# HTTP client
+httpx==0.27.0
+
+# Auth
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# HTTP (for external adapters)
+aiohttp

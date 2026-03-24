@@ -25,9 +25,16 @@ from app.core.exceptions import (
 router = APIRouter()
 
 # 导入团队相关路由
+# Optional modules (may fail if dependencies not installed)
+_optional_modules = {}
+for _mod_name in ['cache_stats', 'search_analytics', 'ab_tests', 'anomaly_detection',
+                   'audit_logs', 'permissions', 'resource_permissions', 'advanced_permissions']:
+    try:
+        _optional_modules[_mod_name] = __import__(f'app.api.{_mod_name}', fromlist=[_mod_name])
+    except ImportError:
+        pass
+
 from app.api import teams, team_members, team_credits, memories, team_stats, team_activity
-from app.api import audit_logs, search_analytics, ab_tests, cache_stats, anomaly_detection
-from app.api import permissions, resource_permissions, advanced_permissions
 from app.api import reranking
 router.include_router(teams.router)
 router.include_router(team_members.router)
@@ -35,14 +42,10 @@ router.include_router(team_credits.router)
 # memories.router 在自定义端点之后注册，避免路由冲突
 router.include_router(team_stats.router)
 router.include_router(team_activity.router)
-router.include_router(audit_logs.router)
-router.include_router(search_analytics.router)
-router.include_router(ab_tests.router)
-router.include_router(cache_stats.router)
-router.include_router(anomaly_detection.router)
-router.include_router(permissions.router)
-router.include_router(resource_permissions.router)
-router.include_router(advanced_permissions.router)
+# Optional routers (skip if module failed to import)
+for _mod in _optional_modules.values():
+    if hasattr(_mod, 'router'):
+        router.include_router(_mod.router)
 router.include_router(reranking.router)
 
 # ============ Agent相关 ============
