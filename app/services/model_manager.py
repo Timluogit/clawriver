@@ -1,16 +1,20 @@
-"""模型管理服务 - 管理嵌入模型和重排模型的下载、加载和缓存"""
-from typing import Optional
+"""模型管理服务 - 管理嵌入模型和重排模型的下载、加载和缓存
+
+注意：torch / sentence_transformers / transformers 均为懒加载，
+仅在实际调用模型时才导入，避免启动时占用大量内存。
+"""
+from typing import Optional, TYPE_CHECKING
 from pathlib import Path
 import logging
 import hashlib
 import json
 from datetime import datetime
 
-import torch
-from sentence_transformers import CrossEncoder
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
 from app.core.config import settings
+
+if TYPE_CHECKING:
+    # 仅用于类型检查，运行时不导入
+    from sentence_transformers import CrossEncoder as _CrossEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +54,11 @@ class ModelManager:
         logger.info(f"ModelManager initialized with device: {self.device}")
 
         # 模型缓存
-        self._cross_encoder: Optional[CrossEncoder] = None
+        self._cross_encoder: Optional[object] = None
         self._cross_encoder_name: Optional[str] = None
 
     def _detect_device(self) -> str:
-        """检测最佳设备
+        """检测最佳设备（懒加载 torch）
 
         Returns:
             'cuda' | 'mps' | 'cpu'
@@ -62,17 +66,17 @@ class ModelManager:
         if self.force_cpu:
             return "cpu"
 
-        if torch.cuda.is_available():
-            device = "cuda"
-            # 检查CUDA版本兼容性
-            cuda_version = torch.version.cuda
-            logger.info(f"CUDA available: version {cuda_version}")
-            return device
-
-        # Apple Silicon (M1/M2/M3)
-        if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
-            logger.info("Apple Silicon MPS available")
-            return "mps"
+        try:
+            import torch  # 懒加载，仅在调用时导入
+            if torch.cuda.is_available():
+                cuda_version = torch.version.cuda
+                logger.info(f"CUDA available: version {cuda_version}")
+                return "cuda"
+            if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+                logger.info("Apple Silicon MPS available")
+                return "mps"
+        except ImportError:
+            logger.warning("torch not installed, defaulting to cpu")
 
         logger.info("Using CPU (no GPU/accelerator detected)")
         return "cpu"
@@ -113,33 +117,30 @@ class ModelManager:
         self,
         model_name: str = "BAAI/bge-reranker-large",
         force_reload: bool = False
-    ) -> CrossEncoder:
-        """获取 CrossEncoder 模型
+    ):
+        """获取 CrossEncoder 模型（懒加载 sentence_transformers）
 
         Args:
             model_name: 模型名称
             force_reload: 强制重新加载
 
         Returns:
-            CrossEncoder 实例
+            CrossEncoder 实例，如果依赖未安装则返回 None
         """
-        # 如果已加载且不需要重载
         if self._cross_encoder is not None and not force_reload and self._cross_encoder_name == model_name:
             return self._cross_encoder
 
         logger.info(f"Loading CrossEncoder model: {model_name}")
 
         try:
-            # 加载模型（自动处理下载和缓存）
+            from sentence_transformers import CrossEncoder  # 懒加载
             self._cross_encoder = CrossEncoder(
                 model_name=model_name,
                 device=self.device,
-                max_length=512  # 限制最大序列长度
+                max_length=512
             )
-
             self._cross_encoder_name = model_name
 
-            # 保存版本信息
             versions = self._load_version_info()
             versions[model_name] = {
                 "loaded_at": datetime.now().isoformat(),
@@ -149,12 +150,17 @@ class ModelManager:
             self._save_version_info(versions)
 
             logger.info(f"CrossEncoder loaded successfully: {model_name} (device: {self.device})")
-
             return self._cross_encoder
 
+        except ImportError:
+            logger.warning(
+                "sentence_transformers not installed; CrossEncoder reranking is disabled. "
+                "Install with: pip install sentence-transformers"
+            )
+            return None
         except Exception as e:
             logger.error(f"Failed to load CrossEncoder {model_name}: {e}")
-            raise
+            return None
 
     def get_model_info(self, model_name: str) -> Optional[dict]:
         """获取模型信息

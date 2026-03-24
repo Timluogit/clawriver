@@ -7,9 +7,7 @@ import logging
 import math
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Tuple
-
-import numpy as np
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
 from app.services.memory_index import MemoryIndex, get_memory_index, MemoryEntry
 from app.search.in_memory_vector import InMemoryVectorEngine, get_in_memory_vector_engine
@@ -69,7 +67,7 @@ class InMemoryHybridEngine:
     def search(
         self,
         query: str,
-        query_vector: Optional[np.ndarray] = None,
+        query_vector: Optional[List[float]] = None,
         top_k: int = 50,
         min_score: float = 0.1,
         search_mode: str = SearchMode.FULL,
@@ -246,7 +244,7 @@ class InMemoryHybridEngine:
     def _full_search(
         self,
         query: str,
-        query_vector: Optional[np.ndarray],
+        query_vector: Optional[List[float]],
         candidate_ids: Set[str],
         all_entries: Dict[str, MemoryEntry],
         top_k: int,

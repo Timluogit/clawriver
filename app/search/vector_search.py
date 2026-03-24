@@ -1,168 +1,261 @@
 """向量语义搜索引擎
 
-使用 TF-IDF + 余弦相似度实现轻量级语义搜索
+使用纯 Python TF-IDF + 余弦相似度实现轻量级语义搜索
+无需 scikit-learn，节省约 200MB 内存
 """
-import numpy as np
-from typing import List, Dict, Tuple, Optional
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import math
 import pickle
 import hashlib
+import re
+from collections import Counter
 from pathlib import Path
+from typing import List, Dict, Tuple, Optional, Set
 
+
+# ---------------------------------------------------------------------------
+# 纯 Python TF-IDF 实现
+# ---------------------------------------------------------------------------
+
+class _TfidfVectorizer:
+    """轻量级 TF-IDF 向量化器（替代 sklearn.feature_extraction.text.TfidfVectorizer）
+
+    特性：
+    - 字符级 ngram（支持中文）
+    - sublinear TF（log(1+tf)）
+    - IDF 平滑（log((N+1)/(df+1))+1）
+    - 最大特征数限制
+    """
+
+    def __init__(
+        self,
+        max_features: int = 5000,
+        ngram_range: Tuple[int, int] = (1, 3),
+        sublinear_tf: bool = True,
+        analyzer: str = "char_wb",
+    ):
+        self.max_features = max_features
+        self.ngram_range = ngram_range
+        self.sublinear_tf = sublinear_tf
+        self.analyzer = analyzer
+
+        self.vocabulary_: Dict[str, int] = {}
+        self.idf_: List[float] = []
+        self._is_fitted = False
+
+    # ------------------------------------------------------------------
+    # 分词 / ngram
+    # ------------------------------------------------------------------
+
+    def _tokenize(self, text: str) -> List[str]:
+        """提取字符级 ngram"""
+        text = text.lower().strip()
+        min_n, max_n = self.ngram_range
+        tokens: List[str] = []
+        if self.analyzer == "char_wb":
+            # 在词边界处用空格填充（char_wb 风格）
+            for word in re.split(r"\s+", text):
+                word = " " + word + " "
+                for n in range(min_n, max_n + 1):
+                    for i in range(len(word) - n + 1):
+                        tokens.append(word[i: i + n])
+        else:
+            for n in range(min_n, max_n + 1):
+                for i in range(len(text) - n + 1):
+                    tokens.append(text[i: i + n])
+        return tokens
+
+    # ------------------------------------------------------------------
+    # fit / transform
+    # ------------------------------------------------------------------
+
+    def fit_transform(self, texts: List[str]) -> List[Dict[int, float]]:
+        """拟合并转换文本列表，返回稀疏向量列表（Dict[feature_index, tfidf_value]）"""
+        # 1. 统计 df
+        df: Counter = Counter()
+        tokenized: List[List[str]] = []
+        for text in texts:
+            tokens = self._tokenize(text)
+            tokenized.append(tokens)
+            df.update(set(tokens))
+
+        N = len(texts)
+
+        # 2. 选取最高频 ngram 作为词表
+        top_ngrams = [tok for tok, _ in df.most_common(self.max_features)]
+        self.vocabulary_ = {tok: idx for idx, tok in enumerate(top_ngrams)}
+        vocab_size = len(self.vocabulary_)
+
+        # 3. 计算 IDF（平滑）
+        self.idf_ = [0.0] * vocab_size
+        for tok, idx in self.vocabulary_.items():
+            df_val = df[tok]
+            self.idf_[idx] = math.log((N + 1) / (df_val + 1)) + 1.0
+
+        self._is_fitted = True
+
+        # 4. 计算 TF-IDF 向量
+        return [self._transform_one(tokens) for tokens in tokenized]
+
+    def transform(self, texts: List[str]) -> List[Dict[int, float]]:
+        """仅转换（词表已固定）"""
+        if not self._is_fitted:
+            raise RuntimeError("Vectorizer not fitted yet")
+        return [self._transform_one(self._tokenize(t)) for t in texts]
+
+    def _transform_one(self, tokens: List[str]) -> Dict[int, float]:
+        """计算单个文档的 TF-IDF 稀疏向量"""
+        tf_counter: Counter = Counter(tokens)
+        vec: Dict[int, float] = {}
+        norm_sq = 0.0
+
+        for tok, raw_tf in tf_counter.items():
+            idx = self.vocabulary_.get(tok)
+            if idx is None:
+                continue
+            tf = (1.0 + math.log(raw_tf)) if self.sublinear_tf else float(raw_tf)
+            val = tf * self.idf_[idx]
+            vec[idx] = val
+            norm_sq += val * val
+
+        # L2 归一化
+        if norm_sq > 0:
+            norm = math.sqrt(norm_sq)
+            vec = {k: v / norm for k, v in vec.items()}
+
+        return vec
+
+
+def _cosine_similarity_sparse(a: Dict[int, float], b: Dict[int, float]) -> float:
+    """两个已 L2 归一化的稀疏向量点积 = 余弦相似度"""
+    dot = 0.0
+    # 遍历较短的向量
+    if len(a) > len(b):
+        a, b = b, a
+    for idx, val in a.items():
+        if idx in b:
+            dot += val * b[idx]
+    return dot
+
+
+# ---------------------------------------------------------------------------
+# 搜索引擎
+# ---------------------------------------------------------------------------
 
 class VectorSearchEngine:
     """向量搜索引擎
 
-    使用 TF-IDF 向量化 + 余弦相似度进行语义搜索
+    使用纯 Python TF-IDF + 余弦相似度进行语义搜索，
+    无需 scikit-learn / numpy 等重量级依赖。
     """
 
     def __init__(self, cache_dir: str = "/tmp/clawriver_cache"):
-        """初始化搜索引擎
-
-        Args:
-            cache_dir: 缓存目录
-        """
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
-        # TF-IDF 向量化器
-        # 针对中文优化：使用字符级 ngram，不使用停用词
-        # min_df=1, max_df=1.0 保证在任何文档数量下都能工作
-        self.vectorizer = TfidfVectorizer(
-            max_features=5000,  # 最大特征数
-            ngram_range=(1, 3),  # 1-3 gram，对中文更友好
-            min_df=1,  # 最小文档频率
-            max_df=1.0,  # 最大文档频率（不过滤，避免小数据集冲突）
-            sublinear_tf=True,  # 使用对数 TF 缩放
-            analyzer='char_wb',  # 字符级分析，支持中文
-            stop_words=None  # 不使用停用词（支持多语言）
+        self.vectorizer = _TfidfVectorizer(
+            max_features=5000,
+            ngram_range=(1, 3),
+            sublinear_tf=True,
+            analyzer="char_wb",
         )
 
-        # 内存缓存
-        self._memory_vectors: Optional[np.ndarray] = None
+        # 稀疏向量列表（每个元素是 Dict[feature_index, tfidf_value]）
+        self._memory_vectors: List[Dict[int, float]] = []
         self._memory_ids: List[str] = []
         self._is_fitted = False
 
+    # ------------------------------------------------------------------
+    # 缓存
+    # ------------------------------------------------------------------
+
     def _get_cache_path(self) -> Path:
-        """获取缓存文件路径"""
         return self.cache_dir / "tfidf_cache.pkl"
 
     def _compute_hash(self, memories: List[Dict]) -> str:
-        """计算记忆列表的哈希值，用于检测变化"""
         content = sorted(f"{m['id']}:{m['title']}:{m['summary']}" for m in memories)
         return hashlib.md5("|".join(content).encode()).hexdigest()
 
-    def index_memories(self, memories: List[Dict]) -> None:
-        """索引记忆
-
-        Args:
-            memories: 记忆列表，每个记忆包含 id, title, summary
-        """
-        if not memories:
-            return
-
-        # 准备文本：标题 + 摘要
-        texts = []
-        self._memory_ids = []
-        for m in memories:
-            text = f"{m.get('title', '')} {m.get('summary', '')}"
-            texts.append(text)
-            self._memory_ids.append(m['id'])
-
-        # 训练或更新 TF-IDF 模型
-        if not self._is_fitted:
-            # 首次训练
-            self._memory_vectors = self.vectorizer.fit_transform(texts)
-            self._is_fitted = True
-        else:
-            # 增量更新：重新训练（简化方案）
-            # 对于生产环境，可以考虑使用在线学习算法
-            self._memory_vectors = self.vectorizer.fit_transform(texts)
-
-        # 保存到缓存
-        self._save_cache()
-
     def _save_cache(self) -> None:
-        """保存索引到缓存"""
-        if self._memory_vectors is None:
+        if not self._memory_vectors:
             return
-
         cache_data = {
-            'vectorizer': self.vectorizer,
-            'memory_vectors': self._memory_vectors,
-            'memory_ids': self._memory_ids,
-            'is_fitted': self._is_fitted
+            "vectorizer": self.vectorizer,
+            "memory_vectors": self._memory_vectors,
+            "memory_ids": self._memory_ids,
+            "is_fitted": self._is_fitted,
         }
-
-        with open(self._get_cache_path(), 'wb') as f:
+        with open(self._get_cache_path(), "wb") as f:
             pickle.dump(cache_data, f)
 
     def _load_cache(self, current_hash: str) -> bool:
-        """从缓存加载索引
-
-        Args:
-            current_hash: 当前数据的哈希值
-
-        Returns:
-            是否成功加载
-        """
         cache_path = self._get_cache_path()
         if not cache_path.exists():
             return False
-
         try:
-            with open(cache_path, 'rb') as f:
+            with open(cache_path, "rb") as f:
                 cache_data = pickle.load(f)
-
-            # 检查哈希是否匹配（如果有提供）
-            if current_hash and cache_data.get('hash') != current_hash:
+            if current_hash and cache_data.get("hash") != current_hash:
                 return False
-
-            self.vectorizer = cache_data['vectorizer']
-            self._memory_vectors = cache_data['memory_vectors']
-            self._memory_ids = cache_data['memory_ids']
-            self._is_fitted = cache_data['is_fitted']
-
+            self.vectorizer = cache_data["vectorizer"]
+            self._memory_vectors = cache_data["memory_vectors"]
+            self._memory_ids = cache_data["memory_ids"]
+            self._is_fitted = cache_data["is_fitted"]
             return True
         except Exception:
             return False
+
+    # ------------------------------------------------------------------
+    # 索引
+    # ------------------------------------------------------------------
+
+    def index_memories(self, memories: List[Dict]) -> None:
+        if not memories:
+            return
+        texts = []
+        self._memory_ids = []
+        for m in memories:
+            texts.append(f"{m.get('title', '')} {m.get('summary', '')}")
+            self._memory_ids.append(m["id"])
+
+        self._memory_vectors = self.vectorizer.fit_transform(texts)
+        self._is_fitted = True
+        self._save_cache()
+
+    def batch_index_with_cache(
+        self, memories: List[Dict], force_rebuild: bool = False
+    ) -> None:
+        if not memories:
+            return
+        current_hash = self._compute_hash(memories)
+        if not force_rebuild and self._load_cache(current_hash):
+            return
+        self.index_memories(memories)
+
+    # ------------------------------------------------------------------
+    # 搜索
+    # ------------------------------------------------------------------
 
     def search(
         self,
         query: str,
         top_k: int = 50,
-        min_similarity: float = 0.1
+        min_similarity: float = 0.1,
     ) -> List[Tuple[str, float]]:
-        """语义搜索
-
-        Args:
-            query: 搜索查询
-            top_k: 返回前 k 个结果
-            min_similarity: 最小相似度阈值
-
-        Returns:
-            [(memory_id, similarity_score), ...] 按相似度降序排序
-        """
-        if not self._is_fitted or self._memory_vectors is None:
+        if not self._is_fitted or not self._memory_vectors:
             return []
 
-        # 查询向量化
-        query_vector = self.vectorizer.transform([query])
+        query_vec = self.vectorizer.transform([query])[0]
+        if not query_vec:
+            return []
 
-        # 计算余弦相似度
-        similarities = cosine_similarity(query_vector, self._memory_vectors)[0]
+        scored: List[Tuple[str, float]] = []
+        for mid, mem_vec in zip(self._memory_ids, self._memory_vectors):
+            score = _cosine_similarity_sparse(query_vec, mem_vec)
+            if score >= min_similarity:
+                scored.append((mid, score))
 
-        # 排序并过滤
-        indices = np.argsort(similarities)[::-1]  # 降序
-
-        results = []
-        for idx in indices:
-            score = float(similarities[idx])
-            if score >= min_similarity and len(results) < top_k:
-                results.append((self._memory_ids[idx], score))
-
-        return results
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:top_k]
 
     def search_with_keywords(
         self,
@@ -170,83 +263,40 @@ class VectorSearchEngine:
         keyword_ids: set,
         top_k: int = 50,
         min_similarity: float = 0.1,
-        semantic_weight: float = 0.5
+        semantic_weight: float = 0.5,
     ) -> List[Tuple[str, float]]:
-        """混合搜索：语义 + 关键词
-
-        Args:
-            query: 搜索查询
-            keyword_ids: 关键词匹配的记忆 ID 集合
-            top_k: 返回前 k 个结果
-            min_similarity: 最小相似度阈值
-            semantic_weight: 语义搜索权重 (0-1)，关键词权重为 1-semantic_weight
-
-        Returns:
-            [(memory_id, hybrid_score), ...] 按混合分数降序排序
-        """
-        # 语义搜索结果
         semantic_results = self.search(query, top_k=top_k * 2, min_similarity=min_similarity)
 
-        # 归一化语义分数
         if semantic_results:
-            max_semantic_score = max(score for _, score in semantic_results)
-            if max_semantic_score > 0:
-                semantic_results = [(mid, score / max_semantic_score) for mid, score in semantic_results]
+            max_score = max(s for _, s in semantic_results)
+            if max_score > 0:
+                semantic_results = [(mid, s / max_score) for mid, s in semantic_results]
 
-        # 混合评分
         hybrid_scores: Dict[str, float] = {}
-
-        # 语义搜索得分
         for memory_id, score in semantic_results:
             hybrid_scores[memory_id] = score * semantic_weight
 
-        # 关键词匹配加分
         for memory_id in keyword_ids:
             if memory_id in hybrid_scores:
                 hybrid_scores[memory_id] += (1 - semantic_weight)
             else:
                 hybrid_scores[memory_id] = (1 - semantic_weight) * 0.5
 
-        # 排序
         sorted_results = sorted(hybrid_scores.items(), key=lambda x: x[1], reverse=True)
-
         return sorted_results[:top_k]
 
-    def batch_index_with_cache(
-        self,
-        memories: List[Dict],
-        force_rebuild: bool = False
-    ) -> None:
-        """批量索引记忆（带缓存）
-
-        Args:
-            memories: 记忆列表
-            force_rebuild: 是否强制重建索引
-        """
-        if not memories:
-            return
-
-        # 计算哈希
-        current_hash = self._compute_hash(memories)
-
-        # 尝试加载缓存
-        if not force_rebuild and self._load_cache(current_hash):
-            return
-
-        # 重建索引
-        self.index_memories(memories)
+    # ------------------------------------------------------------------
+    # 工具
+    # ------------------------------------------------------------------
 
     def get_memory_count(self) -> int:
-        """获取已索引的记忆数量"""
         return len(self._memory_ids)
 
     def clear_cache(self) -> None:
-        """清除缓存"""
         cache_path = self._get_cache_path()
         if cache_path.exists():
             cache_path.unlink()
-
-        self._memory_vectors = None
+        self._memory_vectors = []
         self._memory_ids = []
         self._is_fitted = False
 
@@ -256,7 +306,6 @@ _engine: Optional[VectorSearchEngine] = None
 
 
 def get_search_engine() -> VectorSearchEngine:
-    """获取搜索引擎单例"""
     global _engine
     if _engine is None:
         _engine = VectorSearchEngine()

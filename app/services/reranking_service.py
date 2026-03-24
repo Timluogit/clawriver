@@ -1,10 +1,13 @@
-"""重排序服务 - 使用 Cross-Encoder 对搜索结果进行精细排序"""
+"""重排序服务 - 使用 Cross-Encoder 对搜索结果进行精细排序
+
+注意：sentence_transformers / numpy 均为懒加载，
+仅在实际调用 CrossEncoder 重排时才导入，避免启动时占用大量内存。
+当 sentence_transformers 未安装时，重排功能自动禁用，降级为原始排序。
+"""
+import math
 from typing import List, Dict, Optional, Tuple
 import logging
 from datetime import datetime, timedelta
-
-from sentence_transformers import CrossEncoder
-import numpy as np
 
 from app.core.config import settings
 from app.services.model_manager import get_model_manager
@@ -336,12 +339,12 @@ class RerankingService:
         for i in range(min(k, len(ranked_ids))):
             if ranked_ids[i] in ground_truth_ids:
                 # 假设所有正确结果的增益都是1（二值相关性）
-                dcg += 1.0 / np.log2(i + 2)
+                dcg += 1.0 / math.log2(i + 2)
 
         # 计算 Ideal DCG (理想情况下，所有正确结果都在最前面)
         idcg = 0.0
         for i in range(min(k, len(ground_truth_ids))):
-            idcg += 1.0 / np.log2(i + 2)
+            idcg += 1.0 / math.log2(i + 2)
 
         return dcg / idcg if idcg > 0 else 0.0
 
