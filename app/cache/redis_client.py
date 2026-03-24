@@ -46,7 +46,10 @@ class RedisClient:
             self._pool = ConnectionPool.from_url(
                 self.url,
                 max_connections=self.max_connections,
-                decode_responses=self.decode_responses
+                decode_responses=self.decode_responses,
+                socket_connect_timeout=3,   # 3秒连接超时，防止无Redis时卡住
+                socket_timeout=3,           # 3秒读写超时
+                retry_on_timeout=False,
             )
             logger.info(f"Redis connected: {self.url}")
             return self

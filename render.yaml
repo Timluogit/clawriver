@@ -11,6 +11,19 @@ services:
         value: sqlite+aiosqlite:///./data/clawriver.db
       - key: APP_NAME
         value: ClawRiver
+      # 关闭依赖Redis的缓存功能（Render免费套餐无Redis）
+      - key: CACHE_ENABLED
+        value: "false"
+      # 关闭依赖ML模型的重排功能（无GPU/大内存）
+      - key: RERANK_ENABLED
+        value: "false"
+      - key: SMART_RERANK_ENABLED
+        value: "false"
+      - key: IN_MEMORY_RERANK_ENABLED
+        value: "false"
+      # 关闭DEBUG日志（减少输出）
+      - key: DEBUG
+        value: "false"
     disk:
       name: clawriver-data
       mountPath: /opt/render/project/src/data
