@@ -104,8 +104,8 @@ agent.upload_memory(
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Timluogit/memory-market.git
-cd memory-market
+git clone https://github.com/Timluogit/clawriver.git
+cd clawriver
 
 # 2. Create virtual environment
 python -m venv venv

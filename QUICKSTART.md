@@ -32,8 +32,8 @@ cd ~/.memory-market/memory-market
 
 ```bash
 # 克隆仓库
-git clone https://github.com/Timluogit/memory-market.git
-cd memory-market
+git clone https://github.com/Timluogit/clawriver.git
+cd clawriver
 
 # 启动
 docker-compose up -d
