@@ -7,8 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc g++ libffi-dev libpq-dev curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+COPY requirements-prod.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements-prod.txt
 
 # ---- Runtime ----
 FROM python:3.12-slim
@@ -18,7 +18,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     APP_HOME=/app
 
-RUN groupadd -r app && useradd -r -g app -d ${APP_HOME} -s /sbin/nologin
+# Create non-root user (compatible with slim image)
+RUN addgroup --system app && adduser --system --ingroup app --home ${APP_HOME} --shell /sbin/nologin app
 
 WORKDIR ${APP_HOME}
 
@@ -29,6 +30,9 @@ COPY --from=builder /install /usr/local
 COPY app/ ./app/
 COPY pyproject.toml .
 COPY scripts/ ./scripts/
+COPY clawriver/ ./clawriver/
+COPY clawriver_mcp/ ./clawriver_mcp/
+COPY skills/ ./skills/
 
 RUN mkdir -p /app/data /app/logs && chown -R app:app ${APP_HOME}
 
