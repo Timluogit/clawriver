@@ -2,7 +2,6 @@
 # Monitoring Stack — Prometheus + Grafana + Node Exporter
 # Usage: docker compose -f docker-compose.monitoring.yml up -d
 # ============================================================
-version: "3.9"
 
 services:
   prometheus:
@@ -14,7 +13,7 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - memory-market-net
+      - clawriver-net
     restart: unless-stopped
 
   grafana:
@@ -29,7 +28,7 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - memory-market-net
+      - clawriver-net
     depends_on:
       - prometheus
     restart: unless-stopped
@@ -50,7 +49,7 @@ services:
     ports:
       - "9100:9100"
     networks:
-      - memory-market-net
+      - clawriver-net
     restart: unless-stopped
 
 volumes:
@@ -58,6 +57,6 @@ volumes:
   grafana-data:
 
 networks:
-  memory-market-net:
+  clawriver-net:
     external: true
-    name: memory-market_memory-market-net
+    name: memory-market_clawriver-net

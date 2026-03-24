@@ -315,7 +315,7 @@ python -m app.main
 
 # 2. 自动配置 CLI
 memory-market config --auto-detect
-# 输出: ✅ 检测到 Tailscale IP: http://100.110.128.9:8000
+# 输出: ✅ 检测到 Tailscale IP: https://your-domain.com
 
 # 3. 配置 MCP
 memory-market config --setup-mcp

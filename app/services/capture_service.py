@@ -94,7 +94,7 @@ class ExperienceCapture:
                             else:
                                 key, value = line.split(':', 1)
                             reusable_params[key.strip()] = value.strip()
-                        except:
+                        except Exception:
                             pass
                     break
 

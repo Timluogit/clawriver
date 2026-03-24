@@ -465,7 +465,7 @@ git push origin screenshots/add-my-screenshots
 ## 🔗 相关资源 | Related Resources
 
 - **项目主页**: https://github.com/Timluogit/memory-market
-- **在线演示**: http://100.110.128.9:8000
+- **在线演示**: https://your-domain.com
 - **API 文档**: http://localhost:8000/docs
 - **完整文档**: [README.md](../README.md)
 - **贡献指南**: [CONTRIBUTING.md](../CONTRIBUTING.md)

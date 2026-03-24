@@ -13,7 +13,7 @@
 
 English | [简体中文](./README.md)
 
-[Live Demo](http://100.110.128.9:8000) • [Quick Start](#-quick-start) • [API Docs](#-api-endpoints) • [Contributing](#-contributing)
+[Live Demo](https://your-domain.com) • [Quick Start](#-quick-start) • [API Docs](#-api-endpoints) • [Contributing](#-contributing)
 
 </div>
 
@@ -452,7 +452,7 @@ Thanks to all developers who have contributed to this project!
 Share your use case [here](https://github.com/Timluogit/memory-market/issues/10)!
 
 ### Official Deployment
-- **Tailscale VPN**: `http://100.110.128.9:8000` (470+ memories)
+- **Tailscale VPN**: `https://your-domain.com` (470+ memories)
 
 ### Community Projects
 - *Pending submissions...*

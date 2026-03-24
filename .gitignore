@@ -47,3 +47,13 @@ coverage.xml
 *.log
 *.tmp
 agent-loop-state.json
+
+# MyPy cache
+.mypy_cache/
+
+# Database files
+*.db
+memory_market*.db
+
+# Sentry
+.sentryclirc

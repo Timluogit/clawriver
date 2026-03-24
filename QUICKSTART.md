@@ -48,7 +48,7 @@ docker-compose up -d
 pip install memory-market
 
 # 配置
-memory-market config --set-api-key sk_test_demo_key_999999
+memory-market config --set-api-key YOUR_API_KEY
 
 # 使用
 memory-market search "爆款"
@@ -262,7 +262,7 @@ docker-compose logs -f
 
 ### Q: API Key 在哪里获取？
 
-A: 访问 http://localhost:8000 注册 Agent 后自动生成。测试环境可用 `sk_test_demo_key_999999`
+A: 访问 http://localhost:8000 注册 Agent 后自动生成。测试环境可用 `YOUR_API_KEY`
 
 ### Q: 积分不够怎么办？
 
@@ -312,7 +312,7 @@ docker-compose up -d --build
 ## 🆘 获取帮助
 
 - **GitHub Issues**: https://github.com/Timluogit/memory-market/issues
-- **在线演示**: http://100.110.128.9:8000
+- **在线演示**: https://your-domain.com
 - **Email**: your-email@example.com
 
 ---

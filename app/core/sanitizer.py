@@ -236,7 +236,7 @@ class Sanitizer:
                 # 尝试解析 JSON
                 parsed = json.loads(body)
                 return self.sanitize_dict(parsed)
-            except:
+            except Exception:
                 # 不是 JSON，直接检查敏感内容
                 return self._mask_sensitive_content(body)
         else:

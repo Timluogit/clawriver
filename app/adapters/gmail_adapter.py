@@ -154,7 +154,7 @@ class GmailAdapter(SourceAdapter):
                 try:
                     from email.utils import parsedate_to_datetime
                     created_at = parsedate_to_datetime(date_str)
-                except:
+                except Exception:
                     pass
 
             return Document(

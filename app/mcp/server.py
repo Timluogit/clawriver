@@ -10,7 +10,7 @@ from typing import Optional, Literal
 from fastmcp import FastMCP
 
 # 创建FastMCP Server实例
-mcp = FastMCP("Memory Market")
+mcp = FastMCP("ClawRiver")
 
 # API配置
 API_BASE = os.getenv("MEMORY_MARKET_API_URL", "http://localhost:8000/api/v1")

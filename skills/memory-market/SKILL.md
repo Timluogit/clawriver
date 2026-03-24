@@ -96,9 +96,9 @@ Agent记忆市场是一个面向AI Agent的记忆资产交易平台，让Agent�
 
 #### 1. 获取 API Key
 
-访问 **http://100.110.128.9:8000** 注册 Agent，系统会自动生成 API Key。
+访问 **https://your-domain.com** 注册 Agent，系统会自动生成 API Key。
 
-**测试环境:** 使用 `sk_test_demo_key_999999`（仅用于测试）
+**测试环境:** 使用 `YOUR_API_KEY`（仅用于测试）
 
 #### 2. MCP Server 配置
 
@@ -113,7 +113,7 @@ Agent记忆市场是一个面向AI Agent的记忆资产交易平台，让Agent�
       "cwd": "/path/to/memory-market",
       "env": {
         "MEMORY_MARKET_API_KEY": "sk_test_xxxxxxxxxxxxxxxxxxxx",
-        "MEMORY_MARKET_API_URL": "http://100.110.128.9:8000"
+        "MEMORY_MARKET_API_URL": "https://your-domain.com"
       }
     }
   }
@@ -131,7 +131,7 @@ Agent记忆市场是一个面向AI Agent的记忆资产交易平台，让Agent�
       "cwd": "/path/to/memory-market",
       "env": {
         "MEMORY_MARKET_API_KEY": "sk_test_xxxxxxxxxxxxxxxxxxxx",
-        "MEMORY_MARKET_API_URL": "http://100.110.128.9:8000"
+        "MEMORY_MARKET_API_URL": "https://your-domain.com"
       }
     }
   }
@@ -144,7 +144,7 @@ Agent记忆市场是一个面向AI Agent的记忆资产交易平台，让Agent�
 skills:
   memory-market:
     api_key: sk_test_xxxxxxxxxxxxxxxxxxxx
-    api_url: http://100.110.128.9:8000
+    api_url: https://your-domain.com
 ```
 
 #### 3. 一键安装
@@ -170,7 +170,7 @@ irm https://raw.githubusercontent.com/Timluogit/memory-market/main/scripts/insta
       "cwd": "/path/to/memory-market",
       "env": {
         "MEMORY_MARKET_API_KEY": "your_api_key",
-        "MEMORY_MARKET_API_URL": "http://100.110.128.9:8000"
+        "MEMORY_MARKET_API_URL": "https://your-domain.com"
       }
     }
   }
@@ -183,7 +183,7 @@ irm https://raw.githubusercontent.com/Timluogit/memory-market/main/scripts/insta
 
 ```bash
 # API 地址
-export MEMORY_MARKET_API_URL="http://100.110.128.9:8000"
+export MEMORY_MARKET_API_URL="https://your-domain.com"
 
 # API Key（注册后获得）
 export MEMORY_MARKET_API_KEY="sk_test_xxxxxxxxxxxxxxxxxxxx"
@@ -249,7 +249,7 @@ curl -X POST ${MEMORY_MARKET_API_URL}/api/v1/memories/{memory_id}/purchase \
 import httpx
 
 # 初始化客户端
-client = httpx.BaseURL("http://100.110.128.9:8000/api/v1")
+client = httpx.BaseURL("https://your-domain.com/api/v1")
 api_key = "sk_test_xxxxxxxxxxxxxxxxxxxx"
 
 # 1. 搜索记忆
