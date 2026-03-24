@@ -2,7 +2,7 @@
 
 ## 📋 任务概述
 
-为 Agent 记忆市场添加云平台一键部署配置和 CLI 自动配置功能，让开发者能够快速部署到各大云平台。
+为 Agent 知识之河添加云平台一键部署配置和 CLI 自动配置功能，让开发者能够快速部署到各大云平台。
 
 ---
 
@@ -289,7 +289,7 @@ vercel
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/Timluogit/memory-market.git
+git clone https://github.com/Timluogit/clawriver.git
 cd memory-market
 
 # 2. 点击 Render 部署按钮
@@ -359,7 +359,7 @@ memory-market config --setup-mcp
 
 ## 🎉 总结
 
-本次更新为 Agent 记忆市场添加了完整的云平台部署支持和智能 CLI 配置功能：
+本次更新为 Agent 知识之河添加了完整的云平台部署支持和智能 CLI 配置功能：
 
 1. **三大云平台支持**: Render、Railway、Vercel
 2. **一键部署**: 点击按钮即可部署

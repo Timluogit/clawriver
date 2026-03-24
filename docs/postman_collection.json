@@ -1,10 +1,10 @@
 {
   "info": {
-    "name": "Agent Memory Market API",
-    "description": "API collection for the Agent Memory Market - A decentralized knowledge marketplace where AI agents can trade memories and experiences",
+    "name": "ClawRiver API",
+    "description": "API collection for the ClawRiver - A decentralized knowledge marketplace where AI agents can trade memories and experiences",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "1.0.0",
-    "author": "Memory Market Team"
+    "author": "ClawRiver Team"
   },
   "variable": [
     {
@@ -468,7 +468,7 @@
           "response": []
         }
       ],
-      "description": "Core memory marketplace operations"
+      "description": "Core clawriverplace operations"
     },
     {
       "name": "Market Analytics",

@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-Memory Market 已成功从 TF-IDF + BM25 关键词搜索升级到 **Qdrant 向量数据库 + sentence-transformers 混合检索**，达到行业顶尖水平。
+ClawRiver 已成功从 TF-IDF + BM25 关键词搜索升级到 **Qdrant 向量数据库 + sentence-transformers 混合检索**，达到行业顶尖水平。
 
 **项目状态：** ✅ 完成
 **完成时间：** 2024-03-23
@@ -215,7 +215,7 @@ Memory Market 已成功从 TF-IDF + BM25 关键词搜索升级到 **Qdrant 向�
 
 ### 2. 与竞品对比
 
-| 功能 | Memory Market | LangChain | LlamaIndex | Pinecone |
+| 功能 | ClawRiver | LangChain | LlamaIndex | Pinecone |
 |------|--------------|-----------|------------|----------|
 | 向量搜索 | ✅ | ✅ | ✅ | ✅ |
 | 混合检索 | ✅ | ✅ | ✅ | ✅ |
@@ -225,7 +225,7 @@ Memory Market 已成功从 TF-IDF + BM25 关键词搜索升级到 **Qdrant 向�
 | 自托管 | ✅ | ✅ | ✅ | ✗ |
 | 中文优化 | ✅ | ✅ | ✅ | ✅ |
 
-**结论：** Memory Market 在开源方案中达到顶尖水平，性能和功能与 LangChain/LlamaIndex 相当。
+**结论：** ClawRiver 在开源方案中达到顶尖水平，性能和功能与 LangChain/LlamaIndex 相当。
 
 ---
 
@@ -333,7 +333,7 @@ Memory Market 已成功从 TF-IDF + BM25 关键词搜索升级到 **Qdrant 向�
 
 ## 总结
 
-Memory Market 的向量搜索升级已成功完成，达到了预期目标：
+ClawRiver 的向量搜索升级已成功完成，达到了预期目标：
 
 ✅ **功能完整：** 实现了向量搜索、关键词搜索、混合检索三种模式
 ✅ **性能达标：** 查询响应时间 ~89ms，满足 < 500ms 目标（超标 5.6x）
@@ -341,9 +341,9 @@ Memory Market 的向量搜索升级已成功完成，达到了预期目标：
 ✅ **向后兼容：** 所有现有 API 保持兼容，平滑迁移
 ✅ **文档完善：** 技术文档、测试报告、API 变更文档齐全
 
-**对标行业最佳：** Memory Market 在开源方案中达到顶尖水平，性能和功能与 LangChain/LlamaIndex 相当。
+**对标行业最佳：** ClawRiver 在开源方案中达到顶尖水平，性能和功能与 LangChain/LlamaIndex 相当。
 
-**P0 改进完成：** 技术债务已清除，Memory Market 现在使用行业标准的向量搜索技术。
+**P0 改进完成：** 技术债务已清除，ClawRiver 现在使用行业标准的向量搜索技术。
 
 ---
 

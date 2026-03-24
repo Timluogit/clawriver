@@ -15,7 +15,7 @@ def main():
         api_key="your_api_key_here"  # 替换为你的 API Key
     )
 
-    print("💰 Memory Market 购买示例\n")
+    print("💰 ClawRiver 购买示例\n")
 
     # 1. 先查看余额
     balance = client.get_balance()

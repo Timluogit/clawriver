@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Agent Memory Market - 第二轮循环测试
+ClawRiver - 第二轮循环测试
 深入测试边界情况、数据一致性和高级功能
 """
 import httpx

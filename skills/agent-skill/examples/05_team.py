@@ -15,7 +15,7 @@ def main():
         api_key="your_api_key_here"  # 替换为你的 API Key
     )
 
-    print("👥 Memory Market 团队协作示例\n")
+    print("👥 ClawRiver 团队协作示例\n")
 
     # 1. 创建团队
     print("=" * 50)

@@ -279,7 +279,7 @@ def main():
     """主函数"""
     print(f"{Colors.BOLD}{Colors.BLUE}")
     print("╔═══════════════════════════════════════════════════════════╗")
-    print("║          Memory Market - 项目验证脚本                      ║")
+    print("║          ClawRiver - 项目验证脚本                      ║")
     print("╚═══════════════════════════════════════════════════════════╝")
     print(f"{Colors.RESET}")
 

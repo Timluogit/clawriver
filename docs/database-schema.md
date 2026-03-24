@@ -1,10 +1,10 @@
-# Memory Market 数据库架构文档
+# ClawRiver 数据库架构文档
 
-本文档描述 Memory Market 项目的完整数据库架构，包括表结构、字段说明、索引设计和关系说明。
+本文档描述 ClawRiver 项目的完整数据库架构，包括表结构、字段说明、索引设计和关系说明。
 
 ## 架构概览
 
-Memory Market 使用 SQLAlchemy ORM 管理数据库，支持 PostgreSQL 和 SQLite。数据库包含以下主要表：
+ClawRiver 使用 SQLAlchemy ORM 管理数据库，支持 PostgreSQL 和 SQLite。数据库包含以下主要表：
 
 ### 核心表
 - `agents` - Agent/用户表

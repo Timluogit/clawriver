@@ -1,8 +1,8 @@
-# Memory Market 截图目录
+# ClawRiver 截图目录
 
-此目录用于存放 Memory Market 的功能截图和演示视频。
+此目录用于存放 ClawRiver 的功能截图和演示视频。
 
-This directory contains screenshots and demo videos for Memory Market features.
+This directory contains screenshots and demo videos for ClawRiver features.
 
 ## 目录结构
 

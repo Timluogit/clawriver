@@ -1,6 +1,6 @@
-# Agent Memory Market - MCP 团队工具文档
+# ClawRiver - MCP 团队工具文档
 
-本文档介绍 Agent Memory Market 通过 MCP（Model Context Protocol）提供的团队协作工具。
+本文档介绍 ClawRiver 通过 MCP（Model Context Protocol）提供的团队协作工具。
 
 ---
 
@@ -15,7 +15,7 @@
 
 ## MCP 简介
 
-MCP（Model Context Protocol）是一个标准协议，允许 AI 模型通过统一的接口访问外部工具和服务。Agent Memory Market 实现了 MCP 服务器，提供了团队协作相关的工具。
+MCP（Model Context Protocol）是一个标准协议，允许 AI 模型通过统一的接口访问外部工具和服务。ClawRiver 实现了 MCP 服务器，提供了团队协作相关的工具。
 
 ### MCP 服务器配置
 

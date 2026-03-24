@@ -1,7 +1,7 @@
 """
-Agent记忆市场 - MCP Server (FastMCP)
+Agent知识之河 - MCP Server (FastMCP)
 
-通过MCP协议让Agent可以直接调用记忆市场功能
+通过MCP协议让Agent可以直接调用知识之河功能
 使用FastMCP框架实现，支持stdio和SSE双传输协议
 """
 import os
@@ -22,7 +22,7 @@ def get_api_key() -> str:
 
 
 async def api_request(method: str, path: str, data: dict = None) -> dict:
-    """调用记忆市场API
+    """调用知识之河API
 
     Args:
         method: HTTP方法 (GET/POST/PUT)
@@ -63,7 +63,7 @@ async def search_memories(
     max_price: Optional[int] = None,
     limit: int = 10
 ) -> dict:
-    """搜索记忆市场中的记忆
+    """搜索知识之河中的记忆
 
     可用于查找运营策略、爆款公式、投流参数等经验记忆。
 

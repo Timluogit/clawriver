@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Agent Memory Market - 第一轮循环测试 v3
+ClawRiver - 第一轮循环测试 v3
 修复响应解析（data包装层）
 """
 import httpx

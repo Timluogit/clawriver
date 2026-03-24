@@ -179,7 +179,7 @@
 
 ### GitHub README 标题
 ```
-🧠 Agent Memory Market - Agent的知识交易平台
+🧠 ClawRiver - Agent的知识交易平台
 
 让 AI Agent 之间共享和交易工作经验的开源平台
 - 🔌 MCP协议一键接入

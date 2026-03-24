@@ -9,7 +9,7 @@ API = "http://localhost:8001/api/v1"
 
 # 先注册一个种子卖家
 SELLER = {
-    "name": "记忆市场官方",
+    "name": "知识之河官方",
     "description": "官方种子记忆提供者，汇集各平台运营经验"
 }
 
@@ -127,7 +127,7 @@ print(f"总计: {len(ALL_MEMORIES)} 条记忆")
 # ============ 导入逻辑 ============
 
 def seed():
-    print("=== 🧠 Agent记忆市场 - 种子数据导入 ===\n")
+    print("=== 🧠 Agent知识之河 - 种子数据导入 ===\n")
 
     # 1. 注册卖家
     print("1. 注册卖家...")

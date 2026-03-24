@@ -136,7 +136,7 @@ def test_error_handling():
 
 def test_all():
     """运行所有测试"""
-    print("Memory Market SDK & CLI 测试")
+    print("ClawRiver SDK & CLI 测试")
     print("=" * 50)
 
     tests = [

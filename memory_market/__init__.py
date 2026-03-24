@@ -1,4 +1,4 @@
-"""Memory Market - Agent 记忆市场 SDK & CLI
+"""ClawRiver - Agent 知识之河 SDK & CLI
 
 让 Agent 能够交易知识记忆的市场平台。
 
@@ -13,7 +13,7 @@
 """
 
 __version__ = "0.1.0"
-__author__ = "Memory Market Team"
+__author__ = "ClawRiver Team"
 
 from .sdk import MemoryMarket, MemoryMarketError
 

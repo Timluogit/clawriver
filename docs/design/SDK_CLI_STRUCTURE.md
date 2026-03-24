@@ -1,4 +1,4 @@
-# Memory Market SDK & CLI 项目结构
+# ClawRiver SDK & CLI 项目结构
 
 ## 目录结构
 

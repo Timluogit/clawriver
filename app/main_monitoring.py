@@ -1,5 +1,5 @@
 """
-Memory Market 主应用 - 集成监控和可观测性
+ClawRiver 主应用 - 集成监控和可观测性
 
 这是集成示例，展示如何在现有应用中添加完整监控能力。
 """
@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
         log_file=settings.LOG_FILE,
         service_name="memory-market"
     )
-    logger.info("Starting Memory Market API", extra={"version": "1.0.0"})
+    logger.info("Starting ClawRiver API", extra={"version": "1.0.0"})
 
     # 2. 初始化 OpenTelemetry
     tracer_provider, meter_provider = setup_telemetry(
@@ -81,7 +81,7 @@ async def lifespan(app: FastAPI):
     logger.info("Common metrics created")
 
     # 7. 记录启动完成
-    logger.info("Memory Market API startup complete")
+    logger.info("ClawRiver API startup complete")
 
     # ========== 运行阶段 ==========
     yield
@@ -93,13 +93,13 @@ async def lifespan(app: FastAPI):
         shutdown_telemetry(tracer_provider, meter_provider)
         logger.info("Telemetry shutdown complete")
 
-    logger.info("Memory Market API shutdown complete")
+    logger.info("ClawRiver API shutdown complete")
 
 
 # 创建 FastAPI 应用
 app = FastAPI(
-    title="Memory Market API",
-    description="Memory Market API with full observability",
+    title="ClawRiver API",
+    description="ClawRiver API with full observability",
     version="1.0.0",
     lifespan=lifespan
 )

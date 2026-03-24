@@ -269,7 +269,7 @@ tests/
 
 ## 维护者
 
-- **项目负责人**: Memory Market Team
+- **项目负责人**: ClawRiver Team
 - **技术支持**: OpenClaw AI
 
 ---

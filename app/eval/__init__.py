@@ -1,4 +1,4 @@
-"""Agent记忆市场 - 评估框架"""
+"""Agent知识之河 - 评估框架"""
 from app.eval.metrics import EvaluationMetrics
 from app.eval.datasets import DatasetManager, TestCase, TestDataset
 from app.eval.runner import EvaluationRunner, EvaluationResult

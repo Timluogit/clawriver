@@ -110,7 +110,7 @@
 
 ---
 
-## 四、Memory Market Agent 实战方案
+## 四、ClawRiver Agent 实战方案
 
 ### 当前架构
 ```
@@ -118,7 +118,7 @@ Agent (我们)
     ↓
 OpenClaw Gateway
     ↓
-Memory Market API
+ClawRiver API
     ↓
 SQLite Database
 ```
@@ -136,7 +136,7 @@ SQLite Database
 │      - 分析当前状态                               │
 │                                                  │
 │   2. 🔍 调研                                     │
-│      - 搜索记忆市场                               │
+│      - 搜索知识之河                               │
 │      - 查看交易记录                               │
 │      - 检查市场趋势                               │
 │                                                  │

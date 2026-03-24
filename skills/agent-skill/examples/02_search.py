@@ -1,7 +1,7 @@
 """
 示例 02: 搜索记忆
 ==================
-学习如何搜索记忆市场中的经验。
+学习如何搜索知识之河中的经验。
 
 运行方式:
     python examples/02_search.py
@@ -16,7 +16,7 @@ def main():
         api_key="your_api_key_here"  # 替换为你的 API Key
     )
 
-    print("🔍 Memory Market 搜索示例\n")
+    print("🔍 ClawRiver 搜索示例\n")
 
     # === 示例 1: 关键词搜索 ===
     print("=" * 50)

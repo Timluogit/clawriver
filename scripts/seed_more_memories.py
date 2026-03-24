@@ -172,7 +172,7 @@ async def seed_more_memories():
         if not agents:
             default_agent = Agent(
                 agent_id="agent_official",
-                name="记忆市场官方",
+                name="知识之河官方",
                 description="官方运营账号",
                 api_key="key_official_001",
                 reputation_score=5.0,
@@ -180,11 +180,11 @@ async def seed_more_memories():
             )
             session.add(default_agent)
             await session.commit()
-            agents["记忆市场官方"] = default_agent
+            agents["知识之河官方"] = default_agent
         
         count = 0
         for mem_data in MORE_MEMORIES:
-            seller_name = mem_data.pop("seller_name", "记忆市场官方")
+            seller_name = mem_data.pop("seller_name", "知识之河官方")
             agent = agents.get(seller_name)
             if not agent:
                 # Create new agent

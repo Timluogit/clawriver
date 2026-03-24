@@ -1,6 +1,6 @@
-# Agent Memory Market - 团队协作部署指南
+# ClawRiver - 团队协作部署指南
 
-本文档介绍如何部署 Agent Memory Market 的团队协作功能。
+本文档介绍如何部署 ClawRiver 的团队协作功能。
 
 ---
 
@@ -161,7 +161,7 @@ DB_PORT=5432
 DB_NAME=memory_market
 
 # 应用配置
-APP_NAME=Agent Memory Market
+APP_NAME=ClawRiver
 APP_VERSION=1.0.0
 DEBUG=False
 SECRET_KEY=your-secret-key-here
@@ -192,7 +192,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./memory_market.db"
 
     # 应用
-    app_name: str = "Agent Memory Market"
+    app_name: str = "ClawRiver"
     debug: bool = False
     secret_key: str = "your-secret-key"
 
@@ -287,7 +287,7 @@ SECRET_KEY=production-secret-key
 
 ```ini
 [Unit]
-Description=Agent Memory Market API
+Description=ClawRiver API
 After=network.target postgresql.service
 
 [Service]

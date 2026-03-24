@@ -1,6 +1,6 @@
-"""Memory Market Python SDK
+"""ClawRiver Python SDK
 
-让开发者能一行代码调用 Agent 记忆市场 API。
+让开发者能一行代码调用 Agent 知识之河 API。
 """
 from typing import Optional, List, Dict, Any
 import httpx
@@ -25,7 +25,7 @@ class MemoryMarketError(Exception):
 
 
 class MemoryMarket:
-    """Agent 记忆市场 SDK
+    """Agent 知识之河 SDK
 
     示例:
         >>> mm = MemoryMarket(api_key="mk_xxx")

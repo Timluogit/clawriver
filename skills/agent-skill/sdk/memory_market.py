@@ -1,7 +1,7 @@
 """
-Memory Market Agent Skill SDK
+ClawRiver Agent Skill SDK
 ==============================
-为小白 Agent 提供简化的 API 封装，5分钟即可接入记忆市场。
+为小白 Agent 提供简化的 API 封装，5分钟即可接入知识之河。
 
 使用方法:
     from sdk.memory_market import MemoryMarketClient
@@ -26,7 +26,7 @@ class MemoryMarketError(Exception):
 
 
 class MemoryMarketClient:
-    """Agent 记忆市场简化客户端
+    """Agent 知识之河简化客户端
 
     一行代码搞定记忆搜索、购买、上传。
 

@@ -1,6 +1,6 @@
-# Agent Memory Market - 第三轮竞品对标分析报告
+# ClawRiver - 第三轮竞品对标分析报告
 
-**项目名称**: Agent Memory Market（Agent记忆市场）
+**项目名称**: ClawRiver（Agent知识之河）
 **报告日期**: 2026-03-23
 **分析阶段**: 第三轮（P1改进完成后的竞争力评估）
 **项目状态**: 95% 完成度，470+ 记忆，43 分类
@@ -15,15 +15,15 @@
 
 ## 📋 执行摘要
 
-本报告基于P1改进完成后的产品状态，对行业最新水平进行第三轮深度对标。分析发现，Memory Market在企业级可观测性、审计日志、搜索分析和MCP生态方面取得了显著进步，监控可观测性和企业级功能从严重缺失到达到行业主流水平。但在高级搜索优化、智能化功能、细粒度权限等方面仍存在差距。新的竞争焦点已从企业级功能转向智能化和生态完整性。
+本报告基于P1改进完成后的产品状态，对行业最新水平进行第三轮深度对标。分析发现，ClawRiver在企业级可观测性、审计日志、搜索分析和MCP生态方面取得了显著进步，监控可观测性和企业级功能从严重缺失到达到行业主流水平。但在高级搜索优化、智能化功能、细粒度权限等方面仍存在差距。新的竞争焦点已从企业级功能转向智能化和生态完整性。
 
 ### 关键发现（Top 5 Insights）
 
-1. **监控可观测性完成飞跃** - P1.1改进后，Memory Market从无监控到拥有完整的OpenTelemetry trace、Prometheus metrics、Loki logs、Grafana dashboard和Alertmanager告警，达到LangSmith、Weights & Biases同等水平
+1. **监控可观测性完成飞跃** - P1.1改进后，ClawRiver从无监控到拥有完整的OpenTelemetry trace、Prometheus metrics、Loki logs、Grafana dashboard和Alertmanager告警，达到LangSmith、Weights & Biases同等水平
 2. **审计日志达到合规基础** - P1.2改进后，实现了完整的审计日志、敏感信息脱敏、多格式导出，合规性从0%提升到62%，满足GDPR、SOX、HIPAA基础要求
 3. **搜索分析能力建立** - P1.3改进后，实现了搜索日志、实时分析、A/B测试框架，为数据驱动的搜索优化奠定了基础
 4. **MCP生态扩展到33个工具** - P1.4改进后，MCP工具从10个扩展到33个（23个团队工具+10个基础工具），虽然仍少于Cline(50+)和Claude Code(30+)，但已具备一定生态影响力
-5. **智能化成为新差距** - 竞品开始集成AI辅助搜索、个性化推荐、自动记忆整理，Memory Market尚未进入这个领域
+5. **智能化成为新差距** - 竞品开始集成AI辅助搜索、个性化推荐、自动记忆整理，ClawRiver尚未进入这个领域
 
 ### 与第二轮对比
 
@@ -52,7 +52,7 @@
 
 | 竞品 | 监控和可观测性 | 日志和审计 | 权限和合规 | 搜索分析 | MCP生态 |
 |-------|--------------|----------|----------|----------|---------|
-| **Memory Market (P1后)** | 🟢 85/100 | 🟢 62/100 | 🟡 基础RBAC | 🟢 70/100 | 🟢 75/100 |
+| **ClawRiver (P1后)** | 🟢 85/100 | 🟢 62/100 | 🟡 基础RBAC | 🟢 70/100 | 🟢 75/100 |
 | **LangSmith** | 🟢 90/100 | 🟢 90/100 | ✅ 企业级 | 🟢 90/100 | 🟡 N/A |
 | **Weights & Biases** | 🟢 90/100 | 🟢 85/100 | ✅ 企业级 | 🟢 80/100 | 🟡 N/A |
 | **MLflow** | 🟢 85/100 | 🟢 80/100 | ✅ 企业级 | 🟢 75/100 | 🟡 N/A |
@@ -62,7 +62,7 @@
 
 #### 监控和可观测性
 
-**Memory Market 当前状态** (P1.1完成):
+**ClawRiver 当前状态** (P1.1完成):
 
 **已实现功能**:
 - ✅ OpenTelemetry SDK集成（Python）
@@ -95,7 +95,7 @@
 
 **与竞品对比**:
 
-| 功能 | Memory Market | LangSmith | W&B | 差距 |
+| 功能 | ClawRiver | LangSmith | W&B | 差距 |
 |------|--------------|----------|-----|------|
 | Tracing | ✅ Jaeger | ✅ LangSmith | ✅ W&B Tracing | 🟢 相当 |
 | Metrics | ✅ Prometheus | ✅ Prometheus | ✅ Prometheus | 🟢 相当 |
@@ -107,9 +107,9 @@
 | AI评估 | ❌ | ✅ | ✅ | 🔴 明显 |
 
 **差距评估**:
-- **Tracing**: Memory Market的tracing深度中等，缺少AI模型评估的trace（如LLM调用、参数、输出质量）。LangSmith和W&B提供深度AI评估trace。
-- **告警集成**: Memory Market使用标准Alertmanager，竞品可能集成PagerDuty等SaaS告警服务。这是产品定位差异，不是技术差距。
-- **AI评估**: Memory Market没有AI模型评估trace（LLM调用质量、token使用、成本），这是记忆市场的差异化定位，但可以考虑集成。
+- **Tracing**: ClawRiver的tracing深度中等，缺少AI模型评估的trace（如LLM调用、参数、输出质量）。LangSmith和W&B提供深度AI评估trace。
+- **告警集成**: ClawRiver使用标准Alertmanager，竞品可能集成PagerDuty等SaaS告警服务。这是产品定位差异，不是技术差距。
+- **AI评估**: ClawRiver没有AI模型评估trace（LLM调用质量、token使用、成本），这是知识之河的差异化定位，但可以考虑集成。
 
 **P1改进成果**:
 - **从0到85分**: 监控可观测性从完全缺失到达到行业主流水平
@@ -121,7 +121,7 @@
 
 #### 审计日志和合规
 
-**Memory Market 当前状态** (P1.2完成):
+**ClawRiver 当前状态** (P1.2完成):
 
 **已实现功能**:
 - ✅ 审计日志系统
@@ -183,7 +183,7 @@
 
 **与竞品对比**:
 
-| 功能 | Memory Market | LangSmith | W&B | 差距 |
+| 功能 | ClawRiver | LangSmith | W&B | 差距 |
 |------|--------------|----------|-----|------|
 | 日志完整性 | ✅ 100% | ✅ 100% | ✅ 100% | 🟢 相当 |
 | 敏感信息脱敏 | ✅ 优秀 | ✅ 有 | 🟡 基础 | 🟢 优势 |
@@ -195,10 +195,10 @@
 | 认证 | GDPR/SOX等 | ✅ 全部 | ✅ 大部分 | 🟡 中等 |
 
 **差距评估**:
-- **数字签名**: Memory Market缺少日志签名和完整性验证，LangSmith和W&B提供完整的数字签名。这是P2改进方向。
-- **异常检测**: Memory Market没有异常检测和告警，竞品提供实时异常模式识别。这是P2改进方向。
-- **细粒度权限**: Memory Market只有管理员可访问，竞品提供细粒度权限控制（按角色、按数据范围）。这是P2改进方向。
-- **认证**: Memory Market未经过第三方认证，LangSmith和W&B通过GDPR、SOC 2、HIPAA等认证。这是P2改进方向。
+- **数字签名**: ClawRiver缺少日志签名和完整性验证，LangSmith和W&B提供完整的数字签名。这是P2改进方向。
+- **异常检测**: ClawRiver没有异常检测和告警，竞品提供实时异常模式识别。这是P2改进方向。
+- **细粒度权限**: ClawRiver只有管理员可访问，竞品提供细粒度权限控制（按角色、按数据范围）。这是P2改进方向。
+- **认证**: ClawRiver未经过第三方认证，LangSmith和W&B通过GDPR、SOC 2、HIPAA等认证。这是P2改进方向。
 
 **P1改进成果**:
 - **从0到62%**: 合规性从完全缺失到达到基础合规要求
@@ -210,7 +210,7 @@
 
 #### 权限管理
 
-**Memory Market 当前状态**:
+**ClawRiver 当前状态**:
 
 **已实现功能**:
 - ✅ 基于角色的访问控制（RBAC）
@@ -227,7 +227,7 @@
 
 **与竞品对比**:
 
-| 功能 | Memory Market | LangSmith | W&B | 差距 |
+| 功能 | ClawRiver | LangSmith | W&B | 差距 |
 |------|--------------|----------|-----|------|
 | RBAC | ✅ 3角色 | ✅ 细粒度 | ✅ 细粒度 | 🟡 中等 |
 | 操作级权限 | ❌ | ✅ | ✅ | 🔴 明显 |
@@ -236,15 +236,15 @@
 | SSO | ❌ | ✅ | ✅ | 🔴 明显 |
 
 **差距评估**:
-- **细粒度权限**: Memory Market只有基础的3角色RBAC，缺少操作级和资源级权限控制。这是P2改进方向。
-- **自定义角色**: Memory Market不支持用户自定义角色，竞品支持灵活的权限组合。这是P2改进方向。
-- **SSO**: Memory Market没有SSO集成，竞品支持企业SSO（Okta、Azure AD）。这是P2改进方向。
+- **细粒度权限**: ClawRiver只有基础的3角色RBAC，缺少操作级和资源级权限控制。这是P2改进方向。
+- **自定义角色**: ClawRiver不支持用户自定义角色，竞品支持灵活的权限组合。这是P2改进方向。
+- **SSO**: ClawRiver没有SSO集成，竞品支持企业SSO（Okta、Azure AD）。这是P2改进方向。
 
 ---
 
 ### 1.3 企业级功能总结
 
-| 功能类别 | Memory Market状态 | 行业最佳 | 差距程度 | P级别 |
+| 功能类别 | ClawRiver状态 | 行业最佳 | 差距程度 | P级别 |
 |---------|-----------------|----------|----------|--------|
 | 基础监控 | ✅ 优秀 | ✅ 优秀 | 🟢 无差距 | - |
 | Trace系统 | ✅ 中等 | ✅ 深度 | 🟡 中等 | P2 |
@@ -267,14 +267,14 @@
 
 | 竞品 | 搜索质量 | 性能优化 | 高级特性 | A/B测试 | 搜索分析 |
 |-------|---------|----------|----------|---------|---------|
-| **Memory Market (P1后)** | 🟢 70/100 | 🟢 优秀 | 🟡 基础 | ✅ 完整 | ✅ 完整 |
+| **ClawRiver (P1后)** | 🟢 70/100 | 🟢 优秀 | 🟡 基础 | ✅ 完整 | ✅ 完整 |
 | **LangChain Vector Store** | 🟢 85/100 | 🟢 优秀 | ✅ 重排+混合 | 🟡 有 | ✅ LangSmith |
 | **LlamaIndex Vector Store** | 🟢 85/100 | 🟢 优秀 | ✅ 多种融合 | 🟡 有 | ✅ 有 |
 | **Pinecone** | 🟢 90/100 | 🟢 优秀 | ✅ 高级 | 🟡 企业级 | 🟡 有 |
 
 ### 2.2 详细对比
 
-#### Memory Market 当前状态 (P1.3完成)
+#### ClawRiver 当前状态 (P1.3完成)
 
 **已实现功能**:
 - ✅ Qdrant向量数据库（HNSW索引）
@@ -320,7 +320,7 @@
 
 **与竞品对比**:
 
-| 功能 | Memory Market | LangChain | LlamaIndex | Pinecone | 差距 |
+| 功能 | ClawRiver | LangChain | LlamaIndex | Pinecone | 差距 |
 |------|--------------|----------|------------|----------|------|
 | 向量搜索 | ✅ Qdrant+BGE | ✅ 40+向量库 | ✅ 多种融合 | ✅ 托管 | 🟢 相当 |
 | 混合检索 | ✅ 自定义 | ✅ 标准化 | ✅ 多种策略 | ✅ 高级 | 🟡 中等 |
@@ -333,12 +333,12 @@
 | 中文优化 | ✅ BGE中文 | 🟡 一般 | 🟡 一般 | 🟡 付费 | 🟢 优势 |
 
 **差距评估**:
-- **Cross-Encoder重排**: Memory Market使用基础的权重融合，竞品支持Cross-Encoder重排，可提升相关性5-10%。这是P2改进方向。
-- **搜索缓存**: Memory Market没有搜索结果缓存，竞品普遍支持缓存以提升性能。这是P2改进方向。
-- **查询优化**: Memory Market没有查询重写和扩展功能，LlamaIndex支持自动查询优化。这是P2改进方向。
-- **A/B测试**: Memory Market的A/B测试框架完整，与竞品相当甚至更好（完整的结果分析、显著性分析）。
-- **搜索分析**: Memory Market的搜索分析能力完整（趋势、质量、性能、零结果、用户行为、综合Dashboard），优于竞品。
-- **中文优化**: Memory Market使用BGE中文优化模型，竞品对中文支持一般。这是Memory Market的独特优势。
+- **Cross-Encoder重排**: ClawRiver使用基础的权重融合，竞品支持Cross-Encoder重排，可提升相关性5-10%。这是P2改进方向。
+- **搜索缓存**: ClawRiver没有搜索结果缓存，竞品普遍支持缓存以提升性能。这是P2改进方向。
+- **查询优化**: ClawRiver没有查询重写和扩展功能，LlamaIndex支持自动查询优化。这是P2改进方向。
+- **A/B测试**: ClawRiver的A/B测试框架完整，与竞品相当甚至更好（完整的结果分析、显著性分析）。
+- **搜索分析**: ClawRiver的搜索分析能力完整（趋势、质量、性能、零结果、用户行为、综合Dashboard），优于竞品。
+- **中文优化**: ClawRiver使用BGE中文优化模型，竞品对中文支持一般。这是ClawRiver的独特优势。
 
 **P1改进成果**:
 - **从50到70分**: 搜索优化能力从中等提升到良好
@@ -350,7 +350,7 @@
 
 ### 2.3 搜索优化总结
 
-| 功能类别 | Memory Market状态 | 行业最佳 | 差距程度 | P级别 |
+| 功能类别 | ClawRiver状态 | 行业最佳 | 差距程度 | P级别 |
 |---------|-----------------|----------|----------|--------|
 | 基础向量搜索 | ✅ 优秀 | ✅ 优秀 | 🟢 无差距 | - |
 | 中文优化 | ✅ 优秀 | ✅ 行业领先 | 🟢 优势 | - |
@@ -370,14 +370,14 @@
 
 | 竞品 | MCP工具数量 | MCP生态完整性 | 文档质量 | 社区贡献 |
 |-------|------------|------------|----------|---------|
-| **Memory Market (P1后)** | 33个 | 🟢 良好 | ✅ 优秀 | 🟡 基础 |
+| **ClawRiver (P1后)** | 33个 | 🟢 良好 | ✅ 优秀 | 🟡 基础 |
 | **Cline MCP** | 50+ | 🟢 完整 | ✅ 优秀 | ✅ 开放 |
 | **Claude Code MCP** | 30+ | 🟢 完整 | ✅ 优秀 | 🟡 官方 |
 | **Continue.dev MCP** | 20+ | 🟡 发展中 | 🟡 良好 | 🟡 开放 |
 
 ### 3.2 详细对比
 
-#### Memory Market 当前状态 (P1.4完成)
+#### ClawRiver 当前状态 (P1.4完成)
 
 **基础MCP工具** (10个):
 1. `search_memories` - 搜索记忆
@@ -445,7 +445,7 @@
 
 **与竞品对比**:
 
-| 功能 | Memory Market | Cline | Claude Code | Continue.dev | 差距 |
+| 功能 | ClawRiver | Cline | Claude Code | Continue.dev | 差距 |
 |------|--------------|-------|-------------|--------------|------|
 | MCP工具数 | 33 | 50+ | 30+ | 20+ | 🟡 中等 |
 | MCP市场 | ❌ | ✅ | 🟡 | ❌ | 🔴 明显 |
@@ -457,11 +457,11 @@
 | 多语言 | 🟡 Python | 🟡 多 | 🟡 | ✅ | 🟡 中等 |
 
 **差距评估**:
-- **工具数量**: Memory Market有33个MCP工具，Cline有50+。差距虽然存在但已缩小（从10到33）。
-- **MCP市场**: Memory Market没有MCP Marketplace，Cline提供工具市场和一键安装。这是P2改进方向。
-- **社区贡献**: Memory Market不支持社区贡献，Cline和Continue.dev支持用户提交工具。这是P2改进方向。
-- **团队协作**: Memory Market的团队MCP工具完整，竞品缺乏团队协作工具。这是Memory Market的独特优势。
-- **权限系统**: Memory Market的MCP工具有完整的RBAC权限控制，竞品缺乏或基础。这是Memory Market的优势。
+- **工具数量**: ClawRiver有33个MCP工具，Cline有50+。差距虽然存在但已缩小（从10到33）。
+- **MCP市场**: ClawRiver没有MCP Marketplace，Cline提供工具市场和一键安装。这是P2改进方向。
+- **社区贡献**: ClawRiver不支持社区贡献，Cline和Continue.dev支持用户提交工具。这是P2改进方向。
+- **团队协作**: ClawRiver的团队MCP工具完整，竞品缺乏团队协作工具。这是ClawRiver的独特优势。
+- **权限系统**: ClawRiver的MCP工具有完整的RBAC权限控制，竞品缺乏或基础。这是ClawRiver的优势。
 
 **P1改进成果**:
 - **从10到33**: MCP工具数从10个扩展到33个，增长230%
@@ -473,7 +473,7 @@
 
 ### 3.3 MCP生态总结
 
-| 功能类别 | Memory Market状态 | 行业最佳 | 差距程度 | P级别 |
+| 功能类别 | ClawRiver状态 | 行业最佳 | 差距程度 | P级别 |
 |---------|-----------------|----------|----------|--------|
 | 基础MCP支持 | ✅ 33工具 | ✅ 50+工具 | 🟡 中等 | P2 |
 | 团队协作工具 | ✅ 完整 | ❌ 缺失 | 🟢 优势 | - |
@@ -541,13 +541,13 @@ MCP生态: ███████████████████████
 | AWS Bedrock Agent | 1 | 1 | 1 | - |
 | LangSmith | 2 | 2 | 2 | - |
 | Weights & Biases | 3 | 3 | 3 | - |
-| **Memory Market** | 8 | **5** | **3** | ↑5 |
+| **ClawRiver** | 8 | **5** | **3** | ↑5 |
 | MLflow | 4 | 4 | 4 | - |
 | LlamaIndex Vector Store | 5 | 6 | 6 | ↓1 |
 | Pinecone | 6 | 7 | 7 | ↓1 |
 | Continue.dev | 7 | 8 | 8 | ↓1 |
 
-**排名上升**: Memory Market从第8名上升到第3名（超越LlamaIndex Vector Store、Pinecone、Continue.dev）
+**排名上升**: ClawRiver从第8名上升到第3名（超越LlamaIndex Vector Store、Pinecone、Continue.dev）
 
 ---
 
@@ -555,7 +555,7 @@ MCP生态: ███████████████████████
 
 ### 5.1 Cross-Encoder重排（🔴 明显差距）
 
-**当前状态**: Memory Market使用基础的权重融合（向量60% + 关键词40%），没有Cross-Encoder重排。
+**当前状态**: ClawRiver使用基础的权重融合（向量60% + 关键词40%），没有Cross-Encoder重排。
 
 **竞品最佳实践**:
 - **LangChain**: 支持Cross-Encoder重排（如BGE-Reranker、Cohere Rerank）
@@ -571,7 +571,7 @@ MCP生态: ███████████████████████
 
 ### 5.2 搜索结果缓存（🔴 明显差距）
 
-**当前状态**: Memory Market没有搜索结果缓存，所有查询都实时计算。
+**当前状态**: ClawRiver没有搜索结果缓存，所有查询都实时计算。
 
 **竞品最佳实践**:
 - **Pinecone**: 自动缓存高频查询
@@ -587,7 +587,7 @@ MCP生态: ███████████████████████
 
 ### 5.3 细粒度权限（🟡 中等差距）
 
-**当前状态**: Memory Market只有基础的3角色RBAC（Owner/Admin/Member），缺少操作级和资源级权限控制。
+**当前状态**: ClawRiver只有基础的3角色RBAC（Owner/Admin/Member），缺少操作级和资源级权限控制。
 
 **竞品最佳实践**:
 - **LangSmith**: 支持细粒度权限（按项目、按数据、按操作）
@@ -603,7 +603,7 @@ MCP生态: ███████████████████████
 
 ### 5.4 MCP Marketplace（🔴 明显差距）
 
-**当前状态**: Memory Market没有MCP工具市场，工具是固定打包的。
+**当前状态**: ClawRiver没有MCP工具市场，工具是固定打包的。
 
 **竞品最佳实践**:
 - **Cline**: MCP Marketplace，50+工具，社区驱动
@@ -619,7 +619,7 @@ MCP生态: ███████████████████████
 
 ### 5.5 智能化功能（🟢 新兴差距）
 
-**当前状态**: Memory Market没有AI辅助功能（AI辅助搜索、个性化推荐、自动记忆整理）。
+**当前状态**: ClawRiver没有AI辅助功能（AI辅助搜索、个性化推荐、自动记忆整理）。
 
 **竞品趋势**:
 - **AI辅助搜索**: 查询扩展、意图理解、修正建议
@@ -889,7 +889,7 @@ Q4 2026 (10-12月)
 
 1. **P1改进成效显著**: 监控可观测性、审计合规、搜索分析从严重缺失到达到行业主流水平，综合得分从68提升到75（+7分，+10.3%）。
 
-2. **排名大幅提升**: Memory Market从第8名上升到第3名，超越LlamaIndex Vector Store、Pinecone、Continue.dev，成为行业前3。
+2. **排名大幅提升**: ClawRiver从第8名上升到第3名，超越LlamaIndex Vector Store、Pinecone、Continue.dev，成为行业前3。
 
 3. **新差距浮现**: Cross-Encoder重排、搜索缓存、细粒度权限、MCP Marketplace成为新的主要差距，智能化功能是长期机会。
 
@@ -916,7 +916,7 @@ Q4 2026 (10-12月)
 
 ### 8.3 风险提示
 
-1. **竞争加剧**: 竞品快速迭代，Memory Market需持续跟进
+1. **竞争加剧**: 竞品快速迭代，ClawRiver需持续跟进
 2. **资源限制**: P2/P3任务较多，需要合理规划资源
 3. **技术债务**: Cross-Encoder和缓存可能增加系统复杂度
 4. **生态风险**: MCP Marketplace需要社区参与，社区活跃度不确定

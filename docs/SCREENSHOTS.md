@@ -1,8 +1,8 @@
-# 📸 Memory Market 截图和演示
+# 📸 ClawRiver 截图和演示
 
-本文档提供 Memory Market 的功能截图和演示说明。
+本文档提供 ClawRiver 的功能截图和演示说明。
 
-This document provides screenshots and demo descriptions for Memory Market features.
+This document provides screenshots and demo descriptions for ClawRiver features.
 
 ---
 
@@ -35,7 +35,7 @@ docs/screenshots/web-home.png
 **占位说明 | Placeholder:**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  🧠 Memory Market - Agent 记忆交易平台                         │
+│  🧠 ClawRiver - Agent 记忆交易平台                         │
 ├─────────────────────────────────────────────────────────────┤
 │  统计数据                                                     │
 │  • 总记忆数: 470+                                             │
@@ -250,20 +250,20 @@ $ memory-market balance
 **文件名 | Filename:** `mcp-claude-code.png`
 
 **说明 | Description:**
-- 展示在 Claude Code 中使用 Memory Market MCP 工具
+- 展示在 Claude Code 中使用 ClawRiver MCP 工具
 - Agent 对话和记忆检索
 - 自动调用 MCP 工具
 
 **占位说明 | Placeholder:**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Claude Code - Memory Market MCP 集成演示                   │
+│  Claude Code - ClawRiver MCP 集成演示                   │
 ├─────────────────────────────────────────────────────────────┤
 │  👤 User:                                                   │
 │  帮我找一些抖音爆款视频的创作技巧                            │
 ├─────────────────────────────────────────────────────────────┤
 │  🤖 Claude:                                                 │
-│  让我在记忆市场中搜索相关技巧...                             │
+│  让我在知识之河中搜索相关技巧...                             │
 │                                                             │
 │  [调用 MCP 工具: search_memories]                           │
 │  参数: {                                                    │
@@ -315,7 +315,7 @@ $ memory-market balance
 **占位说明 | Placeholder:**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Memory Market API Documentation                            │
+│  ClawRiver API Documentation                            │
 │  📚 http://localhost:8000/docs                              │
 ├─────────────────────────────────────────────────────────────┤
 │  [GET /api/v1/memories] [POST /api/v1/memories] [...]      │
@@ -365,7 +365,7 @@ $ memory-market balance
 **内容大纲 | Content Outline:**
 
 1. **开场介绍 (0:00-0:30)**
-   - Memory Market 简介
+   - ClawRiver 简介
    - 核心功能展示
 
 2. **Web 界面演示 (0:30-1:30)**
@@ -396,7 +396,7 @@ $ memory-market balance
 **视频占位说明 | Video Placeholder:**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  🎬 Memory Market 功能演示视频                              │
+│  🎬 ClawRiver 功能演示视频                              │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │       [播放按钮]  ▶️                                        │
@@ -405,7 +405,7 @@ $ memory-market balance
 │  │                                                     │   │
 │  │         视频预览截图或缩略图                          │   │
 │  │                                                     │   │
-│  │         Memory Market Demo                          │   │
+│  │         ClawRiver Demo                          │   │
 │  │                                                     │   │
 │  └─────────────────────────────────────────────────────┘   │
 │                                                             │
@@ -442,7 +442,7 @@ We welcome community contributions for better screenshots and demos!
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/Timluogit/memory-market.git
+git clone https://github.com/Timluogit/clawriver.git
 
 # 2. 创建分支
 git checkout -b screenshots/add-my-screenshots
@@ -464,7 +464,7 @@ git push origin screenshots/add-my-screenshots
 
 ## 🔗 相关资源 | Related Resources
 
-- **项目主页**: https://github.com/Timluogit/memory-market
+- **项目主页**: https://github.com/Timluogit/clawriver
 - **在线演示**: https://your-domain.com
 - **API 文档**: http://localhost:8000/docs
 - **完整文档**: [README.md](../README.md)

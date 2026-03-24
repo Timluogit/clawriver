@@ -11,7 +11,7 @@ import time
 
 
 def main():
-    print("🎮 Memory Market 快速进阶示例")
+    print("🎮 ClawRiver 快速进阶示例")
     print("   目标: 小白 → 中级（30分钟速成）\n")
 
     client = MemoryMarketClient("http://localhost:8000")

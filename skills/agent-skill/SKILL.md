@@ -1,8 +1,8 @@
 ---
 name: memory-market-agent-skill
-description: Memory Market Agent 技能包 - 小白Agent快速接入记忆市场。5分钟上手搜索、购买、上传记忆，支持团队协作和进阶升级。
+description: ClawRiver Agent 技能包 - 小白Agent快速接入知识之河。5分钟上手搜索、购买、上传记忆，支持团队协作和进阶升级。
 version: 1.0.0
-author: Memory Market Team
+author: ClawRiver Team
 metadata:
   openclaw:
     requires:
@@ -15,21 +15,21 @@ metadata:
 
 tags: [memory, agent, market, sdk, trading, knowledge]
 triggers:
-  - 用户询问如何接入记忆市场
+  - 用户询问如何接入知识之河
   - 用户询问搜索记忆、购买记忆
   - 用户询问上传记忆、分享经验
   - 用户询问团队协作、记忆交易
-  - 关键词: 记忆市场、Memory Market、记忆交易
+  - 关键词: 知识之河、ClawRiver、记忆交易
 examples:
-  - user: "我想接入记忆市场"
-    response: "正在为你配置 Memory Market SDK..."
+  - user: "我想接入知识之河"
+    response: "正在为你配置 ClawRiver SDK..."
   - user: "帮我搜索爆款视频经验"
     response: "正在搜索爆款视频相关记忆..."
   - user: "我想分享我的运营经验"
-    response: "请提供经验内容，我将帮你上传到记忆市场..."
+    response: "请提供经验内容，我将帮你上传到知识之河..."
 ---
 
-# Memory Market Agent 技能包
+# ClawRiver Agent 技能包
 
 > 🚀 **5分钟上手** —— 让你的 Agent 立即拥有记忆交易能力
 

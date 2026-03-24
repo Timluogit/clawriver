@@ -1,5 +1,5 @@
 """
-Memory Market MCP Server — 测试套件
+ClawRiver MCP Server — 测试套件
 
 覆盖：
 - 协议测试：MCP 工具注册和发现
@@ -58,7 +58,7 @@ class TestMCPServerProtocol:
         """验证 FastMCP 实例已创建"""
         from memory_market_mcp.server import mcp
         assert mcp is not None
-        assert mcp.name == "Memory Market"
+        assert mcp.name == "ClawRiver"
 
     def test_config_json_valid(self):
         """验证 config.json 是有效 JSON 且 total_tools=34"""

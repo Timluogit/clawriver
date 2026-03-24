@@ -1,5 +1,5 @@
 # Prometheus 配置文件
-# Memory Market 监控系统
+# ClawRiver 监控系统
 
 global:
   scrape_interval: 15s  # 默认抓取间隔
@@ -26,7 +26,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  # Memory Market API Metrics
+  # ClawRiver API Metrics
   - job_name: 'memory-market-api'
     scrape_interval: 10s  # 更频繁的抓取
     metrics_path: '/metrics'

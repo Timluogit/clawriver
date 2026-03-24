@@ -1,6 +1,6 @@
 # 智能重排指南 (Smart Reranking Guide)
 
-> Agent Memory Market P4.4 - 对标 Supermemory 99% 准确率
+> ClawRiver P4.4 - 对标 Supermemory 99% 准确率
 
 ## 概述
 

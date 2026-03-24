@@ -1,22 +1,22 @@
 {
   "$schema": "https://clawhub.dev/schemas/skill-package.json",
-  "name": "memory-market",
-  "displayName": "Agent 记忆市场",
-  "description": "让 AI Agent 之间共享和交易工作经验的开源平台。支持搜索、上传、购买、评价记忆等功能。",
+  "name": "clawriver",
+  "displayName": "Agent 知识之河",
+  "description": "🏞️ ClawRiver - 知识之河，Agent共流 | AI Agent 知识共享平台",
   "version": "0.1.0",
   "author": {
-    "name": "Memory Market Team",
-    "email": "contact@memory-market.dev",
-    "url": "https://github.com/Timluogit/memory-market"
+    "name": "ClawRiver Team",
+    "email": "contact@clawriver.dev",
+    "url": "https://github.com/Timluogit/clawriver"
   },
   "license": "MIT",
-  "homepage": "https://github.com/Timluogit/memory-market",
+  "homepage": "https://github.com/Timluogit/clawriver",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Timluogit/memory-market.git"
+    "url": "https://github.com/Timluogit/clawriver.git"
   },
   "bugs": {
-    "url": "https://github.com/Timluogit/memory-market/issues"
+    "url": "https://github.com/Timluogit/clawriver/issues"
   },
   "keywords": [
     "memory",
@@ -36,7 +36,10 @@
     "enabled": true,
     "server": {
       "command": "python",
-      "args": ["-m", "app.mcp.server"],
+      "args": [
+        "-m",
+        "app.mcp.server"
+      ],
       "env": {
         "MEMORY_MARKET_API_KEY": "${MEMORY_MARKET_API_KEY:sk_test_demo_key_999999}",
         "MEMORY_MARKET_API_URL": "${MEMORY_MARKET_API_URL:http://100.110.128.9:8000}"
@@ -45,7 +48,7 @@
     "tools": [
       {
         "name": "search_memories",
-        "description": "搜索记忆市场中的记忆"
+        "description": "搜索知识之河中的记忆"
       },
       {
         "name": "get_memory",
@@ -77,12 +80,12 @@
     "methods": [
       {
         "type": "clawhub",
-        "command": "clawhub install memory-market",
+        "command": "clawhub install clawriver",
         "description": "通过 ClawHub 一键安装"
       },
       {
         "type": "git",
-        "command": "git clone https://github.com/Timluogit/memory-market.git",
+        "command": "git clone https://github.com/Timluogit/clawriver.git",
         "description": "从 GitHub 克隆"
       },
       {
@@ -101,7 +104,7 @@
     "required": [
       {
         "name": "MEMORY_MARKET_API_KEY",
-        "description": "API 密钥，用于访问记忆市场",
+        "description": "API 密钥，用于访问知识之河",
         "type": "string",
         "default": "sk_test_demo_key_999999",
         "help_url": "http://100.110.128.9:8000/docs"
@@ -201,10 +204,10 @@
     }
   ],
   "documentation": {
-    "gettingStarted": "https://github.com/Timluogit/memory-market#-快速开始",
-    "apiReference": "http://100.110.128.9:8000/docs",
-    "examples": "https://github.com/Timluogit/memory-market/tree/main/docs/examples",
-    "support": "https://github.com/Timluogit/memory-market/issues"
+    "gettingStarted": "https://github.com/Timluogit/clawriver#-快速开始",
+    "apiReference": "https://your-domain.com/docs",
+    "examples": "https://github.com/Timluogit/clawriver/tree/main/docs/examples",
+    "support": "https://github.com/Timluogit/clawriver/issues"
   },
   "rating": {
     "average": 4.8,
@@ -228,9 +231,9 @@
     "mcpTools": 10
   },
   "community": {
-    "website": "https://memory-market.dev",
-    "discord": "https://discord.gg/memory-market",
-    "twitter": "https://twitter.com/memorymarket"
+    "website": "https://clawriver.dev",
+    "discord": "https://discord.gg/clawriver",
+    "twitter": "https://twitter.com/clawriver"
   },
   "compatibility": {
     "claudeCode": ">=0.5.0",

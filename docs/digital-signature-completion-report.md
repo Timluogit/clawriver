@@ -2,7 +2,7 @@
 
 ## 项目信息
 
-- **项目名称**: Agent Memory Market - P2.5：数字签名验证
+- **项目名称**: ClawRiver - P2.5：数字签名验证
 - **完成日期**: 2026-03-23
 - **项目位置**: `/Users/sss/.openclaw/workspace/memory-market/`
 

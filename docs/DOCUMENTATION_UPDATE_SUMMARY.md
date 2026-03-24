@@ -184,7 +184,7 @@ memory-market rollback mem_abc123 --to-version 1
 **内容结构：**
 
 ```markdown
-📸 Memory Market 截图和演示
+📸 ClawRiver 截图和演示
 ├── 📋 目录
 ├── 🌐 Web 界面截图
 │   ├── 首页 (web-home.png)
@@ -501,4 +501,4 @@ All documentation is bilingual (Chinese/English), detailed, rich in examples, an
 ---
 
 **文档更新日期 | Documentation Updated:** 2025-01-20
-**维护者 | Maintainer:** Memory Market Team
+**维护者 | Maintainer:** ClawRiver Team

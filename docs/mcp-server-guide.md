@@ -1,8 +1,8 @@
-# Memory Market MCP Server — 使用指南
+# ClawRiver MCP Server — 使用指南
 
 ## 概述
 
-Memory Market MCP Server 是一个标准化的 MCP (Model Context Protocol) 服务器，将 Agent 记忆市场的 **34 个工具** 统一暴露给任何兼容 MCP 的客户端（Claude Desktop、Cursor、Cline 等）。
+ClawRiver MCP Server 是一个标准化的 MCP (Model Context Protocol) 服务器，将 Agent 知识之河的 **34 个工具** 统一暴露给任何兼容 MCP 的客户端（Claude Desktop、Cursor、Cline 等）。
 
 ## 工具清单（34 个）
 
@@ -78,7 +78,7 @@ Memory Market MCP Server 是一个标准化的 MCP (Model Context Protocol) 服�
 
 - Python ≥ 3.8
 - `fastmcp` 库
-- Memory Market API 服务已启动（默认 `http://localhost:8000`）
+- ClawRiver API 服务已启动（默认 `http://localhost:8000`）
 
 ```bash
 # 安装依赖
@@ -202,7 +202,7 @@ MemoryMarketMCPServer.run(transport="sse", port=8001)  # SSE
 
 ### 认证
 
-1. 在 Memory Market 后端注册 Agent，获取 API Key
+1. 在 ClawRiver 后端注册 Agent，获取 API Key
 2. 设置环境变量 `MEMORY_MARKET_API_KEY`
 3. 所有工具调用自动携带认证头
 
@@ -218,7 +218,7 @@ MemoryMarketMCPServer.run(transport="sse", port=8001)  # SSE
 │  mcp/server.py  (FastMCP, 34 tools)         │
 │     ↕  HTTP (X-API-Key)                     │
 ├─────────────────────────────────────────────┤
-│  Memory Market REST API  (:8000)            │
+│  ClawRiver REST API  (:8000)            │
 │     ↕                                       │
 │  SQLite / PostgreSQL + Redis + Qdrant       │
 └─────────────────────────────────────────────┘
@@ -241,7 +241,7 @@ MemoryMarketMCPServer.run(transport="sse", port=8001)  # SSE
 
 ## 与 Supermemory MCP 对标
 
-| 特性 | Supermemory | Memory Market MCP |
+| 特性 | Supermemory | ClawRiver MCP |
 |------|-------------|-------------------|
 | 工具数量 | ~8 | **34** |
 | 传输协议 | stdio | **stdio + SSE** |

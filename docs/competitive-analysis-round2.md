@@ -1,6 +1,6 @@
-# Agent Memory Market - 第二轮竞品对标分析报告
+# ClawRiver - 第二轮竞品对标分析报告
 
-**项目名称**: Agent Memory Market（Agent记忆市场）
+**项目名称**: ClawRiver（Agent知识之河）
 **报告日期**: 2026-03-23
 **分析阶段**: 第二轮（P0改进完成后的深度对标）
 **项目状态**: 95% 完成度，470+ 记忆，43 分类
@@ -13,15 +13,15 @@
 
 ## 📋 执行摘要
 
-本报告基于P0改进完成后的产品状态,对行业最新水平进行第二轮深度对标。分析发现,Memory Market在向量搜索和团队协作方面已达到行业主流水平,但在企业级可观测性、高级监控、MCP生态深度方面仍存在明显差距。新的竞争焦点已从基础功能转向可观测性、智能化和生态完整性。
+本报告基于P0改进完成后的产品状态,对行业最新水平进行第二轮深度对标。分析发现,ClawRiver在向量搜索和团队协作方面已达到行业主流水平,但在企业级可观测性、高级监控、MCP生态深度方面仍存在明显差距。新的竞争焦点已从基础功能转向可观测性、智能化和生态完整性。
 
 ### 关键发现（Top 5 Insights）
 
 1. **向量搜索已达标但可优化** - P0升级后,Qdrant+BGE混合检索已达到LangChain/LlamaIndex同等水平,但在Cross-Encoder重排、个性化搜索方面仍有提升空间
 2. **团队协作功能完善但缺乏企业级增强** - RBAC权限系统已实现,但缺少高级功能如审计日志导出、细粒度权限、团队层级
-3. **可观测性成为新竞争焦点** - LangSmith、Weights & Biases提供完整的trace、评估、部署工作流,Memory Market缺乏监控和日志系统
-4. **MCP生态快速演进** - Cline、Claude Code、Continue.dev的MCP工具数量快速增长,Memory Market的10个工具需要扩展
-5. **智能化是下一个前沿** - 竞品开始集成AI辅助搜索、个性化推荐、自动记忆整理,Memory Market尚未进入这个领域
+3. **可观测性成为新竞争焦点** - LangSmith、Weights & Biases提供完整的trace、评估、部署工作流,ClawRiver缺乏监控和日志系统
+4. **MCP生态快速演进** - Cline、Claude Code、Continue.dev的MCP工具数量快速增长,ClawRiver的10个工具需要扩展
+5. **智能化是下一个前沿** - 竞品开始集成AI辅助搜索、个性化推荐、自动记忆整理,ClawRiver尚未进入这个领域
 
 ### 与第一轮对比
 
@@ -42,7 +42,7 @@
 
 | 竞品 | 团队管理 | 权限系统 | 协作工作流 | 审计合规 | 企业级特性 |
 |-------|----------|-----------|------------|----------|------------|
-| **Memory Market** | ✅ 基础 | ✅ RBAC (3角色) | 🟡 基础 | 🟡 本地日志 | ❌ 缺失 |
+| **ClawRiver** | ✅ 基础 | ✅ RBAC (3角色) | 🟡 基础 | 🟡 本地日志 | ❌ 缺失 |
 | **LangChain Team** | ✅ 完整 | ✅ 细粒度 | ✅ LangSmith集成 | ✅ 完整审计 | ✅ Fleet工具 |
 | **AutoGPT Multi-Agent** | 🟡 实验性 | 🟡 简单 | ✅ Agent协作 | ❌ 无 | ❌ 无 |
 | **MemGPT** | ✅ 文件共享 | ✅ 多层级 | ✅ 记忆同步 | 🟡 部分 | ❌ 无 |
@@ -50,7 +50,7 @@
 
 ### 1.2 详细对比
 
-#### Memory Market 当前状态
+#### ClawRiver 当前状态
 
 **已实现功能**:
 - ✅ 团队创建/更新/删除
@@ -79,9 +79,9 @@
 - **企业级审计**: 完整的操作日志和合规报告
 - **多租户支持**: 支持SaaS部署
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | LangChain Team | 差距 |
+| 功能 | ClawRiver | LangChain Team | 差距 |
 |------|--------------|----------------|-------|
 | 权限粒度 | 3角色 | 细粒度操作级 | 🔴 明显 |
 | 审计日志 | 本地SQLite | 完整导出+合规 | 🔴 明显 |
@@ -90,9 +90,9 @@
 | 多租户 | ❌ | ✅ | 🔴 明显 |
 
 **差距评估**:
-- **权限系统**: Memory Market的RBAC是基础的3角色系统,缺少操作级别的细粒度控制。LangChain Team支持更细化的权限模型,如"只读"、"编辑"、"删除"等操作级别的控制。
-- **审计合规**: Memory Market只有本地SQLite日志,无法导出,不符合企业合规要求。LangSmith Team提供完整的审计日志导出、合规报告,满足HIPAA、SOC 2等标准。
-- **协作工具**: Memory Market提供基础的团队管理,缺少可视化协作工具。LangChain Team的Fleet提供无代码界面,降低协作门槛。
+- **权限系统**: ClawRiver的RBAC是基础的3角色系统,缺少操作级别的细粒度控制。LangChain Team支持更细化的权限模型,如"只读"、"编辑"、"删除"等操作级别的控制。
+- **审计合规**: ClawRiver只有本地SQLite日志,无法导出,不符合企业合规要求。LangSmith Team提供完整的审计日志导出、合规报告,满足HIPAA、SOC 2等标准。
+- **协作工具**: ClawRiver提供基础的团队管理,缺少可视化协作工具。LangChain Team的Fleet提供无代码界面,降低协作门槛。
 
 #### AutoGPT Multi-Agent
 
@@ -102,9 +102,9 @@
 - **共享记忆池**: Agent间共享短期和长期记忆
 - **实验性**: 灵活但稳定性一般
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | AutoGPT | 差距 |
+| 功能 | ClawRiver | AutoGPT | 差距 |
 |------|--------------|----------|-------|
 | Agent协作 | ❌ | ✅ | 🟡 差异定位 |
 | 任务分配 | ❌ | ✅ | 🔴 新功能 |
@@ -112,9 +112,9 @@
 | 稳定性 | ✅ | 🟡 | 🟢 优势 |
 
 **差距评估**:
-- **产品定位差异**: AutoGPT是Agent协作框架,Memory Market是记忆交易市场,定位不同。Memory Market不直接支持Agent间实时协作,但通过记忆共享实现间接协作。
-- **任务分配**: AutoGPT支持自动化的任务分解和分配,Memory Market不提供此功能。这是一个潜在的新功能方向。
-- **稳定性**: Memory Market作为商业化产品,稳定性优于实验性的AutoGPT。
+- **产品定位差异**: AutoGPT是Agent协作框架,ClawRiver是记忆交易市场,定位不同。ClawRiver不直接支持Agent间实时协作,但通过记忆共享实现间接协作。
+- **任务分配**: AutoGPT支持自动化的任务分解和分配,ClawRiver不提供此功能。这是一个潜在的新功能方向。
+- **稳定性**: ClawRiver作为商业化产品,稳定性优于实验性的AutoGPT。
 
 #### MemGPT Collaboration
 
@@ -124,9 +124,9 @@
 - **版本控制**: 记忆的完整版本管理
 - **压缩功能**: 自动压缩对话历史
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | MemGPT | 差距 |
+| 功能 | ClawRiver | MemGPT | 差距 |
 |------|--------------|----------|-------|
 | 文件存储 | ❌ | ✅ ReMeLight | 🟡 差异 |
 | 记忆同步 | ✅ 团队级别 | ✅ Agent级别 | 🟢 相当 |
@@ -134,9 +134,9 @@
 | 压缩功能 | ❌ | ✅ | 🔴 新功能 |
 
 **差距评估**:
-- **存储模型**: MemGPT使用文件系统存储,Memory Market使用数据库。文件存储更适合知识库场景,数据库更适合交易场景。
-- **压缩功能**: MemGPT提供自动压缩功能,Memory Market缺失。这是一个有价值的优化点。
-- **记忆同步**: Memory Market的团队级别同步与MemGPT的Agent级别同步定位不同,各有优势。
+- **存储模型**: MemGPT使用文件系统存储,ClawRiver使用数据库。文件存储更适合知识库场景,数据库更适合交易场景。
+- **压缩功能**: MemGPT提供自动压缩功能,ClawRiver缺失。这是一个有价值的优化点。
+- **记忆同步**: ClawRiver的团队级别同步与MemGPT的Agent级别同步定位不同,各有优势。
 
 #### AWS Bedrock Agent
 
@@ -147,9 +147,9 @@
 - **多Agent协调**: 高级的多Agent上下文共享
 - **监控和告警**: CloudWatch集成
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | AWS Bedrock | 差距 |
+| 功能 | ClawRiver | AWS Bedrock | 差距 |
 |------|--------------|--------------|-------|
 | IAM权限 | ❌ | ✅ AWS IAM | 🔴 明显 |
 | 企业合规 | ❌ | ✅ 完整 | 🔴 明显 |
@@ -158,13 +158,13 @@
 | 部署成本 | 低 | 高 | 🟢 优势 |
 
 **差距评估**:
-- **企业级功能**: AWS Bedrock提供完整的企业级功能,Memory Market几乎完全缺失。这是最大的差距。
-- **云生态集成**: Memory Market是独立部署,AWS Bedrock深度集成AWS云生态。这是技术栈选择带来的差异化。
-- **成本优势**: Memory Market的开源部署成本低,适合中小团队,AWS Bedrock成本高但功能全面。
+- **企业级功能**: AWS Bedrock提供完整的企业级功能,ClawRiver几乎完全缺失。这是最大的差距。
+- **云生态集成**: ClawRiver是独立部署,AWS Bedrock深度集成AWS云生态。这是技术栈选择带来的差异化。
+- **成本优势**: ClawRiver的开源部署成本低,适合中小团队,AWS Bedrock成本高但功能全面。
 
 ### 1.3 团队协作功能总结
 
-| 功能类别 | Memory Market状态 | 行业最佳 | 差距程度 | P级别 |
+| 功能类别 | ClawRiver状态 | 行业最佳 | 差距程度 | P级别 |
 |---------|-----------------|----------|----------|--------|
 | 基础团队管理 | ✅ 完成 | ✅ 行业水平 | 🟢 无差距 | - |
 | RBAC权限 | ✅ 基础 | ✅ 细粒度 | 🟡 中等 | P1 |
@@ -183,7 +183,7 @@
 
 | 竞品 | 搜索质量 | 性能优化 | 高级特性 | 中文支持 | 开源 |
 |-------|---------|----------|----------|---------|------|
-| **Memory Market** | 🟢 达标 | 🟢 优秀 | 🟡 基础 | ✅ 优化 | ✅ 是 |
+| **ClawRiver** | 🟢 达标 | 🟢 优秀 | 🟡 基础 | ✅ 优化 | ✅ 是 |
 | **LangChain Vector Store** | 🟢 优秀 | 🟢 优秀 | ✅ 重排+混合 | 🟡 一般 | ✅ 是 |
 | **LlamaIndex Vector Store** | 🟢 优秀 | 🟢 优秀 | ✅ 多种融合 | 🟡 一般 | ✅ 是 |
 | **Chroma** | 🟡 中等 | 🟡 中等 | 🟡 基础 | 🟡 一般 | ✅ 是 |
@@ -191,7 +191,7 @@
 
 ### 2.2 详细对比
 
-#### Memory Market 当前状态
+#### ClawRiver 当前状态
 
 **已实现功能**:
 - ✅ Qdrant向量数据库（HNSW索引）
@@ -217,9 +217,9 @@
 - **重排支持**: 支持外部reranker集成
 - **LangSmith集成**: 完整的搜索trace
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | LangChain | 差距 |
+| 功能 | ClawRiver | LangChain | 差距 |
 |------|--------------|----------|-------|
 | 向量库数量 | 1 (Qdrant) | 40+ | 🟡 不适用 |
 | 混合检索 | ✅ 自定义 | ✅ 标准化 | 🟢 相当 |
@@ -228,9 +228,9 @@
 | 标准化接口 | 🟡 FastAPI | ✅ 统一 | 🟡 中等 |
 
 **差距评估**:
-- **Cross-Encoder重排**: Memory Market使用基础的权重融合,LangChain支持Cross-Encoder重排,可提升相关性5-10%。
-- **搜索trace**: Memory Market没有搜索trace,无法分析和优化搜索质量。LangChain通过LangSmith提供完整的trace。
-- **接口标准化**: Memory Market使用FastAPI自定义接口,LangChain提供标准化接口。这是权衡,自定义接口更灵活但生态集成度低。
+- **Cross-Encoder重排**: ClawRiver使用基础的权重融合,LangChain支持Cross-Encoder重排,可提升相关性5-10%。
+- **搜索trace**: ClawRiver没有搜索trace,无法分析和优化搜索质量。LangChain通过LangSmith提供完整的trace。
+- **接口标准化**: ClawRiver使用FastAPI自定义接口,LangChain提供标准化接口。这是权衡,自定义接口更灵活但生态集成度低。
 
 #### LlamaIndex Vector Store
 
@@ -241,9 +241,9 @@
 - **检索增强**: 结合知识图谱和结构化数据
 - **性能优化**: 多种索引和优化策略
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | LlamaIndex | 差距 |
+| 功能 | ClawRiver | LlamaIndex | 差距 |
 |------|--------------|-------------|-------|
 | 融合策略 | 1种（加权） | 多种（5+） | 🟡 中等 |
 | Reranker | 自定义 | 内置4+种 | 🟡 中等 |
@@ -252,9 +252,9 @@
 | 性能优化 | HNSW | 多种策略 | 🟢 相当 |
 
 **差距评估**:
-- **融合策略**: Memory Market只有简单的加权融合,LlamaIndex提供多种高级融合策略,可适应不同场景。
-- **查询优化**: Memory Market没有查询重写和扩展功能,LlamaIndex支持自动查询优化,提升搜索质量。
-- **知识图谱**: Memory Market是平铺的记忆存储,LlamaIndex支持知识图谱组织,适合复杂关系查询。
+- **融合策略**: ClawRiver只有简单的加权融合,LlamaIndex提供多种高级融合策略,可适应不同场景。
+- **查询优化**: ClawRiver没有查询重写和扩展功能,LlamaIndex支持自动查询优化,提升搜索质量。
+- **知识图谱**: ClawRiver是平铺的记忆存储,LlamaIndex支持知识图谱组织,适合复杂关系查询。
 
 #### Chroma
 
@@ -264,9 +264,9 @@
 - **本地优先**: 支持完全本地部署
 - **开源**: Apache 2.0许可证
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | Chroma | 差距 |
+| 功能 | ClawRiver | Chroma | 差距 |
 |------|--------------|---------|-------|
 | 搜索质量 | 🟢 | 🟡 | 🟢 优势 |
 | 性能 | 🟢 | 🟡 | 🟢 优势 |
@@ -275,9 +275,9 @@
 | 中文支持 | ✅ 优化 | 🟡 一般 | 🟢 优势 |
 
 **差距评估**:
-- **搜索质量**: Memory Market使用BGE中文优化模型,Chroma的默认模型对中文支持一般。这是Memory Market的优势。
-- **性能**: Memory Market的Qdrant+HNSW性能优于Chroma的默认配置。
-- **易用性**: Chroma更简单,Memory Market需要配置Qdrant和模型。
+- **搜索质量**: ClawRiver使用BGE中文优化模型,Chroma的默认模型对中文支持一般。这是ClawRiver的优势。
+- **性能**: ClawRiver的Qdrant+HNSW性能优于Chroma的默认配置。
+- **易用性**: Chroma更简单,ClawRiver需要配置Qdrant和模型。
 
 #### Pinecone
 
@@ -288,9 +288,9 @@
 - **企业级**: SLA、安全、合规
 - **Scale**: 支持数十亿向量
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | Pinecone | 差距 |
+| 功能 | ClawRiver | Pinecone | 差距 |
 |------|--------------|----------|-------|
 | 搜索质量 | 🟢 | 🟢 | 🟢 相当 |
 | 性能 | 🟢 <500ms | 🟢 <100ms | 🟡 中等 |
@@ -300,12 +300,12 @@
 
 **差距评估**:
 - **性能**: Pinecone作为托管服务,性能优于自部署的Qdrant,但差距可接受（<500ms vs <100ms）。
-- **成本**: Memory Market的自部署成本远低于Pinecone的付费服务。
-- **企业功能**: Pinecone提供完整的企业功能,Memory Market缺失。这是P1改进方向。
+- **成本**: ClawRiver的自部署成本远低于Pinecone的付费服务。
+- **企业功能**: Pinecone提供完整的企业功能,ClawRiver缺失。这是P1改进方向。
 
 ### 2.3 向量搜索总结
 
-| 功能类别 | Memory Market状态 | 行业最佳 | 差距程度 | P级别 |
+| 功能类别 | ClawRiver状态 | 行业最佳 | 差距程度 | P级别 |
 |---------|-----------------|----------|----------|--------|
 | 基础向量搜索 | ✅ 达标 | ✅ 行业水平 | 🟢 无差距 | - |
 | 中文优化 | ✅ 优秀 | ✅ 行业领先 | 🟢 优势 | - |
@@ -324,14 +324,14 @@
 
 | 竞品 | 监控和可观测性 | 日志和审计 | 权限和合规 | 多租户支持 | 价格 |
 |-------|--------------|----------|----------|-----------|------|
-| **Memory Market** | ❌ 无 | 🟡 本地 | 🟡 基础RBAC | ❌ 无 | 免费 |
+| **ClawRiver** | ❌ 无 | 🟡 本地 | 🟡 基础RBAC | ❌ 无 | 免费 |
 | **LangSmith** | ✅ 完整 | ✅ 完整 | ✅ 企业级 | ✅ SaaS | 付费 |
 | **Weights & Biases** | ✅ 完整 | ✅ 完整 | ✅ 企业级 | ✅ SaaS | 付费 |
 | **MLflow** | ✅ 完整 | ✅ 完整 | ✅ 企业级 | ✅ 自托管 | 开源免费 |
 
 ### 3.2 详细对比
 
-#### Memory Market 当前状态
+#### ClawRiver 当前状态
 
 **已实现功能**:
 - ✅ 基础RBAC权限（3角色）
@@ -359,9 +359,9 @@
 - **可视化**: 可视化界面和仪表板
 - **合规认证**: HIPAA、SOC 2 Type 2、GDPR
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | LangSmith | 差距 |
+| 功能 | ClawRiver | LangSmith | 差距 |
 |------|--------------|----------|-------|
 | Trace系统 | ❌ | ✅ | 🔴 严重 |
 | 评估框架 | ❌ | ✅ | 🔴 严重 |
@@ -372,9 +372,9 @@
 | 多租户 | ❌ | ✅ | 🔴 明显 |
 
 **差距评估**:
-- **监控和可观测性**: 这是Memory Market最大的差距。LangSmith提供完整的trace、评估、部署管理,Memory Market完全没有这些功能。
-- **协作开发**: LangSmith支持多人协作开发和调试,Memory Market不提供。
-- **合规**: Memory Market没有企业级合规认证,无法进入企业市场。
+- **监控和可观测性**: 这是ClawRiver最大的差距。LangSmith提供完整的trace、评估、部署管理,ClawRiver完全没有这些功能。
+- **协作开发**: LangSmith支持多人协作开发和调试,ClawRiver不提供。
+- **合规**: ClawRiver没有企业级合规认证,无法进入企业市场。
 
 #### Weights & Biases (W&B)
 
@@ -386,9 +386,9 @@
 - **集成**: 100+框架集成
 - **企业功能**: SSO、RBAC、审计
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | W&B | 差距 |
+| 功能 | ClawRiver | W&B | 差距 |
 |------|--------------|------|-------|
 | 实验追踪 | ❌ | ✅ | 🔴 明显 |
 | 模型评估 | ❌ | ✅ | 🔴 明显 |
@@ -398,9 +398,9 @@
 | SSO | ❌ | ✅ | 🟡 中等 |
 
 **差距评估**:
-- **实时监控和异常检测**: Memory Market没有监控能力,无法及时发现和响应问题。W&B提供完整的监控和告警。
-- **实验和评估**: W&B是ML实验管理平台,Memory Market不是同类产品,但搜索优化需要实验追踪。
-- **集成生态**: W&B支持100+框架集成,Memory Market只有FastAPI。
+- **实时监控和异常检测**: ClawRiver没有监控能力,无法及时发现和响应问题。W&B提供完整的监控和告警。
+- **实验和评估**: W&B是ML实验管理平台,ClawRiver不是同类产品,但搜索优化需要实验追踪。
+- **集成生态**: W&B支持100+框架集成,ClawRiver只有FastAPI。
 
 #### MLflow
 
@@ -412,9 +412,9 @@
 - **自托管**: 完全开源,可自部署
 - **企业功能**: SSO、RBAC、审计
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | MLflow | 差距 |
+| 功能 | ClawRiver | MLflow | 差距 |
 |------|--------------|---------|-------|
 | 实验管理 | ❌ | ✅ | 🔴 明显 |
 | 模型注册 | ❌ | ✅ | 🟡 差异 |
@@ -424,13 +424,13 @@
 | RBAC | ✅ 基础 | ✅ 企业级 | 🟡 中等 |
 
 **差距评估**:
-- **定位差异**: MLflow是ML实验和模型管理平台,Memory Market是记忆交易市场,不是直接竞品。
+- **定位差异**: MLflow是ML实验和模型管理平台,ClawRiver是记忆交易市场,不是直接竞品。
 - **自托管**: 两者都支持自托管,这是共同点。
-- **功能互补**: Memory Market可以借鉴MLflow的实验管理思想,用于搜索优化。
+- **功能互补**: ClawRiver可以借鉴MLflow的实验管理思想,用于搜索优化。
 
 ### 3.3 企业级功能总结
 
-| 功能类别 | Memory Market状态 | 行业最佳 | 差距程度 | P级别 |
+| 功能类别 | ClawRiver状态 | 行业最佳 | 差距程度 | P级别 |
 |---------|-----------------|----------|----------|--------|
 | 基础监控 | ❌ 无 | ✅ 完整 | 🔴 严重 | P1 |
 | Trace系统 | ❌ 无 | ✅ OpenTelemetry | 🔴 严重 | P1 |
@@ -449,14 +449,14 @@
 
 | 竞品 | MCP工具数量 | MCP生态完整性 | 文档质量 | 集成平台 |
 |-------|------------|------------|----------|---------|
-| **Memory Market** | 10个 | 🟡 基础 | 🟡 完整 | Claude Code |
+| **ClawRiver** | 10个 | 🟡 基础 | 🟡 完整 | Claude Code |
 | **Cline MCP** | 50+ | 🟢 完整 | ✅ 优秀 | Cline |
 | **Claude Code MCP** | 30+ | 🟢 完整 | ✅ 优秀 | Claude Code |
 | **Continue.dev MCP** | 20+ | 🟡 发展中 | 🟡 良好 | Continue.dev |
 
 ### 4.2 详细对比
 
-#### Memory Market 当前状态
+#### ClawRiver 当前状态
 
 **已实现MCP工具** (10个):
 1. `search_memories` - 搜索记忆
@@ -488,9 +488,9 @@
 - **文档完善**: 每个工具都有详细文档
 - **IDE集成**: 深度集成VSCode
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | Cline | 差距 |
+| 功能 | ClawRiver | Cline | 差距 |
 |------|--------------|--------|-------|
 | MCP工具数 | 10 | 50+ | 🔴 明显 |
 | MCP市场 | ❌ | ✅ | 🔴 明显 |
@@ -499,9 +499,9 @@
 | 文档质量 | 🟡 完整 | ✅ 优秀 | 🟡 中等 |
 
 **差距评估**:
-- **工具数量**: Memory Market只有10个MCP工具,Cline有50+。这是明显的差距。
-- **MCP市场**: Cline提供MCP Marketplace,Memory Market没有。这是生态建设的差距。
-- **社区贡献**: Cline支持社区贡献,Memory Market是闭源开发。
+- **工具数量**: ClawRiver只有10个MCP工具,Cline有50+。这是明显的差距。
+- **MCP市场**: Cline提供MCP Marketplace,ClawRiver没有。这是生态建设的差距。
+- **社区贡献**: Cline支持社区贡献,ClawRiver是闭源开发。
 
 #### Claude Code MCP
 
@@ -512,9 +512,9 @@
 - **持续更新**: 跟随Claude Code更新
 - **企业功能**: LiteLLM支持权限管理
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | Claude Code | 差距 |
+| 功能 | ClawRiver | Claude Code | 差距 |
 |------|--------------|------------|-------|
 | MCP工具数 | 10 | 30+ | 🟡 中等 |
 | 官方支持 | ❌ | ✅ | 🟡 中等 |
@@ -523,8 +523,8 @@
 | 持续更新 | 🟡 被动 | ✅ 主动 | 🟡 中等 |
 
 **差距评估**:
-- **官方支持**: Claude Code是Anthropic官方产品,Memory Market是第三方。这影响采用率。
-- **持续更新**: Claude Code MCP跟随主产品更新,Memory Market需要主动维护。
+- **官方支持**: Claude Code是Anthropic官方产品,ClawRiver是第三方。这影响采用率。
+- **持续更新**: Claude Code MCP跟随主产品更新,ClawRiver需要主动维护。
 
 #### Continue.dev MCP
 
@@ -535,9 +535,9 @@
 - **文档完善**: 详细的使用指南
 - **开源**: Apache 2.0
 
-**与Memory Market对比**:
+**与ClawRiver对比**:
 
-| 功能 | Memory Market | Continue.dev | 差距 |
+| 功能 | ClawRiver | Continue.dev | 差距 |
 |------|--------------|--------------|-------|
 | MCP工具数 | 10 | 20+ | 🟡 中等 |
 | 多语言 | 🟡 Python | ✅ 多语言 | 🟡 中等 |
@@ -545,12 +545,12 @@
 | 开源 | ✅ | ✅ | 🟢 相当 |
 
 **差距评估**:
-- **插件系统**: Continue.dev支持MCP插件扩展,Memory Market不提供。这是生态差距。
-- **多语言**: Continue.dev支持多语言MCP客户端,Memory Market只有Python。
+- **插件系统**: Continue.dev支持MCP插件扩展,ClawRiver不提供。这是生态差距。
+- **多语言**: Continue.dev支持多语言MCP客户端,ClawRiver只有Python。
 
 ### 4.3 MCP生态总结
 
-| 功能类别 | Memory Market状态 | 行业最佳 | 差距程度 | P级别 |
+| 功能类别 | ClawRiver状态 | 行业最佳 | 差距程度 | P级别 |
 |---------|-----------------|----------|----------|--------|
 | 基础MCP支持 | ✅ 10工具 | ✅ 30+工具 | 🟡 中等 | P2 |
 | MCP市场 | ❌ 无 | ✅ Marketplace | 🔴 明显 | P2 |
@@ -592,7 +592,7 @@
 
 ### 6.1 监控和可观测性（🔴 严重差距）
 
-**当前状态**: Memory Market完全没有监控和可观测性能力。
+**当前状态**: ClawRiver完全没有监控和可观测性能力。
 
 **竞品最佳实践**:
 - **LangSmith**: 完整的trace、评估、部署管理
@@ -974,7 +974,7 @@ Q4 2026 (10-12月)
 
 3. **企业级功能关键**: 要进入企业市场,必须补齐监控、审计、合规等企业级功能。
 
-4. **MCP生态机会**: MCP协议快速演进,Memory Market有建立MCP生态的机会。
+4. **MCP生态机会**: MCP协议快速演进,ClawRiver有建立MCP生态的机会。
 
 5. **长期趋势智能化**: 竞品开始布局AI辅助功能,这是未来竞争的关键。
 
@@ -999,7 +999,7 @@ Q4 2026 (10-12月)
 
 1. **监控缺失风险**: 缺乏监控导致问题发现和定位困难,影响用户信任
 2. **合规风险**: 没有审计日志和合规认证,无法进入受监管行业
-3. **竞争加剧**: 竞品快速迭代,Memory Market需持续跟进
+3. **竞争加剧**: 竞品快速迭代,ClawRiver需持续跟进
 4. **资源限制**: P1/P2任务较多,需要合理规划资源
 
 ### 9.4 成功因素

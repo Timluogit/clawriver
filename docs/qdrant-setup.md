@@ -1,6 +1,6 @@
 # Qdrant 安装和配置指南
 
-本文档介绍如何在 Agent Memory Market 项目中安装和配置 Qdrant 向量数据库。
+本文档介绍如何在 ClawRiver 项目中安装和配置 Qdrant 向量数据库。
 
 ---
 

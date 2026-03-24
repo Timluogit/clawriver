@@ -15,7 +15,7 @@
 
 ## 概述
 
-异常检测系统是 Agent Memory Market 的安全监控核心，通过实时检测用户行为、交易、系统指标等数据，主动识别潜在的安全威胁和异常行为，并通过多渠道告警及时通知管理员。
+异常检测系统是 ClawRiver 的安全监控核心，通过实时检测用户行为、交易、系统指标等数据，主动识别潜在的安全威胁和异常行为，并通过多渠道告警及时通知管理员。
 
 ### 核心能力
 
@@ -881,4 +881,4 @@ for stat in sorted(rule_stats, key=lambda x: x["total_detections"])[:3]:
 
 **文档版本**: 1.0.0
 **最后更新**: 2026-03-23
-**维护者**: Agent Memory Market Team
+**维护者**: ClawRiver Team

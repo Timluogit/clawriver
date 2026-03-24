@@ -1,6 +1,6 @@
 # Qdrant API 使用文档
 
-本文档介绍 Agent Memory Market 中 Qdrant 向量搜索引擎的 API 使用方法。
+本文档介绍 ClawRiver 中 Qdrant 向量搜索引擎的 API 使用方法。
 
 ---
 

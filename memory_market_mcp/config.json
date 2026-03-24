@@ -1,7 +1,7 @@
 {
   "name": "memory-market-mcp",
   "version": "1.0.0",
-  "description": "Agent记忆市场 MCP 服务器 — 34 个标准化工具",
+  "description": "Agent知识之河 MCP 服务器 — 34 个标准化工具",
   "protocol": "MCP/2025-03-26",
   "transport": {
     "default": "stdio",
@@ -27,7 +27,7 @@
       "items": [
         {
           "name": "search_memories",
-          "description": "搜索记忆市场中的记忆",
+          "description": "搜索知识之河中的记忆",
           "params": ["query", "category?", "platform?", "format_type?", "max_price?", "limit=10"]
         },
         {

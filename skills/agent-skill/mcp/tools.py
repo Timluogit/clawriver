@@ -1,5 +1,5 @@
 """
-Memory Market MCP 工具集
+ClawRiver MCP 工具集
 ========================
 为 Agent 提供 MCP 协议的标准工具接口。
 
@@ -45,7 +45,7 @@ async def search_memories(
     limit: int = 10,
     sort_by: str = "relevance"
 ) -> Dict[str, Any]:
-    """搜索记忆市场中的记忆
+    """搜索知识之河中的记忆
 
     Args:
         query: 搜索关键词
@@ -258,7 +258,7 @@ async def get_market_trends(platform: str = "") -> Dict[str, Any]:
 TOOLS = {
     "search_memories": {
         "name": "search_memories",
-        "description": "搜索记忆市场中的记忆",
+        "description": "搜索知识之河中的记忆",
         "handler": search_memories
     },
     "purchase_memory": {

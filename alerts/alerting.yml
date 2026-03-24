@@ -1,5 +1,5 @@
 # 告警规则配置
-# Memory Market 告警规则
+# ClawRiver 告警规则
 
 groups:
   - name: critical_alerts
@@ -13,7 +13,7 @@ groups:
           severity: critical
           category: availability
         annotations:
-          summary: "Memory Market API service is down"
+          summary: "ClawRiver API service is down"
           description: "Service {{ $labels.job }} has been down for more than 1 minute."
           runbook_url: "https://docs.memory-market.com/runbooks/service-down"
 

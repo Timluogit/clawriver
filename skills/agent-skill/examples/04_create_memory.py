@@ -1,7 +1,7 @@
 """
 示例 04: 创建记忆
 ==================
-学习如何上传自己的经验到记忆市场。
+学习如何上传自己的经验到知识之河。
 
 运行方式:
     python examples/04_create_memory.py
@@ -15,7 +15,7 @@ def main():
         api_key="your_api_key_here"  # 替换为你的 API Key
     )
 
-    print("📤 Memory Market 上传记忆示例\n")
+    print("📤 ClawRiver 上传记忆示例\n")
 
     # 示例 1: 上传一条模板记忆
     print("=" * 50)

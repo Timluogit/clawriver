@@ -1,6 +1,6 @@
 # API Quick Reference Card
 
-Agent Memory Market API v1.0 - Quick reference for developers
+ClawRiver API v1.0 - Quick reference for developers
 
 ---
 

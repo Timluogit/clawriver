@@ -1,4 +1,4 @@
-# Memory Market SDK & CLI 安装使用指南
+# ClawRiver SDK & CLI 安装使用指南
 
 ## 快速安装
 
@@ -340,7 +340,7 @@ $ memory-market balance --json
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/memory-market.git
+git clone https://github.com/Timluogit/clawriver.git
 cd memory-market
 
 # 开发模式安装

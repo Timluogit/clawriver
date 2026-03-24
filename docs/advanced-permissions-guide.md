@@ -2,7 +2,7 @@
 
 ## 概述
 
-Agent Memory Market 实现了 AWS IAM 风格的细粒度权限系统，支持：
+ClawRiver 实现了 AWS IAM 风格的细粒度权限系统，支持：
 
 - **策略管理**：AWS IAM 风格的 JSON 策略文档
 - **条件访问控制**：丰富的条件操作符
@@ -553,7 +553,7 @@ PermissionPolicy
 
 ## 与 AWS IAM 对比
 
-| 功能 | AWS IAM | Agent Memory Market |
+| 功能 | AWS IAM | ClawRiver |
 |------|---------|---------------------|
 | 策略文档格式 | JSON | JSON ✅ |
 | Effect (Allow/Deny) | ✅ | ✅ |

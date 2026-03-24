@@ -1,6 +1,6 @@
-# Agent Memory Market - 第五轮竞品对标分析报告
+# ClawRiver - 第五轮竞品对标分析报告
 
-**项目名称**: Agent Memory Market（Agent记忆市场）
+**项目名称**: ClawRiver（Agent知识之河）
 **报告日期**: 2026-03-23
 **分析阶段**: 第五轮（P3全部完成后的竞争力重评估）
 **项目状态**: P3全部完成，104个Python文件，~1.86M行代码，62个文档
@@ -9,7 +9,7 @@
 
 ## 📋 执行摘要
 
-P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第四轮的70/100（第5名末位）提升至**85/100**，一举超越MLflow，排名升至**第4名**。关键突破在于：
+P3六个任务全部完成后，ClawRiver实现了**质的飞跃**。从第四轮的70/100（第5名末位）提升至**85/100**，一举超越MLflow，排名升至**第4名**。关键突破在于：
 
 1. **多Agent并行推理架构** — 7个Agent + 三阶段流水线，直追Supermemory的ASMR
 2. **用户画像系统** — 两层架构 + LLM自动提取，对标Supermemory
@@ -33,7 +33,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 | 1 | Supermemory ASMR | 95/100 | 96/100 | +1 |
 | 2 | AWS Bedrock Agent | 95/100 | 95/100 | — |
 | 3 | LangSmith | 92/100 | 92/100 | — |
-| **4** | **Memory Market** | **70/100** | **85/100** | **↑ +15 🔥** |
+| **4** | **ClawRiver** | **70/100** | **85/100** | **↑ +15 🔥** |
 | 5 | MLflow | 88/100 | 87/100 | -1 |
 
 ---
@@ -42,7 +42,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 
 ### 1. 核心能力（权重25%）
 
-| 子维度 | Memory Market | Supermemory | AWS Bedrock | LangSmith | MLflow |
+| 子维度 | ClawRiver | Supermemory | AWS Bedrock | LangSmith | MLflow |
 |--------|:---:|:---:|:---:|:---:|:---:|
 | 记忆存储和检索 | 8 | 10 | 9 | 7 | 7 |
 | 向量搜索质量 | 8 | 9 | 9 | 7 | 7 |
@@ -58,7 +58,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 
 ### 2. 高级功能（权重30%）
 
-| 子维度 | Memory Market | Supermemory | AWS Bedrock | LangSmith | MLflow |
+| 子维度 | ClawRiver | Supermemory | AWS Bedrock | LangSmith | MLflow |
 |--------|:---:|:---:|:---:|:---:|:---:|
 | 用户画像 | 8 | 9 | 5 | 4 | 3 |
 | 外部数据源集成 | 8 | 9 | 7 | 5 | 4 |
@@ -74,7 +74,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 
 ### 3. 企业功能（权重15%）
 
-| 子维度 | Memory Market | Supermemory | AWS Bedrock | LangSmith | MLflow |
+| 子维度 | ClawRiver | Supermemory | AWS Bedrock | LangSmith | MLflow |
 |--------|:---:|:---:|:---:|:---:|:---:|
 | 监控和告警 | 9 | 7 | 9 | 8 | 7 |
 | 审计日志 | 8 | 6 | 9 | 7 | 6 |
@@ -91,7 +91,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 
 ### 4. 性能（权重15%）
 
-| 子维度 | Memory Market | Supermemory | AWS Bedrock | LangSmith | MLflow |
+| 子维度 | ClawRiver | Supermemory | AWS Bedrock | LangSmith | MLflow |
 |--------|:---:|:---:|:---:|:---:|:---:|
 | 搜索延迟 | 8 | 9 | 8 | 7 | 6 |
 | 索引构建速度 | 7 | 8 | 8 | 7 | 7 |
@@ -107,7 +107,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 
 ### 5. 生态（权重15%）
 
-| 子维度 | Memory Market | Supermemory | AWS Bedrock | LangSmith | MLflow |
+| 子维度 | ClawRiver | Supermemory | AWS Bedrock | LangSmith | MLflow |
 |--------|:---:|:---:|:---:|:---:|:---:|
 | API完整性 | 8 | 9 | 9 | 8 | 8 |
 | 文档质量 | 8 | 8 | 9 | 9 | 9 |
@@ -124,7 +124,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 
 ## 📈 加权总分计算
 
-| 维度 | 权重 | Memory Market | Supermemory | AWS Bedrock | LangSmith | MLflow |
+| 维度 | 权重 | ClawRiver | Supermemory | AWS Bedrock | LangSmith | MLflow |
 |------|:----:|:---:|:---:|:---:|:---:|:---:|
 | 核心能力 | 25% | 8.0 | 9.3 | 8.3 | 6.8 | 6.3 |
 | 高级功能 | 30% | 8.3 | 8.8 | 5.3 | 4.5 | 3.0 |
@@ -134,7 +134,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 | **加权总分** | **100%** | **7.90** | **8.20** | **7.72** | **6.62** | **5.86** |
 | **百分制** | | **85/100** | **96/100** | **95/100** | **92/100** | **87/100** |
 
-> 注：竞品分数保持与第四轮一致的量级，仅微调。Memory Market按实际加权得分79，换算百分制约85。
+> 注：竞品分数保持与第四轮一致的量级，仅微调。ClawRiver按实际加权得分79，换算百分制约85。
 
 ---
 
@@ -257,7 +257,7 @@ P3六个任务全部完成后，Memory Market实现了**质的飞跃**。从第�
 
 ## 🏅 竞争优势总结
 
-### Memory Market的独特优势
+### ClawRiver的独特优势
 
 1. **MCP工具生态最丰富** — 61个工具，所有竞品中最多
 2. **企业监控最完整** — Prometheus+Grafana+Jaeger+Alertmanager全栈

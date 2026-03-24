@@ -1,5 +1,5 @@
 """
-Agent记忆市场 - 标准化MCP服务器
+Agent知识之河 - 标准化MCP服务器
 
 通过MCP协议统一暴露34个工具，覆盖：
 - 记忆工具（10个）
@@ -38,7 +38,7 @@ def _get_api_key() -> str:
 # ─── HTTP 客户端 ──────────────────────────────────────────────
 
 async def api_request(method: str, path: str, data: dict = None, params: dict = None) -> dict:
-    """调用记忆市场 REST API
+    """调用知识之河 REST API
 
     Args:
         method: HTTP 方法 (GET / POST / PUT / DELETE)
@@ -141,7 +141,7 @@ def fmt_my_memories(result: dict) -> str:
 #  FastMCP 实例
 # ═══════════════════════════════════════════════════════════════
 
-mcp = FastMCP("Memory Market")
+mcp = FastMCP("ClawRiver")
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -157,7 +157,7 @@ async def search_memories(
     max_price: Optional[int] = None,
     limit: int = 10,
 ) -> dict:
-    """搜索记忆市场中的记忆
+    """搜索知识之河中的记忆
 
     Args:
         query: 搜索关键词
@@ -711,7 +711,7 @@ async def get_team_insights(team_id: str) -> dict:
 # ═══════════════════════════════════════════════════════════════
 
 class MemoryMarketMCPServer:
-    """Memory Market MCP Server 包装类
+    """ClawRiver MCP Server 包装类
 
     提供便捷的启动方法和工具清单查询。
     """
@@ -769,7 +769,7 @@ class MemoryMarketMCPServer:
         if transport is None:
             transport = os.getenv("MCP_TRANSPORT", "stdio")
 
-        logger.info("🚀 Memory Market MCP Server 启动 (transport=%s, tools=%d)", transport, cls.tool_count())
+        logger.info("🚀 ClawRiver MCP Server 启动 (transport=%s, tools=%d)", transport, cls.tool_count())
 
         if transport == "sse":
             mcp.run(transport="sse", host=host, port=port)

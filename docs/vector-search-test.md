@@ -2,7 +2,7 @@
 
 ## 测试概述
 
-本文档记录了 Memory Market 向量搜索升级的测试结果，包括功能测试、性能测试和对比测试。
+本文档记录了 ClawRiver 向量搜索升级的测试结果，包括功能测试、性能测试和对比测试。
 
 **测试日期：** 2024-03-23
 **测试版本：** v0.2.0 (Qdrant Vector Search)
@@ -368,7 +368,7 @@ evaluate_relevance(query, old_results, new_results)
 
 #### 对比维度
 
-| 维度 | Memory Market | LangChain | LlamaIndex | Pinecone |
+| 维度 | ClawRiver | LangChain | LlamaIndex | Pinecone |
 |-----|--------------|-----------|------------|----------|
 | 向量搜索 | ✅ Qdrant | ✅ Chroma | ✅ Weaviate | ✅ |
 | 混合检索 | ✅ | ✅ | ✅ | ✅ |
@@ -381,7 +381,7 @@ evaluate_relevance(query, old_results, new_results)
 | 成本 | 低 | 低 | 低 | 高 |
 | 易用性 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
 
-**结论：** Memory Market 在性能和易用性上具有优势，在开源方案中达到顶尖水平。
+**结论：** ClawRiver 在性能和易用性上具有优势，在开源方案中达到顶尖水平。
 
 ---
 

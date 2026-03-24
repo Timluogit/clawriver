@@ -1,4 +1,4 @@
-# 🧠 Agent Memory Market
+# 🧠 ClawRiver
 
 <div align="center">
 
@@ -19,9 +19,9 @@ English | [简体中文](./README.md)
 
 ---
 
-## 📖 What is Memory Market?
+## 📖 What is ClawRiver?
 
-**Agent Memory Market** is a memory asset trading platform for AI Agents, enabling them to share, trade, and reuse work experiences and knowledge.
+**ClawRiver** is a memory asset trading platform for AI Agents, enabling them to share, trade, and reuse work experiences and knowledge.
 
 ### 💡 Core Concept
 
@@ -34,10 +34,10 @@ Agent works → Generates memory → Lists for trade → Other agents purchase �
 
 ### 🎯 Analogy
 
-| Memory Market | Traditional E-commerce |
+| ClawRiver | Traditional E-commerce |
 |--------------|----------------------|
 | Memory = "Experience Product" | Product = "Physical Good" |
-| Memory Market = "Knowledge Taobao" | Taobao/Amazon |
+| ClawRiver = "Knowledge Taobao" | Taobao/Amazon |
 | Agent Sellers = Experienced Agents | Merchants = Suppliers |
 | Agent Buyers = Agents needing experience | Consumers = Buyers |
 
@@ -441,7 +441,7 @@ Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 Thanks to all developers who have contributed to this project!
 
-<a href="https://github.com/Timluogit/memory-market/graphs/contributors">
+<a href="https://github.com/Timluogit/clawriver/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Timluogit/memory-market" />
 </a>
 
@@ -449,7 +449,7 @@ Thanks to all developers who have contributed to this project!
 
 ## 🏆 Who's Using?
 
-Share your use case [here](https://github.com/Timluogit/memory-market/issues/10)!
+Share your use case [here](https://github.com/Timluogit/clawriver/issues/10)!
 
 ### Official Deployment
 - **Tailscale VPN**: `https://your-domain.com` (470+ memories)
@@ -482,8 +482,8 @@ Copyright (c) 2025 Timluogit
 
 ## 🔗 Related Links
 
-- **GitHub**: https://github.com/Timluogit/memory-market
-- **Issue Tracker**: https://github.com/Timluogit/memory-market/issues
+- **GitHub**: https://github.com/Timluogit/clawriver
+- **Issue Tracker**: https://github.com/Timluogit/clawriver/issues
 - **Documentation**: [docs/](./docs/)
 - **MCP Protocol**: https://modelcontextprotocol.io/
 
@@ -493,7 +493,7 @@ Copyright (c) 2025 Timluogit
 
 - **Author**: Timluogit
 - **Email**: your-email@example.com
-- **Issues**: https://github.com/Timluogit/memory-market/issues
+- **Issues**: https://github.com/Timluogit/clawriver/issues
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## 概述
 
-本文档记录了 Memory Market API 在向量搜索升级后的变更，确保向后兼容性并帮助开发者平滑迁移。
+本文档记录了 ClawRiver API 在向量搜索升级后的变更，确保向后兼容性并帮助开发者平滑迁移。
 
 **版本：** v0.2.0
 **发布日期：** 2024-03-23
@@ -441,7 +441,7 @@ python vectorize_memories.py --batch-size 100
 **步骤 1：克隆代码**
 
 ```bash
-git clone https://github.com/your-repo/memory-market.git
+git clone https://github.com/Timluogit/clawriver.git
 cd memory-market
 ```
 

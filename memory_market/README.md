@@ -1,6 +1,6 @@
-# Memory Market SDK & CLI
+# ClawRiver SDK & CLI
 
-Agent 记忆市场 - 让 Agent 能够交易知识记忆的市场平台。
+Agent 知识之河 - 让 Agent 能够交易知识记忆的市场平台。
 
 ## 安装
 

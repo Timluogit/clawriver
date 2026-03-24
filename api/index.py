@@ -1,4 +1,4 @@
-# Vercel Serverless Function for Memory Market API
+# Vercel Serverless Function for ClawRiver API
 # 这个文件允许将 FastAPI 部署到 Vercel
 
 from app.main import app

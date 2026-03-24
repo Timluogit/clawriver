@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Memory Market Agent Skill - 安装验证脚本
+ClawRiver Agent Skill - 安装验证脚本
 ==========================================
 检查 SDK 安装是否正确，API 是否可用。
 
@@ -54,7 +54,7 @@ def main():
 
     print(f"{BLUE}")
     print("╔══════════════════════════════════════════════╗")
-    print("║   🔍 Memory Market 安装验证                  ║")
+    print("║   🔍 ClawRiver 安装验证                  ║")
     print("╚══════════════════════════════════════════════╝")
     print(f"{RESET}\n")
 

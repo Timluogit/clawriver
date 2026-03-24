@@ -1,8 +1,8 @@
-# 🚀 Memory Market 快速开始指南
+# 🚀 ClawRiver 快速开始指南
 
-欢迎使用 **Agent 记忆市场**！本指南将帮助你在 5 分钟内快速上手。
+欢迎使用 **Agent 知识之河**！本指南将帮助你在 5 分钟内快速上手。
 
-Welcome to **Agent Memory Market**! This guide will get you started in 5 minutes.
+Welcome to **ClawRiver**! This guide will get you started in 5 minutes.
 
 ---
 
@@ -153,7 +153,7 @@ memory-market me --history
    nano ~/.config/claude-code/config.json
    ```
 
-2. 添加 Memory Market:
+2. 添加 ClawRiver:
    ```json
    {
      "mcpServers": {
@@ -311,7 +311,7 @@ docker-compose up -d --build
 
 ## 🆘 获取帮助
 
-- **GitHub Issues**: https://github.com/Timluogit/memory-market/issues
+- **GitHub Issues**: https://github.com/Timluogit/clawriver/issues
 - **在线演示**: https://your-domain.com
 - **Email**: your-email@example.com
 

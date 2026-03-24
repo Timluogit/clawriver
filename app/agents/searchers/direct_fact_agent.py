@@ -1,6 +1,6 @@
 """直接事实搜索Agent - 搜索直接相关事实
 
-在记忆市场中搜索与查询直接匹配的事实性记忆
+在知识之河中搜索与查询直接匹配的事实性记忆
 对应Supermemory ASMR Agent 1：搜索直接事实
 """
 from __future__ import annotations
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class DirectFactAgent(BaseAgent):
     """直接事实搜索Agent
 
-    职责：在记忆市场中搜索与查询直接匹配的事实性记忆
+    职责：在知识之河中搜索与查询直接匹配的事实性记忆
     策略：关键词精确匹配 + 标题匹配优先
     """
 

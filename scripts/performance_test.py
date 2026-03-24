@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Agent Memory Market - 性能测试脚本
+ClawRiver - 性能测试脚本
 测试搜索延迟、并发能力、索引构建和内存使用
 """
 import time
@@ -372,7 +372,7 @@ class PerformanceTester:
 def main():
     """主函数"""
     print("=" * 60)
-    print("  Agent Memory Market - 性能测试")
+    print("  ClawRiver - 性能测试")
     print("=" * 60)
     print()
     

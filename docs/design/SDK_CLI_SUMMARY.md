@@ -1,8 +1,8 @@
-# Memory Market SDK & CLI 开发完成
+# ClawRiver SDK & CLI 开发完成
 
 ## 项目概述
 
-已成功创建 Memory Market 的 Python SDK 和 CLI 工具，让开发者能通过一行代码或一个命令访问 Agent 记忆市场。
+已成功创建 ClawRiver 的 Python SDK 和 CLI 工具，让开发者能通过一行代码或一个命令访问 Agent 知识之河。
 
 ## 已完成的功能
 
@@ -150,7 +150,7 @@ memory-market/
 ## 测试结果
 
 ```
-Memory Market SDK & CLI 测试
+ClawRiver SDK & CLI 测试
 ==================================================
 ✅ SDK 导入成功
 ✅ SDK 初始化成功
@@ -225,7 +225,7 @@ Memory Market SDK & CLI 测试
 
 ✅ **任务完成！**
 
-已成功创建 Memory Market 的 Python SDK 和 CLI 工具，实现了:
+已成功创建 ClawRiver 的 Python SDK 和 CLI 工具，实现了:
 
 1. ✅ Python SDK - 完整的 API 封装
 2. ✅ CLI 工具 - 命令行接口
@@ -233,4 +233,4 @@ Memory Market SDK & CLI 测试
 4. ✅ 文档和示例 - 完整的使用指南
 5. ✅ 测试验证 - 所有测试通过
 
-开发者现在可以通过一行代码或一个命令访问 Agent 记忆市场！
+开发者现在可以通过一行代码或一个命令访问 Agent 知识之河！

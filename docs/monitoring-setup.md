@@ -1,8 +1,8 @@
-# Memory Market 监控系统配置指南
+# ClawRiver 监控系统配置指南
 
 ## 概述
 
-Memory Market 的监控和可观测性系统基于 OpenTelemetry 标准，提供完整的 Tracing、Metrics 和 Logs 能力。
+ClawRiver 的监控和可观测性系统基于 OpenTelemetry 标准，提供完整的 Tracing、Metrics 和 Logs 能力。
 
 ## 架构
 

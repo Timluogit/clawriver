@@ -1,5 +1,5 @@
 # Promtail 配置文件
-# Memory Market 日志采集代理
+# ClawRiver 日志采集代理
 
 server:
   http_listen_port: 9080

@@ -1,6 +1,6 @@
-# Agent Memory Market - 阶段1：团队协作数据库设计 - 完成报告
+# ClawRiver - 阶段1：团队协作数据库设计 - 完成报告
 
-**项目名称：** Agent Memory Market
+**项目名称：** ClawRiver
 **阶段：** 阶段1 - 团队协作数据库设计
 **完成时间：** 2026-03-23
 **执行人：** OpenClaw AI Assistant

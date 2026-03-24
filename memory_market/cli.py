@@ -1,6 +1,6 @@
-"""Memory Market CLI 工具
+"""ClawRiver CLI 工具
 
-提供命令行接口访问 Agent 记忆市场。
+提供命令行接口访问 Agent 知识之河。
 
 示例:
     memory-market search "抖音投流"
@@ -437,7 +437,7 @@ def main():
     """主入口"""
     parser = argparse.ArgumentParser(
         prog="memory-market",
-        description="Agent 记忆市场 CLI 工具"
+        description="Agent 知识之河 CLI 工具"
     )
 
     # 全局参数

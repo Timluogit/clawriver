@@ -1,6 +1,6 @@
-# Agent Memory Market - 第四轮竞品对标分析报告
+# ClawRiver - 第四轮竞品对标分析报告
 
-**项目名称**: Agent Memory Market（Agent记忆市场）
+**项目名称**: ClawRiver（Agent知识之河）
 **报告日期**: 2026-03-23
 **分析阶段**: 第四轮（Supermemory ASMR系统深度对标）
 **项目状态**: 95% 完成度，470+ 记忆，43 分类
@@ -15,19 +15,19 @@
 
 ## 📋 执行摘要
 
-本报告基于Supermemory发布的ASMR系统进行第四轮深度对标。分析发现，Supermemory在准确率（99% vs 85%）、架构创新（内存+多Agent vs Qdrant+BGE）、用户画像（50ms vs 无）、外部数据源集成（6+ vs 0）、MCP协议（MCP服务器 vs MCP工具）等方面展现出显著优势。Supermemory抛弃向量数据库的架构创新标志着记忆系统的新范式，多Agent并行推理实现了更高的准确率和实时性。Memory Market虽然在企业级功能、监控、审计、团队协作方面表现良好，但在核心技术架构、智能化功能、生态完整性方面存在明显差距。
+本报告基于Supermemory发布的ASMR系统进行第四轮深度对标。分析发现，Supermemory在准确率（99% vs 85%）、架构创新（内存+多Agent vs Qdrant+BGE）、用户画像（50ms vs 无）、外部数据源集成（6+ vs 0）、MCP协议（MCP服务器 vs MCP工具）等方面展现出显著优势。Supermemory抛弃向量数据库的架构创新标志着记忆系统的新范式，多Agent并行推理实现了更高的准确率和实时性。ClawRiver虽然在企业级功能、监控、审计、团队协作方面表现良好，但在核心技术架构、智能化功能、生态完整性方面存在明显差距。
 
 ### 关键发现（Top 5 Insights）
 
 1. **Supermemory架构创新 - 抛弃向量数据库** - Supermemory完全抛弃向量数据库，使用多Agent并行推理架构，在内存中运行，实现了99%的准确率和50ms的用户画像响应时间，标志着记忆系统的新范式
 
-2. **多Agent并行推理成为新标准** - Supermemory使用3个观察者Agent并行读取数据、3个搜索Agent主动推理检索，相比Memory Market的单一向量搜索，准确率从85%提升到99%（+14个百分点）
+2. **多Agent并行推理成为新标准** - Supermemory使用3个观察者Agent并行读取数据、3个搜索Agent主动推理检索，相比ClawRiver的单一向量搜索，准确率从85%提升到99%（+14个百分点）
 
-3. **自动化用户画像是关键竞争力** - Supermemory提供自动化用户画像（静态事实+动态上下文），50ms响应时间，而Memory Market完全没有用户画像系统，这是P3优先级差距
+3. **自动化用户画像是关键竞争力** - Supermemory提供自动化用户画像（静态事实+动态上下文），50ms响应时间，而ClawRiver完全没有用户画像系统，这是P3优先级差距
 
-4. **外部数据源集成是生态护城河** - Supermemory集成6+外部数据源（Google Drive、Gmail、Notion、OneDrive、GitHub等），通过Webhook实时同步，而Memory Market没有外部数据源集成，限制了应用场景
+4. **外部数据源集成是生态护城河** - Supermemory集成6+外部数据源（Google Drive、Gmail、Notion、OneDrive、GitHub等），通过Webhook实时同步，而ClawRiver没有外部数据源集成，限制了应用场景
 
-5. **MCP服务器 > MCP工具** - Supermemory提供MCP服务器（标准化协议），Memory Market提供MCP工具（34个），MCP服务器支持SDK集成（Vercel AI SDK、LangChain等），生态影响力更大
+5. **MCP服务器 > MCP工具** - Supermemory提供MCP服务器（标准化协议），ClawRiver提供MCP工具（34个），MCP服务器支持SDK集成（Vercel AI SDK、LangChain等），生态影响力更大
 
 ### 与第三轮对比
 
@@ -280,7 +280,7 @@ memory_index: {
 | 系统 | 用户画像延迟 | 更新频率 |
 |------|------------|---------|
 | Supermemory | 50ms | 实时 |
-| Memory Market | N/A（无用户画像） | N/A |
+| ClawRiver | N/A（无用户画像） | N/A |
 | 传统推荐系统 | 200-500ms | 批处理（每小时/每天） |
 
 #### 自动化机制
@@ -441,13 +441,13 @@ const memories = await client.search({
 
 ---
 
-## 2. Memory Market vs Supermemory深度对比
+## 2. ClawRiver vs Supermemory深度对比
 
 ### 2.1 核心技术对比
 
 #### 架构对比
 
-| 维度 | Memory Market | Supermemory | 差距 |
+| 维度 | ClawRiver | Supermemory | 差距 |
 |------|--------------|-------------|------|
 | 搜索架构 | Qdrant向量数据库 + BGE嵌入 | 内存 + 多Agent并行推理 | 🔴 明显 |
 | 推理方式 | 被动向量匹配 | 主动推理检索 | 🔴 明显 |
@@ -458,7 +458,7 @@ const memories = await client.search({
 
 #### 准确率对比
 
-| 测试集 | Memory Market | Supermemory | 差距 |
+| 测试集 | ClawRiver | Supermemory | 差距 |
 |--------|--------------|-------------|------|
 | 事实检索 | 88% | 99% | 🔴 11% |
 | 上下文检索 | 82% | 99% | 🔴 17% |
@@ -466,14 +466,14 @@ const memories = await client.search({
 | 综合准确率 | 85% | 99% | 🔴 14% |
 
 **差距原因**:
-1. **多维度检索** - Supermemory使用6大维度，Memory Market只有向量相似度
-2. **主动推理** - Supermemory理解查询意图，Memory Market只是向量匹配
-3. **用户画像** - Supermemory基于用户画像个性化检索，Memory Market没有
-4. **结果融合** - Supermemory融合多个Agent结果，Memory Market单一结果
+1. **多维度检索** - Supermemory使用6大维度，ClawRiver只有向量相似度
+2. **主动推理** - Supermemory理解查询意图，ClawRiver只是向量匹配
+3. **用户画像** - Supermemory基于用户画像个性化检索，ClawRiver没有
+4. **结果融合** - Supermemory融合多个Agent结果，ClawRiver单一结果
 
 #### 性能对比
 
-| 指标 | Memory Market | Supermemory | 差距 |
+| 指标 | ClawRiver | Supermemory | 差距 |
 |------|--------------|-------------|------|
 | 搜索延迟（P50） | 300ms | 20ms | 🔴 15x |
 | 搜索延迟（P95） | 500ms | 50ms | 🔴 10x |
@@ -485,7 +485,7 @@ const memories = await client.search({
 
 #### 用户画像
 
-| 功能 | Memory Market | Supermemory | 差距 |
+| 功能 | ClawRiver | Supermemory | 差距 |
 |------|--------------|-------------|------|
 | 静态事实 | ❌ | ✅ | 🔴 明显 |
 | 动态上下文 | ❌ | ✅ | 🔴 明显 |
@@ -494,13 +494,13 @@ const memories = await client.search({
 | API接口 | ❌ | ✅ | 🔴 明显 |
 
 **差距分析**:
-- Memory Market完全没有用户画像系统
+- ClawRiver完全没有用户画像系统
 - Supermemory的50ms用户画像API是关键竞争力
 - 用户画像是后续智能化功能的基础（个性化搜索、推荐等）
 
 #### 外部数据源集成
 
-| 数据源 | Memory Market | Supermemory | 差距 |
+| 数据源 | ClawRiver | Supermemory | 差距 |
 |--------|--------------|-------------|------|
 | Google Drive | ❌ | ✅ | 🔴 明显 |
 | Gmail | ❌ | ✅ | 🔴 明显 |
@@ -510,13 +510,13 @@ const memories = await client.search({
 | Webhook实时同步 | ❌ | ✅ | 🔴 明显 |
 
 **差距分析**:
-- Memory Market没有任何外部数据源集成
+- ClawRiver没有任何外部数据源集成
 - Supermemory集成6+外部数据源，实时同步
 - 外部数据源集成扩大了应用场景和用户群
 
 #### MCP协议
 
-| 特性 | Memory Market | Supermemory | 差距 |
+| 特性 | ClawRiver | Supermemory | 差距 |
 |------|--------------|-------------|------|
 | MCP工具数量 | 34个 | MCP服务器 | 🟡 中等 |
 | MCP服务器 | ❌ | ✅ | 🔴 明显 |
@@ -525,13 +525,13 @@ const memories = await client.search({
 | 标准化协议 | ❌ | ✅ | 🔴 明显 |
 
 **差距分析**:
-- Memory Market提供MCP工具，Supermemory提供MCP服务器
+- ClawRiver提供MCP工具，Supermemory提供MCP服务器
 - MCP服务器支持SDK集成，生态影响力更大
 - Supermemory的内置插件（Claude Code、OpenCode、OpenClaw）提升了易用性
 
 #### 记忆管理
 
-| 功能 | Memory Market | Supermemory | 差距 |
+| 功能 | ClawRiver | Supermemory | 差距 |
 |------|--------------|-------------|------|
 | RAG | ✅ | ❌ | -（不同架构） |
 | 团队协作 | ✅ | ❌ | 🟢 优势 |
@@ -540,7 +540,7 @@ const memories = await client.search({
 | 真正记忆 | ❌ | ✅ | 🔴 明显 |
 
 **差距分析**:
-- Memory Market的团队协作和市场交易是独特优势
+- ClawRiver的团队协作和市场交易是独特优势
 - Supermemory的自动遗忘和真正记忆机制更符合人类记忆特点
 - 记忆管理方式不同，各有优劣
 
@@ -548,7 +548,7 @@ const memories = await client.search({
 
 #### 开发者生态
 
-| 指标 | Memory Market | Supermemory | 差距 |
+| 指标 | ClawRiver | Supermemory | 差距 |
 |------|--------------|-------------|------|
 | SDK | ❌ | ✅（5个） | 🔴 明显 |
 | 文档质量 | ✅ 优秀 | ✅ 优秀 | 🟢 相当 |
@@ -557,11 +557,11 @@ const memories = await client.search({
 
 **差距分析**:
 - Supermemory提供5个SDK，降低了开发者集成门槛
-- Memory Market没有SDK，开发者需要自己实现API调用
+- ClawRiver没有SDK，开发者需要自己实现API调用
 
 #### 用户生态
 
-| 指标 | Memory Market | Supermemory | 差距 |
+| 指标 | ClawRiver | Supermemory | 差距 |
 |------|--------------|-------------|------|
 | 免费策略 | ✅ 永久免费 | ❌ 免费额度 | 🟢 优势 |
 | 团队协作 | ✅ 完整 | ❌ 无 | 🟢 优势 |
@@ -569,7 +569,7 @@ const memories = await client.search({
 | 多租户 | ❌ | ❌ | 🟢 相同 |
 
 **差距分析**:
-- Memory Market的永久免费、团队协作、市场交易是用户生态优势
+- ClawRiver的永久免费、团队协作、市场交易是用户生态优势
 - Supermemory专注企业用户，提供付费服务
 
 ---
@@ -578,7 +578,7 @@ const memories = await client.search({
 
 ### 3.1 多Agent并行推理架构（🔴 明显差距 - P3优先级）
 
-**当前状态**: Memory Market使用单一向量搜索（Qdrant + BGE），没有多Agent并行推理。
+**当前状态**: ClawRiver使用单一向量搜索（Qdrant + BGE），没有多Agent并行推理。
 
 **竞品最佳实践**:
 - **Supermemory**: 3个观察者Agent + 3个搜索Agent，并行工作，99%准确率
@@ -597,7 +597,7 @@ const memories = await client.search({
 
 ### 3.2 自动化用户画像系统（🔴 明显差距 - P3优先级）
 
-**当前状态**: Memory Market完全没有用户画像系统。
+**当前状态**: ClawRiver完全没有用户画像系统。
 
 **竞品最佳实践**:
 - **Supermemory**: 静态事实 + 动态上下文，50ms API响应
@@ -616,7 +616,7 @@ const memories = await client.search({
 
 ### 3.3 外部数据源集成（🔴 明显差距 - P3优先级）
 
-**当前状态**: Memory Market没有任何外部数据源集成。
+**当前状态**: ClawRiver没有任何外部数据源集成。
 
 **竞品最佳实践**:
 - **Supermemory**: 6+外部数据源（Google Drive、Gmail、Notion等）
@@ -635,7 +635,7 @@ const memories = await client.search({
 
 ### 3.4 MCP服务器（🟡 中等差距 - P3优先级）
 
-**当前状态**: Memory Market提供34个MCP工具，没有MCP服务器。
+**当前状态**: ClawRiver提供34个MCP工具，没有MCP服务器。
 
 **竞品最佳实践**:
 - **Supermemory**: MCP服务器（标准化协议）
@@ -654,7 +654,7 @@ const memories = await client.search({
 
 ### 3.5 真正记忆机制（自动遗忘）（🟡 中等差距 - P3优先级）
 
-**当前状态**: Memory Market使用RAG，没有自动遗忘机制。
+**当前状态**: ClawRiver使用RAG，没有自动遗忘机制。
 
 **竞品最佳实践**:
 - **Supermemory**: 真正记忆机制，自动遗忘
@@ -723,10 +723,10 @@ const memories = await client.search({
 
 | 维度 | 第三轮得分 | 第四轮得分 | 变化 | 原因 |
 |------|-----------|-----------|------|------|
-| 准确率 | 85/100 | 70/100 | -15 | Supermemory 99% vs Memory Market 85% |
+| 准确率 | 85/100 | 70/100 | -15 | Supermemory 99% vs ClawRiver 85% |
 | 架构 | 75/100 | 60/100 | -15 | 内存+多Agent vs Qdrant+BGE |
 | 用户画像 | 0/100 | 0/100 | 0 | 两者都没有评估 |
-| 外部数据源 | 0/100 | 0/100 | 0 | Memory Market 0 vs Supermemory 90/100 |
+| 外部数据源 | 0/100 | 0/100 | 0 | ClawRiver 0 vs Supermemory 90/100 |
 | MCP协议 | 75/100 | 70/100 | -5 | MCP服务器 vs MCP工具 |
 | 记忆管理 | 80/100 | 80/100 | 0 | RAG+团队 vs 真正记忆 |
 | 企业级功能 | 70/100 | 70/100 | 0 | 无变化 |
@@ -768,23 +768,23 @@ MCP生态:  ██████████████████████�
 | AWS Bedrock Agent | 1 | 2 | ↓1 | 被Supermemory超越 |
 | LangSmith | 2 | 3 | ↓1 | 被Supermemory超越 |
 | Weights & Biases | 3 | 4 | ↓1 | 被Supermemory超越 |
-| **Memory Market** | 3 | **5** | ↓2 | 被Supermemory超越 |
+| **ClawRiver** | 3 | **5** | ↓2 | 被Supermemory超越 |
 | MLflow | 4 | 6 | ↓2 | 被Supermemory超越 |
 | LlamaIndex Vector Store | 6 | 7 | ↓1 | 被Supermemory超越 |
 | Pinecone | 7 | 8 | ↓1 | 被Supermemory超越 |
 
-**排名下降**: Memory Market从第3名下降到第5名（被Supermemory、MLflow超越）
+**排名下降**: ClawRiver从第3名下降到第5名（被Supermemory、MLflow超越）
 
 ### 5.3 竞争力总结
 
-**Memory Market的优势**:
+**ClawRiver的优势**:
 1. **企业级功能完整** - 监控、审计、团队协作、市场交易
 2. **永久免费** - 相比竞品的付费模式，永久免费吸引用户
 3. **中文优化** - BGE中文模型，中文内容搜索质量高
 4. **团队协作** - 完整的团队管理、成员管理、积分管理
-5. **市场交易** - 记忆市场，用户可以购买和出售记忆
+5. **市场交易** - 知识之河，用户可以购买和出售记忆
 
-**Memory Market的劣势**:
+**ClawRiver的劣势**:
 1. **准确率差距** - 85% vs Supermemory 99%（-14个百分点）
 2. **架构差距** - Qdrant+BGE vs 内存+多Agent
 3. **用户画像缺失** - 完全没有用户画像系统
@@ -800,9 +800,9 @@ MCP生态:  ██████████████████████�
 
 **Supermemory的劣势**:
 1. **团队协作缺失** - 没有团队管理功能
-2. **市场交易缺失** - 没有记忆市场
+2. **市场交易缺失** - 没有知识之河
 3. **付费模式** - 免费额度限制，需要付费
-4. **中文支持** - 中文优化不如Memory Market
+4. **中文支持** - 中文优化不如ClawRiver
 
 ---
 
@@ -865,15 +865,15 @@ MCP生态:  ██████████████████████�
 
 ### 6.4 差异化策略
 
-**Memory Market的独特优势**:
+**ClawRiver的独特优势**:
 1. **永久免费** - 继续保持永久免费策略，吸引用户
 2. **团队协作** - 深化团队协作功能，企业市场
-3. **市场交易** - 扩大记忆市场，创作者经济
+3. **市场交易** - 扩大知识之河，创作者经济
 4. **中文优化** - 持续强化中文内容，中国市场
 
 **差异化定位**:
 - Supermemory: 企业级AI记忆系统（付费）
-- Memory Market: 开源记忆市场（永久免费，团队协作，市场交易）
+- ClawRiver: 开源知识之河（永久免费，团队协作，市场交易）
 
 ---
 
@@ -890,7 +890,7 @@ MCP生态:  ██████████████████████�
 
 1. **Supermemory快速迭代** - 可能快速扩大优势
 2. **竞品抄袭** - 其他竞品可能快速模仿Supermemory
-3. **用户迁移成本** - 用户从Memory Market迁移到Supermemory的成本
+3. **用户迁移成本** - 用户从ClawRiver迁移到Supermemory的成本
 4. **免费模式可持续性** - 永久免费模式的商业可持续性
 
 ### 7.3 资源风险
@@ -909,15 +909,15 @@ MCP生态:  ██████████████████████�
 
 2. **多Agent并行推理成为新的竞争力标准** - 3个观察者Agent + 3个搜索Agent，并行工作，相比单一向量搜索，准确率提升14个百分点，性能提升10倍
 
-3. **自动化用户画像是关键竞争力** - Supermemory提供静态事实+动态上下文，50ms API响应，Memory Market完全没有用户画像系统，这是P3优先级差距
+3. **自动化用户画像是关键竞争力** - Supermemory提供静态事实+动态上下文，50ms API响应，ClawRiver完全没有用户画像系统，这是P3优先级差距
 
-4. **外部数据源集成是生态护城河** - Supermemory集成6+外部数据源，实时同步，扩大了应用场景和用户群，Memory Market没有外部数据源集成
+4. **外部数据源集成是生态护城河** - Supermemory集成6+外部数据源，实时同步，扩大了应用场景和用户群，ClawRiver没有外部数据源集成
 
-5. **MCP服务器 > MCP工具** - Supermemory提供MCP服务器和SDK集成，生态影响力更大，Memory Market的34个MCP工具虽然数量多，但生态影响力有限
+5. **MCP服务器 > MCP工具** - Supermemory提供MCP服务器和SDK集成，生态影响力更大，ClawRiver的34个MCP工具虽然数量多，但生态影响力有限
 
-6. **Memory Market的综合竞争力下降** - 从第三轮的75分下降到第四轮的70分，排名从第3下降到第5，被Supermemory和MLflow超越
+6. **ClawRiver的综合竞争力下降** - 从第三轮的75分下降到第四轮的70分，排名从第3下降到第5，被Supermemory和MLflow超越
 
-7. **Memory Market仍有独特优势** - 企业级功能完整（监控、审计、团队协作、市场交易）、永久免费、中文优化、团队协作是独特优势
+7. **ClawRiver仍有独特优势** - 企业级功能完整（监控、审计、团队协作、市场交易）、永久免费、中文优化、团队协作是独特优势
 
 ### 8.2 战略建议
 

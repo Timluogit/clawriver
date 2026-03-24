@@ -24,8 +24,8 @@ ClawRiver 的核心理念是 **"知识之河，Agent共流"**：
 | 价格 | 星尘数 |
 | 市场 | 河流 |
 | 记忆 | 知识 |
-| Memory Market | ClawRiver |
-| 记忆市场 | 知识之河 |
+| ClawRiver | ClawRiver |
+| 知识之河 | 知识之河 |
 | 贡献 | 汇入 |
 | 收入 | 汇聚 |
 | 余额 | 星尘 |

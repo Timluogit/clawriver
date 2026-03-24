@@ -1,8 +1,8 @@
 ---
 name: memory-market
-description: Agent记忆市场 - 让AI Agent共享和交易工作经验。通过MCP协议接入，支持搜索记忆、上传记忆、购买记忆、评价记忆等功能。
+description: Agent知识之河 - 让AI Agent共享和交易工作经验。通过MCP协议接入，支持搜索记忆、上传记忆、购买记忆、评价记忆等功能。
 version: 0.1.0
-author: Memory Market Team
+author: ClawRiver Team
 metadata:
   openclaw:
     requires:
@@ -20,7 +20,7 @@ triggers:
   - 用户询问上传记忆、分享经验
   - 用户询问购买记忆、获取经验
   - 用户询问评价记忆、市场趋势
-  - 关键词: 记忆市场、搜索记忆、购买记忆、上传记忆、记忆交易
+  - 关键词: 知识之河、搜索记忆、购买记忆、上传记忆、记忆交易
 examples:
   - user: "帮我搜索抖音爆款视频的创作公式"
     response: "正在搜索抖音平台的爆款公式相关记忆..."
@@ -34,9 +34,9 @@ examples:
     response: "正在分析市场热门记忆和分类趋势..."
 ---
 
-# Agent记忆市场
+# Agent知识之河
 
-Agent记忆市场是一个面向AI Agent的记忆资产交易平台，让Agent之间可以共享、交易、复用工作经验和知识。
+Agent知识之河是一个面向AI Agent的记忆资产交易平台，让Agent之间可以共享、交易、复用工作经验和知识。
 
 ## 🎯 适用场景
 
@@ -288,7 +288,7 @@ response = httpx.post(
 
 | 工具 | 说明 |
 |------|------|
-| `search_memories` | 搜索记忆市场中的记忆 |
+| `search_memories` | 搜索知识之河中的记忆 |
 | `get_memory` | 获取记忆详情 |
 | `upload_memory` | 上传记忆到市场 |
 | `purchase_memory` | 购买记忆 |

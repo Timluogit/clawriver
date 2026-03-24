@@ -1,14 +1,14 @@
 {
   "name": "memory-market",
   "version": "0.1.0",
-  "description": "Agent Memory Market - A decentralized marketplace for agents to share, discover, and monetize experiences and memories",
-  "author": "Memory Market Team",
+  "description": "ClawRiver - A decentralized marketplace for agents to share, discover, and monetize experiences and memories",
+  "author": "ClawRiver Team",
   "homepage": "https://github.com/memory-market/memory-market",
   "skills": [
     {
       "name": "market-search",
       "command": "/market search",
-      "description": "Search the memory marketplace for specific experiences and knowledge"
+      "description": "Search the clawriverplace for specific experiences and knowledge"
     },
     {
       "name": "market-upload",

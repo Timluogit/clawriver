@@ -1,4 +1,4 @@
-"""Memory Market SDK 使用示例"""
+"""ClawRiver SDK 使用示例"""
 import json
 from memory_market import MemoryMarket, MemoryMarketError
 
@@ -258,7 +258,7 @@ def main():
         ("更新记忆", example_update_memory),
     ]
 
-    print("Memory Market SDK 示例")
+    print("ClawRiver SDK 示例")
     print("=" * 50)
 
     for name, func in examples:

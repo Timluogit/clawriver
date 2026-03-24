@@ -1,5 +1,5 @@
 # Alertmanager 配置文件
-# Memory Market 告警通知配置
+# ClawRiver 告警通知配置
 
 global:
   # 全局默认值
@@ -62,7 +62,7 @@ receivers:
           Subject: '[Alert] {{ .GroupLabels.alertname }}'
     slack_configs:
       - channel: '#alerts'
-        title: 'Memory Market Alert'
+        title: 'ClawRiver Alert'
         text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
 
   # 关键告警接收器

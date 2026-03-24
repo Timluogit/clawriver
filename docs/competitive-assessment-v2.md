@@ -1,6 +1,6 @@
-# Agent Memory Market - 竞争力评估v2
+# ClawRiver - 竞争力评估v2
 
-**项目名称**: Agent Memory Market（Agent记忆市场）
+**项目名称**: ClawRiver（Agent知识之河）
 **版本**: 2.0 竞争力评估
 **更新日期**: 2026-03-23
 **基于**: 第四轮竞品对标分析（Supermemory ASMR系统）
@@ -9,7 +9,7 @@
 
 ## 📋 执行摘要
 
-本评估报告基于第四轮竞品对标分析，对Memory Market的综合竞争力进行评估。Supermemory发布ASMR系统（99%准确率，多Agent并行推理），Memory Market在准确率、架构、用户画像、外部数据源、MCP协议等方面存在明显差距，综合得分从第三轮的75下降到第四轮的70（-5分，-6.7%），排名从第3下降到第5。Memory Market虽然在企业级功能、监控、审计、团队协作、市场交易方面表现良好，但在核心技术架构、智能化功能、生态完整性方面存在差距。本评估提供了详细的得分分析、排名变化、差距识别和改进建议。
+本评估报告基于第四轮竞品对标分析，对ClawRiver的综合竞争力进行评估。Supermemory发布ASMR系统（99%准确率，多Agent并行推理），ClawRiver在准确率、架构、用户画像、外部数据源、MCP协议等方面存在明显差距，综合得分从第三轮的75下降到第四轮的70（-5分，-6.7%），排名从第3下降到第5。ClawRiver虽然在企业级功能、监控、审计、团队协作、市场交易方面表现良好，但在核心技术架构、智能化功能、生态完整性方面存在差距。本评估提供了详细的得分分析、排名变化、差距识别和改进建议。
 
 ---
 
@@ -73,16 +73,16 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 | AWS Bedrock Agent | 1 | 1 | 1 | 2 | ↓1 | 被Supermemory超越 |
 | LangSmith | 2 | 2 | 2 | 3 | ↓1 | 被Supermemory超越 |
 | Weights & Biases | 3 | 3 | 3 | 4 | ↓1 | 被Supermemory超越 |
-| **Memory Market** | 8 | 5 | 3 | **5** | ↓2 | 被Supermemory、MLflow超越 |
+| **ClawRiver** | 8 | 5 | 3 | **5** | ↓2 | 被Supermemory、MLflow超越 |
 | MLflow | 4 | 4 | 4 | 6 | ↓2 | 被Supermemory、MLflow超越 |
 | LlamaIndex Vector Store | 5 | 6 | 6 | 7 | ↓1 | 被Supermemory超越 |
 | Pinecone | 6 | 7 | 7 | 8 | ↓1 | 被Supermemory超越 |
 | Continue.dev | 7 | 8 | 8 | 9 | ↓1 | 被Supermemory超越 |
 
 **排名变化分析**:
-- **第三轮→第四轮**: Memory Market从第3下降到第5（下降2位）
-- **超越者**: Supermemory（第1）、MLflow（第6→4，超越Memory Market）
-- **被超越者**: Memory Market被Supermemory和MLflow超越
+- **第三轮→第四轮**: ClawRiver从第3下降到第5（下降2位）
+- **超越者**: Supermemory（第1）、MLflow（第6→4，超越ClawRiver）
+- **被超越者**: ClawRiver被Supermemory和MLflow超越
 
 ---
 
@@ -95,7 +95,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 **变化**: -15%
 
 **评分依据**:
-- **Memory Market**: 85%（基于Qdrant + BGE的预估）
+- **ClawRiver**: 85%（基于Qdrant + BGE的预估）
 - **Supermemory**: 99%（LongMemEval）
 - **行业最佳**: 99%（Supermemory）
 - **差距**: -14个百分点
@@ -117,7 +117,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 **变化**: -15%
 
 **评分依据**:
-- **Memory Market**: Qdrant + BGE（向量数据库架构）
+- **ClawRiver**: Qdrant + BGE（向量数据库架构）
 - **Supermemory**: 内存 + 多Agent并行推理（新范式）
 - **行业最佳**: 内存 + 多Agent（Supermemory）
 - **差距**: 抛弃向量数据库的架构创新
@@ -139,7 +139,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 **变化**: 0%
 
 **评分依据**:
-- **Memory Market**: 完全没有用户画像系统
+- **ClawRiver**: 完全没有用户画像系统
 - **Supermemory**: 静态事实 + 动态上下文，50ms API
 - **行业最佳**: 自动化用户画像（Supermemory）
 - **差距**: -100%（完全没有）
@@ -161,7 +161,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 **变化**: 0%
 
 **评分依据**:
-- **Memory Market**: 没有任何外部数据源集成
+- **ClawRiver**: 没有任何外部数据源集成
 - **Supermemory**: 6+外部数据源（Google Drive、Gmail、Notion等）
 - **行业最佳**: 6+外部数据源集成（Supermemory）
 - **差距**: -100%（完全没有）
@@ -183,7 +183,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 **变化**: -5%
 
 **评分依据**:
-- **Memory Market**: 34个MCP工具
+- **ClawRiver**: 34个MCP工具
 - **Supermemory**: MCP服务器（标准化协议）
 - **行业最佳**: MCP服务器（Supermemory）
 - **差距**: MCP工具 vs MCP服务器
@@ -205,7 +205,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 **变化**: 0%
 
 **评分依据**:
-- **Memory Market**: RAG + 团队协作 + 市场交易
+- **ClawRiver**: RAG + 团队协作 + 市场交易
 - **Supermemory**: 真正记忆机制（自动遗忘）
 - **行业最佳**: RAG + 团队协作（各有优劣）
 - **差距**: 真正记忆机制 vs RAG
@@ -245,7 +245,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 
 ### 3.1 优势分析
 
-**Memory Market的核心优势**:
+**ClawRiver的核心优势**:
 
 1. **企业级功能完整** (85/100)
    - 监控和可观测性（OpenTelemetry + Jaeger + Prometheus + Grafana + Alertmanager + Loki）
@@ -285,7 +285,7 @@ MCP生态:  75% → 70% (↓5%)  ← Supermemory MCP服务器影响
 
 ### 3.2 劣势分析
 
-**Memory Market的核心劣势**:
+**ClawRiver的核心劣势**:
 
 1. **准确率差距** (70/100)
    - 85% vs Supermemory 99%（-14个百分点）
@@ -326,10 +326,10 @@ MCP协议:    ██████████████████████
 
 ### 3.3 差异化定位
 
-**Memory Market的独特定位**:
+**ClawRiver的独特定位**:
 - **永久免费** - 相比竞品的付费模式
 - **团队协作** - 完整的团队管理、成员管理、积分管理
-- **市场交易** - 记忆市场，购买和出售记忆
+- **市场交易** - 知识之河，购买和出售记忆
 - **中文优化** - BGE中文模型，中文内容搜索质量高
 
 **Supermemory的独特定位**:
@@ -339,7 +339,7 @@ MCP协议:    ██████████████████████
 - **外部数据源集成** - 6+数据源，实时同步
 
 **差异化策略**:
-- **Memory Market**: 开源记忆市场（永久免费，团队协作，市场交易）
+- **ClawRiver**: 开源知识之河（永久免费，团队协作，市场交易）
 - **Supermemory**: 企业级AI记忆系统（付费，99%准确率，外部数据源）
 
 ---
@@ -452,11 +452,11 @@ MCP协议:    ██████████████████████
 
 1. **Supermemory ASMR系统改变了竞争格局** - 抛弃向量数据库，使用多Agent并行推理，99%准确率，50ms超低延迟，标志着记忆系统的新范式
 
-2. **Memory Market综合竞争力下降** - 从第三轮的75下降到第四轮的70（-5分，-6.7%），排名从第3下降到第5
+2. **ClawRiver综合竞争力下降** - 从第三轮的75下降到第四轮的70（-5分，-6.7%），排名从第3下降到第5
 
 3. **5个新差距被识别** - 多Agent并行推理、自动化用户画像、外部数据源集成、MCP服务器、真正记忆机制
 
-4. **Memory Market仍有独特优势** - 企业级功能完整、永久免费、团队协作、市场交易、中文优化
+4. **ClawRiver仍有独特优势** - 企业级功能完整、永久免费、团队协作、市场交易、中文优化
 
 5. **改进路线清晰** - P3任务（用户画像、外部数据源、多Agent架构、MCP服务器、真正记忆）可补齐关键差距
 
@@ -470,7 +470,7 @@ MCP协议:    ██████████████████████
 | 外部数据源 | 0 | 85 (Supermemory) | 🔴 -85 | P3-2 | +70% |
 | MCP协议 | 70 | 90 (Supermemory) | 🟡 -20 | P3-4 | +15% |
 | 记忆管理 | 80 | 90 (Supermemory) | 🟢 -10 | P3-5 | +10% |
-| 团队协作 | 90 | 90 (Memory Market) | 🟢 0 | - | - |
+| 团队协作 | 90 | 90 (ClawRiver) | 🟢 0 | - | - |
 | 监控可观测性 | 85 | 90 (LangSmith/W&B) | 🟡 -5 | - | +5% |
 | 审计合规 | 62 | 90 (LangSmith) | 🟡 -28 | P2 | +28% |
 | 企业功能 | 70 | 90 (AWS Bedrock) | 🟡 -20 | P2 | +20% |
@@ -498,13 +498,13 @@ MCP协议:    ██████████████████████
 
 ## 6. 结论
 
-Memory Market在第四轮对标中发现Supermemory发布ASMR系统（99%准确率，多Agent并行推理），在准确率、架构、用户画像、外部数据源、MCP协议等方面存在明显差距，综合得分从75下降到70，排名从第3下降到第5。
+ClawRiver在第四轮对标中发现Supermemory发布ASMR系统（99%准确率，多Agent并行推理），在准确率、架构、用户画像、外部数据源、MCP协议等方面存在明显差距，综合得分从75下降到70，排名从第3下降到第5。
 
-Memory Market虽然在企业级功能、监控、审计、团队协作、市场交易方面表现良好，永久免费、中文优化是独特优势，但在核心技术架构、智能化功能、生态完整性方面存在差距。
+ClawRiver虽然在企业级功能、监控、审计、团队协作、市场交易方面表现良好，永久免费、中文优化是独特优势，但在核心技术架构、智能化功能、生态完整性方面存在差距。
 
 改进路线清晰：P3.1用户画像（8-12周）、P3.2外部数据源（10-14周）、P3.3多Agent架构（12-16周）、P3.4 MCP服务器（6-8周）、P3.5真正记忆（4-6周）可补齐关键差距。预计完成P3任务后，综合得分可提升到92，排名进入前3。
 
-差异化定位：Memory Market - 开源记忆市场（永久免费，团队协作，市场交易）vs Supermemory - 企业级AI记忆系统（付费，99%准确率，外部数据源）。
+差异化定位：ClawRiver - 开源知识之河（永久免费，团队协作，市场交易）vs Supermemory - 企业级AI记忆系统（付费，99%准确率，外部数据源）。
 
 ---
 

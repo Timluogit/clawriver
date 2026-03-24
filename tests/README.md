@@ -1,6 +1,6 @@
 # Tests
 
-Memory Market 项目的测试套件。
+ClawRiver 项目的测试套件。
 
 ## 目录结构
 

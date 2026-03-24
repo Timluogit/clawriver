@@ -1,4 +1,4 @@
-# Agent Memory Market - 向量搜索技术选型报告
+# ClawRiver - 向量搜索技术选型报告
 
 **日期**: 2026-03-23
 **版本**: v1.0
@@ -8,7 +8,7 @@
 
 ## 执行摘要
 
-本报告针对 Memory Market 的向量搜索需求，对业界主流向量数据库和中文嵌入模型进行深度调研和对比分析。
+本报告针对 ClawRiver 的向量搜索需求，对业界主流向量数据库和中文嵌入模型进行深度调研和对比分析。
 
 **推荐方案**:
 - **向量数据库**: Qdrant（自托管）
@@ -17,7 +17,7 @@
 **核心决策理由**:
 1. Qdrant 在性能、易用性和成本之间达到最佳平衡，特别适合470+数据规模
 2. BGE-small 在中文语义理解准确性和推理速度之间达到最佳平衡
-3. 自托管方案确保数据隐私，成本可控，符合 Memory Market 的轻量化需求
+3. 自托管方案确保数据隐私，成本可控，符合 ClawRiver 的轻量化需求
 
 ---
 
@@ -143,7 +143,7 @@ results = client.search(
 - 延迟: <30ms p99
 - 成本: $70/月（起步价）
 
-**不选理由**: 对于 470+ 数据规模，Pinecone 成本过高，且 Memory Market 涉及个人记忆，数据隐私敏感。
+**不选理由**: 对于 470+ 数据规模，Pinecone 成本过高，且 ClawRiver 涉及个人记忆，数据隐私敏感。
 
 #### 2.2.3 Weaviate ⭐⭐⭐
 
@@ -168,7 +168,7 @@ results = client.search(
 - 延迟: <100ms p99
 - 内存占用: >4GB（100k向量）
 
-**不选理由**: 对于 Memory Market 的简单搜索需求，Weaviate 的 GraphQL 复杂度和资源占用是过度设计。
+**不选理由**: 对于 ClawRiver 的简单搜索需求，Weaviate 的 GraphQL 复杂度和资源占用是过度设计。
 
 #### 2.2.4 Chroma ⭐⭐⭐⭐
 
@@ -193,7 +193,7 @@ results = client.search(
 - 延迟: <200ms p99
 - 内存占用: <1GB（100k向量）
 
-**不选理由**: 虽然 Chroma 易用，但性能不足以满足 <500ms 的响应要求，且 Memory Market 需要生产级稳定性。
+**不选理由**: 虽然 Chroma 易用，但性能不足以满足 <500ms 的响应要求，且 ClawRiver 需要生产级稳定性。
 
 ---
 
@@ -295,7 +295,7 @@ print(embeddings.shape)  # (2, 512)
 - 对准确性有极端要求
 - 有充足的计算资源
 
-**不选理由**: 对于 Memory Market 的小规模数据，large 版本的资源消耗不值得。
+**不选理由**: 对于 ClawRiver 的小规模数据，large 版本的资源消耗不值得。
 
 #### 3.2.4 moka-ai/m3e-base ⭐⭐⭐
 
@@ -339,7 +339,7 @@ print(embeddings.shape)  # (2, 512)
 - MTEB (中文): 58.67
 - 推理速度: 10ms/句（CPU）
 
-**不选理由**: 准确性远低于 BGE 系列，不适合追求高质量语义搜索的 Memory Market。
+**不选理由**: 准确性远低于 BGE 系列，不适合追求高质量语义搜索的 ClawRiver。
 
 ---
 
@@ -354,7 +354,7 @@ print(embeddings.shape)  # (2, 512)
 2. **成本可控**: 自托管零成本，适合小规模数据
 3. **Python 友好**: Python SDK 完善，与 FastAPI 集成简单
 4. **功能完整**: 原生支持混合检索、元数据过滤
-5. **数据隐私**: 数据本地存储，符合 Memory Market 的隐私要求
+5. **数据隐私**: 数据本地存储，符合 ClawRiver 的隐私要求
 6. **生态成熟**: 被广泛采用，文档完善，社区活跃
 
 **部署方案**:
@@ -671,7 +671,7 @@ async def index_memory(text: str):
 
 ### 10.1 核心结论
 
-1. **Qdrant + BGE-small** 是 Memory Market 的最优选择
+1. **Qdrant + BGE-small** 是 ClawRiver 的最优选择
 2. 技术方案成熟、稳定、零成本
 3. 性能指标远超需求（<500ms）
 4. 集成简单，开发周期短（9天）

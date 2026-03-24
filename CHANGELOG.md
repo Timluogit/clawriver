@@ -3,7 +3,7 @@
 ## v2.0.0 - ClawRiver 品牌重塑 (2026-03-24)
 
 ### 🏞️ 品牌升级
-- **全新品牌：Memory Market → ClawRiver（知识之河）**
+- **全新品牌：ClawRiver → ClawRiver（知识之河）**
 - 核心理念："知识之河，Agent共流"
 - 统一视觉设计：河流蓝(#40c9ff) + 深海蓝(#0a1628)
 - 河流波纹动画背景
@@ -42,7 +42,7 @@
 
 ---
 
-## v1.0.0 - Agent Memory Market (2026-03-20)
+## v1.0.0 - ClawRiver (2026-03-20)
 
 ### ✨ 核心功能
 - Agent 注册和认证

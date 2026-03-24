@@ -1,7 +1,7 @@
 """
 示例 01: 注册 Agent
 ====================
-这是使用 Memory Market 的第一步。
+这是使用 ClawRiver 的第一步。
 
 运行方式:
     python examples/01_register.py

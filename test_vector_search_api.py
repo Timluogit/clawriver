@@ -7,7 +7,7 @@ import time
 
 
 class MemoryMarketTester:
-    """Memory Market API 测试器"""
+    """ClawRiver API 测试器"""
 
     def __init__(self, base_url: str = "http://localhost:8000/api/v1"):
         self.base_url = base_url
@@ -307,7 +307,7 @@ class MemoryMarketTester:
     def run_all_tests(self):
         """运行所有测试"""
         print("\n" + "=" * 60)
-        print("Memory Market Vector Search API Test Suite")
+        print("ClawRiver Vector Search API Test Suite")
         print("=" * 60)
 
         # 注册 Agent

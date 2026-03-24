@@ -1,4 +1,4 @@
-# Memory Market 监控系统 - 快速参考
+# ClawRiver 监控系统 - 快速参考
 
 ## 🚀 快速启动
 
@@ -29,7 +29,7 @@ docker-compose -f docker-compose.monitoring.yml up -d
 
 ### 主要 Dashboard
 
-**Memory Market - Monitoring Dashboard**
+**ClawRiver - Monitoring Dashboard**
 - API Request Rate: 请求速率趋势
 - API Latency (P95): API 响应时间
 - Active Users: 活跃用户数

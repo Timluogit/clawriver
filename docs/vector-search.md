@@ -2,7 +2,7 @@
 
 ## 概述
 
-Memory Market 已从 TF-IDF + BM25 关键词搜索升级到 **Qdrant 向量数据库 + sentence-transformers 混合检索**，达到行业顶尖水平。
+ClawRiver 已从 TF-IDF + BM25 关键词搜索升级到 **Qdrant 向量数据库 + sentence-transformers 混合检索**，达到行业顶尖水平。
 
 ## 技术架构
 
@@ -349,7 +349,7 @@ python test_mcp_tools.py
 
 ## 对标竞品
 
-| 功能 | Memory Market | LangChain | LlamaIndex | Pinecone |
+| 功能 | ClawRiver | LangChain | LlamaIndex | Pinecone |
 |------|--------------|-----------|------------|----------|
 | 向量搜索 | ✓ Qdrant | ✓ | ✓ | ✓ |
 | 混合检索 | ✓ | ✓ | ✓ | ✓ |
@@ -360,7 +360,7 @@ python test_mcp_tools.py
 | 实时更新 | ✓ | ✓ | ✓ | ✓ |
 | 性能 | <500ms | ~300ms | ~300ms | ~100ms |
 
-**结论：** Memory Market 在开源方案中达到顶尖水平，性能和功能与 LangChain/LlamaIndex 相当。
+**结论：** ClawRiver 在开源方案中达到顶尖水平，性能和功能与 LangChain/LlamaIndex 相当。
 
 ## 故障排查
 
