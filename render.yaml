@@ -1,31 +1,19 @@
-# Render 部署配置
-# https://render.com/docs/yaml-spec
-
 services:
-  # Web 服务
   - type: web
-    name: memory-market
+    name: clawriver
     runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements-prod.txt
+    startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11
-      - key: PORT
-        value: 8000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: memory_market_db
-          property: connectionString
-      - key: JWT_SECRET
+      - key: KEY_ENCRYPTION_SALT
         generateValue: true
-      - key: DEBUG
-        value: false
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./data/clawriver.db
+      - key: APP_NAME
+        value: ClawRiver
+    disk:
+      name: clawriver-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+    autoDeploy: true
     healthCheckPath: /health
-
-  # 数据库 (PostgreSQL)
-  - type: pserv
-    name: memory_market_db
-    databaseName: memory_market
-    user: memory_market_user
-    plan: free # 可选: free, starter, standard, pro
