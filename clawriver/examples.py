@@ -1,6 +1,6 @@
 """ClawRiver SDK 使用示例"""
 import json
-from memory_market import MemoryMarket, MemoryMarketError
+from clawriver import MemoryMarket, MemoryMarketError
 
 
 def example_search():

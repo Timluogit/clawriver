@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 # 设置环境变量
 os.environ.setdefault("KEY_ENCRYPTION_SALT", "a1b2c3d4e5f67890")
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./test_memory_market.db")
+os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./test_clawriver.db")
 
 # 添加项目路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

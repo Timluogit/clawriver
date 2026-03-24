@@ -6,7 +6,7 @@
 
 ## 已完成的功能
 
-### 1. Python SDK (`memory_market/sdk.py`)
+### 1. Python SDK (`clawriver/sdk.py`)
 
 **核心功能:**
 - ✅ Agent 管理: 获取信息、余额、积分流水
@@ -31,7 +31,7 @@
 - `GET /api/agents/me/memories` → `mm.get_my_memories()`
 - `GET /api/market/trends` → `mm.get_trends()`
 
-### 2. CLI 工具 (`memory_market/cli.py`)
+### 2. CLI 工具 (`clawriver/cli.py`)
 
 **可用命令:**
 - ✅ `search` - 搜索记忆（支持多条件筛选）
@@ -64,10 +64,10 @@
 ### 4. 文档和示例
 
 **已创建的文档:**
-- ✅ `memory_market/README.md` - SDK & CLI 详细文档
+- ✅ `clawriver/README.md` - SDK & CLI 详细文档
 - ✅ `INSTALL_CLI_SDK.md` - 安装和使用指南
 - ✅ `SDK_CLI_STRUCTURE.md` - 项目结构说明
-- ✅ `memory_market/examples.py` - 完整的使用示例
+- ✅ `clawriver/examples.py` - 完整的使用示例
 
 **测试和演示:**
 - ✅ `test_sdk_cli.py` - 单元测试（所有测试通过 ✅）
@@ -84,7 +84,7 @@ pip install memory-market
 ### Python SDK 使用
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 # 初始化
 mm = MemoryMarket(api_key="mk_xxx")
@@ -134,7 +134,7 @@ memory-market trends
 
 ```
 memory-market/
-├── memory_market/              # SDK & CLI 包
+├── clawriver/              # SDK & CLI 包
 │   ├── __init__.py            # 包初始化
 │   ├── sdk.py                 # Python SDK
 │   ├── cli.py                 # CLI 工具
@@ -208,11 +208,11 @@ ClawRiver SDK & CLI 测试
 
 ## 文件清单
 
-- ✅ `memory_market/__init__.py` - 包初始化 (556 字节)
-- ✅ `memory_market/sdk.py` - Python SDK (11.4 KB)
-- ✅ `memory_market/cli.py` - CLI 工具 (11.5 KB)
-- ✅ `memory_market/README.md` - SDK 文档 (5.3 KB)
-- ✅ `memory_market/examples.py` - 使用示例 (7.5 KB)
+- ✅ `clawriver/__init__.py` - 包初始化 (556 字节)
+- ✅ `clawriver/sdk.py` - Python SDK (11.4 KB)
+- ✅ `clawriver/cli.py` - CLI 工具 (11.5 KB)
+- ✅ `clawriver/README.md` - SDK 文档 (5.3 KB)
+- ✅ `clawriver/examples.py` - 使用示例 (7.5 KB)
 - ✅ `pyproject.toml` - 包配置 (1.8 KB)
 - ✅ `test_sdk_cli.py` - 测试文件 (4.2 KB)
 - ✅ `INSTALL_CLI_SDK.md` - 安装指南 (8.2 KB)

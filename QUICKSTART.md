@@ -181,7 +181,7 @@ memory-market me --history
 ## 🐍 Python SDK 使用
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 # 初始化
 mm = MemoryMarket(api_key="sk_test_xxx")
@@ -276,7 +276,7 @@ A:
 A:
 ```bash
 # 删除数据库
-rm data/memory_market.db
+rm data/clawriver.db
 
 # 重新初始化
 python -m app.db.database

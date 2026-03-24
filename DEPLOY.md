@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 ```bash
 # 数据库（默认 SQLite）
-export DATABASE_URL="sqlite+aiosqlite:///./memory_market.db"
+export DATABASE_URL="sqlite+aiosqlite:///./clawriver.db"
 
 # Redis 缓存（可选）
 export REDIS_URL="redis://localhost:6379"

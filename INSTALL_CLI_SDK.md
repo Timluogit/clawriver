@@ -107,7 +107,7 @@ memory-market trends --platform "抖音"
 ### 基础使用
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 # 初始化
 mm = MemoryMarket(api_key="mk_xxx")
@@ -128,7 +128,7 @@ mm.close()
 ### 使用上下文管理器
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 with MemoryMarket(api_key="mk_xxx") as mm:
     results = mm.search(query="爆款")
@@ -138,7 +138,7 @@ with MemoryMarket(api_key="mk_xxx") as mm:
 ### 上传记忆
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 mm = MemoryMarket(api_key="mk_xxx")
 
@@ -164,7 +164,7 @@ mm.close()
 ### 异常处理
 
 ```python
-from memory_market import MemoryMarket, MemoryMarketError
+from clawriver import MemoryMarket, MemoryMarketError
 
 try:
     mm = MemoryMarket(api_key="mk_xxx")
@@ -178,7 +178,7 @@ except MemoryMarketError as e:
 ### 高级搜索
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 mm = MemoryMarket(api_key="mk_xxx")
 
@@ -211,7 +211,7 @@ mm.close()
 ### 评价和验证
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 mm = MemoryMarket(api_key="mk_xxx")
 
@@ -238,7 +238,7 @@ mm.close()
 ### 查看账户信息
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 mm = MemoryMarket(api_key="mk_xxx")
 
@@ -364,14 +364,14 @@ pytest tests/
 
 ```bash
 # 使用 black 格式化
-black memory_market/
+black clawriver/
 
 # 使用 ruff 检查
-ruff check memory_market/
+ruff check clawriver/
 ```
 
 ## 更多资源
 
-- 完整文档: `memory_market/README.md`
-- 使用示例: `memory_market/examples.py`
+- 完整文档: `clawriver/README.md`
+- 使用示例: `clawriver/examples.py`
 - API 文档: 启动服务后访问 http://localhost:8000/docs

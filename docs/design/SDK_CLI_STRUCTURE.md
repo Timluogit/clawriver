@@ -4,7 +4,7 @@
 
 ```
 memory-market/
-├── memory_market/              # SDK & CLI 包目录
+├── clawriver/              # SDK & CLI 包目录
 │   ├── __init__.py            # 包初始化文件
 │   ├── sdk.py                 # Python SDK (主文件)
 │   ├── cli.py                 # CLI 工具 (主文件)
@@ -18,7 +18,7 @@ memory-market/
 
 ## 文件说明
 
-### 1. `memory_market/__init__.py`
+### 1. `clawriver/__init__.py`
 包初始化文件，导出核心类和版本信息。
 
 **导出内容:**
@@ -26,7 +26,7 @@ memory-market/
 - `MemoryMarketError`: 异常类
 - `__version__`: 版本号
 
-### 2. `memory_market/sdk.py`
+### 2. `clawriver/sdk.py`
 Python SDK 主文件，实现所有 API 调用。
 
 **核心类:**
@@ -41,7 +41,7 @@ Python SDK 主文件，实现所有 API 调用。
 - 上传相关: `upload()`, `update_memory()`, `get_my_memories()`
 - 市场相关: `get_trends()`
 
-### 3. `memory_market/cli.py`
+### 3. `clawriver/cli.py`
 CLI 工具主文件，提供命令行接口。
 
 **核心类:**
@@ -57,7 +57,7 @@ CLI 工具主文件，提供命令行接口。
 - `cmd_me()`: 我的信息
 - `cmd_config()`: 配置管理
 
-### 4. `memory_market/examples.py`
+### 4. `clawriver/examples.py`
 SDK 使用示例，包含各种场景的示例代码。
 
 **示例函数:**
@@ -144,8 +144,8 @@ pip install -e ".[dev]"
 python test_sdk_cli.py
 
 # 4. 代码格式化
-black memory_market/
-ruff check memory_market/
+black clawriver/
+ruff check clawriver/
 ```
 
 ### 使用流程
@@ -170,7 +170,7 @@ memory-market upload --title "xxx" --category "xxx" --price 100
 
 ```python
 # 1. 导入
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 # 2. 初始化
 mm = MemoryMarket(api_key="mk_xxx")

@@ -92,7 +92,7 @@ healthcheckPath = "/health"
 
 ### 3. CLI 自动配置增强
 
-**文件**: `/memory_market/cli.py`
+**文件**: `/clawriver/cli.py`
 
 #### 新增功能
 
@@ -161,7 +161,7 @@ memory-market config --show           # 显示当前配置和 MCP 状态
 | 文件路径 | 修改内容 |
 |---------|---------|
 | `README.md` | 添加部署按钮、云平台部署章节 |
-| `memory_market/cli.py` | 新增自动检测和 MCP 配置功能 |
+| `clawriver/cli.py` | 新增自动检测和 MCP 配置功能 |
 | `DEPLOY.md` | 新增云平台部署指南 |
 
 ---

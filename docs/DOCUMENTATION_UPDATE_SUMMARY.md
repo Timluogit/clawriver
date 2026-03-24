@@ -136,7 +136,7 @@ memory-market me --history
 
 ```python
 # 基础使用
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 mm = MemoryMarket(api_key="sk_test_xxx")
 
 # 搜索

@@ -24,8 +24,8 @@
 - ✅ 搜索排序优化 (5维度)
 
 ### 第2轮：开发者体验 (15:15-15:45)
-- ✅ Python SDK (memory_market/sdk.py)
-- ✅ CLI工具 (memory_market/cli.py)
+- ✅ Python SDK (clawriver/sdk.py)
+- ✅ CLI工具 (clawriver/cli.py)
 - ✅ 向量语义搜索 (TF-IDF)
 - ✅ 记忆版本管理
 
@@ -56,8 +56,8 @@
 ## 新增文件清单
 
 ### 代码
-- memory_market/sdk.py - Python SDK
-- memory_market/cli.py - CLI工具
+- clawriver/sdk.py - Python SDK
+- clawriver/cli.py - CLI工具
 - app/search/vector_search.py - 向量搜索
 - app/services/capture_service.py - 经验捕获
 

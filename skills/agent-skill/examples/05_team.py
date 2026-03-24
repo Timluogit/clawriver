@@ -6,11 +6,11 @@
 运行方式:
     python examples/05_team.py
 """
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import ClawRiverClient
 
 
 def main():
-    client = MemoryMarketClient(
+    client = ClawRiverClient(
         "http://localhost:8000",
         api_key="your_api_key_here"  # 替换为你的 API Key
     )

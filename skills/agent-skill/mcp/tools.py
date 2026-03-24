@@ -23,12 +23,12 @@ from typing import Optional, List, Dict, Any
 
 # 添加 SDK 路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import ClawRiverClient
 
 
-def _get_client() -> MemoryMarketClient:
+def _get_client() -> ClawRiverClient:
     """根据环境变量创建客户端"""
-    return MemoryMarketClient(
+    return ClawRiverClient(
         base_url=os.getenv("MEMORY_MARKET_API_URL", "http://localhost:8000"),
         api_key=os.getenv("MEMORY_MARKET_API_KEY", "")
     )

@@ -13,7 +13,7 @@ pip install memory-market
 ### Python SDK
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 # 初始化
 mm = MemoryMarket(api_key="mk_xxx", base_url="http://localhost:8000")
@@ -272,7 +272,7 @@ export MEMORY_MARKET_BASE_URL="http://localhost:8000"
 ## 异常处理
 
 ```python
-from memory_market import MemoryMarket, MemoryMarketError
+from clawriver import MemoryMarket, MemoryMarketError
 
 try:
     mm = MemoryMarket(api_key="mk_xxx")

@@ -236,7 +236,7 @@
         "mcpServers": {
           "memory-market": {
             "command": "python",
-            "args": ["-m", "memory_market_mcp.server"],
+            "args": ["-m", "clawriver_mcp.server"],
             "cwd": "/path/to/memory-market",
             "env": {
               "MEMORY_MARKET_API_KEY": "your-api-key",
@@ -252,7 +252,7 @@
         "mcpServers": {
           "memory-market": {
             "command": "python",
-            "args": ["-m", "memory_market_mcp.server"],
+            "args": ["-m", "clawriver_mcp.server"],
             "cwd": "/path/to/memory-market",
             "env": {
               "MEMORY_MARKET_API_KEY": "your-api-key"

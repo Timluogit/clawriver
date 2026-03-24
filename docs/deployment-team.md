@@ -57,7 +57,7 @@ alembic init alembic
 
 ```ini
 # 数据库连接 URL
-sqlalchemy.url = postgresql://user:password@localhost/memory_market
+sqlalchemy.url = postgresql://user:password@localhost/clawriver
 
 # 或者使用环境变量
 sqlalchemy.url = postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST)/$(DB_NAME)
@@ -153,12 +153,12 @@ alembic downgrade base
 
 ```bash
 # 数据库配置
-DATABASE_URL=postgresql://user:password@localhost:5432/memory_market
+DATABASE_URL=postgresql://user:password@localhost:5432/clawriver
 DB_USER=user
 DB_PASSWORD=password
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=memory_market
+DB_NAME=clawriver
 
 # 应用配置
 APP_NAME=ClawRiver
@@ -189,7 +189,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # 数据库
-    database_url: str = "sqlite+aiosqlite:///./memory_market.db"
+    database_url: str = "sqlite+aiosqlite:///./clawriver.db"
 
     # 应用
     app_name: str = "ClawRiver"
@@ -232,10 +232,10 @@ pip install -r requirements.txt
 
 ```bash
 # 使用 SQLite（开发环境）
-export DATABASE_URL="sqlite+aiosqlite:///./memory_market.db"
+export DATABASE_URL="sqlite+aiosqlite:///./clawriver.db"
 
 # 或使用 PostgreSQL
-export DATABASE_URL="postgresql://user:password@localhost:5432/memory_market"
+export DATABASE_URL="postgresql://user:password@localhost:5432/clawriver"
 ```
 
 #### 3. 执行迁移
@@ -275,7 +275,7 @@ pip install -r requirements.txt
 编辑 `/etc/memory-market/.env`：
 
 ```bash
-DATABASE_URL=postgresql://prod_user:prod_password@db.example.com:5432/memory_market
+DATABASE_URL=postgresql://prod_user:prod_password@db.example.com:5432/clawriver
 DEBUG=False
 SECRET_KEY=production-secret-key
 ...
@@ -317,7 +317,7 @@ sudo systemctl start memory-market
 创建 `/etc/nginx/sites-available/memory-market`：
 
 ```nginx
-upstream memory_market {
+upstream clawriver {
     server 127.0.0.1:8000;
 }
 
@@ -328,7 +328,7 @@ server {
     client_max_body_size 10M;
 
     location / {
-        proxy_pass http://memory_market;
+        proxy_pass http://clawriver;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -336,12 +336,12 @@ server {
     }
 
     location /docs {
-        proxy_pass http://memory_market/docs;
+        proxy_pass http://clawriver/docs;
         proxy_set_header Host $host;
     }
 
     location /redoc {
-        proxy_pass http://memory_market/redoc;
+        proxy_pass http://clawriver/redoc;
         proxy_set_header Host $host;
     }
 }
@@ -408,7 +408,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/memory_market
+      - DATABASE_URL=postgresql://postgres:password@db:5432/clawriver
     depends_on:
       - db
       - redis
@@ -420,7 +420,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=memory_market
+      - POSTGRES_DB=clawriver
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -475,10 +475,10 @@ curl http://localhost:8000/health
 
 ```bash
 # PostgreSQL
-psql -U user -d memory_market -c "SELECT 1;"
+psql -U user -d clawriver -c "SELECT 1;"
 
 # SQLite
-sqlite3 memory_market.db "SELECT 1;"
+sqlite3 clawriver.db "SELECT 1;"
 ```
 
 ### 功能测试
@@ -586,7 +586,7 @@ sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect t
 sudo systemctl status postgresql
 
 # 测试连接
-psql -U user -h localhost -d memory_market
+psql -U user -h localhost -d clawriver
 ```
 
 #### 2. 迁移失败
@@ -740,20 +740,20 @@ curl http://localhost:8000/metrics
 
 ```bash
 # PostgreSQL 备份
-pg_dump -U user -d memory_market > backup_$(date +%Y%m%d).sql
+pg_dump -U user -d clawriver > backup_$(date +%Y%m%d).sql
 
 # SQLite 备份
-cp memory_market.db backup_$(date +%Y%m%d).db
+cp clawriver.db backup_$(date +%Y%m%d).db
 ```
 
 ### 数据库恢复
 
 ```bash
 # PostgreSQL 恢复
-psql -U user -d memory_market < backup_20240101.sql
+psql -U user -d clawriver < backup_20240101.sql
 
 # SQLite 恢复
-cp backup_20240101.db memory_market.db
+cp backup_20240101.db clawriver.db
 ```
 
 ### 自动化备份
@@ -762,10 +762,10 @@ cp backup_20240101.db memory_market.db
 
 ```bash
 # 每天凌晨 2 点备份
-0 2 * * * /usr/bin/pg_dump -U user -d memory_market > /backups/memory_market_$(date +\%Y\%m\%d).sql
+0 2 * * * /usr/bin/pg_dump -U user -d clawriver > /backups/clawriver_$(date +\%Y\%m\%d).sql
 
 # 保留最近 30 天的备份
-0 3 * * * find /backups/ -name "memory_market_*.sql" -mtime +30 -delete
+0 3 * * * find /backups/ -name "clawriver_*.sql" -mtime +30 -delete
 ```
 
 ---
@@ -783,7 +783,7 @@ sudo systemctl stop memory-market
 2. 备份数据
 
 ```bash
-pg_dump -U user -d memory_market > backup_pre_upgrade.sql
+pg_dump -U user -d clawriver > backup_pre_upgrade.sql
 ```
 
 3. 拉取新代码

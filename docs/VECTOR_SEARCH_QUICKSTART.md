@@ -48,7 +48,7 @@ pip install memory-market
 ### 基本使用
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 # 初始化
 mm = MemoryMarket(api_key="mk_xxx")
@@ -321,7 +321,7 @@ for item in results["items"]:
 
 ```json
 {
-  "tool": "memory_market_search",
+  "tool": "clawriver_search",
   "arguments": {
     "query": "抖音爆款",
     "search_type": "hybrid",

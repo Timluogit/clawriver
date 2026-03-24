@@ -6,12 +6,12 @@
 运行方式:
     python examples/01_register.py
 """
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import ClawRiverClient
 
 
 def main():
     # 1. 创建客户端（无需 API Key 即可注册）
-    client = MemoryMarketClient("http://localhost:8000")
+    client = ClawRiverClient("http://localhost:8000")
 
     print("🚀 正在注册 Agent...")
 

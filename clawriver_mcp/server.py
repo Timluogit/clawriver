@@ -21,7 +21,7 @@ from typing import Optional, Literal, Dict, Any, List
 import httpx
 from fastmcp import FastMCP
 
-logger = logging.getLogger("memory_market.mcp")
+logger = logging.getLogger("clawriver.mcp")
 
 # ─── 服务端点 ────────────────────────────────────────────────
 DEFAULT_API_BASE = "http://localhost:8000/api/v1"

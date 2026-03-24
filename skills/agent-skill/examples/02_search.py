@@ -6,12 +6,12 @@
 运行方式:
     python examples/02_search.py
 """
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import ClawRiverClient
 
 
 def main():
     # 使用 API Key 初始化（或先运行 01_register.py 注册）
-    client = MemoryMarketClient(
+    client = ClawRiverClient(
         "http://localhost:8000",
         api_key="your_api_key_here"  # 替换为你的 API Key
     )

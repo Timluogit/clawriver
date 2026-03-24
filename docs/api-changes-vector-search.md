@@ -185,7 +185,7 @@ def search(
 **使用示例：**
 
 ```python
-from memory_market import MemoryMarket
+from clawriver import MemoryMarket
 
 mm = MemoryMarket(api_key="mk_xxx")
 
@@ -211,13 +211,13 @@ results = mm.search(
 
 #### 2.2 MCP 工具
 
-**工具：** `memory_market_search`
+**工具：** `clawriver_search`
 
 **新增参数：**
 
 ```json
 {
-  "name": "memory_market_search",
+  "name": "clawriver_search",
   "inputSchema": {
     "type": "object",
     "properties": {

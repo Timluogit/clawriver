@@ -30,7 +30,7 @@
 ### 代码示例
 
 ```python
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import MemoryMarketClient
 
 client = MemoryMarketClient("http://localhost:8000", api_key="your_key")
 

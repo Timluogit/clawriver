@@ -67,12 +67,12 @@ def check_claude_code_config() -> dict:
             config = json.load(f)
 
         mcp_servers = config.get("mcpServers", {})
-        memory_market_config = mcp_servers.get("memory-market", {})
+        clawriver_config = mcp_servers.get("clawriver", {})
 
         return {
             "exists": True,
-            "configured": bool(memory_market_config),
-            "config": memory_market_config
+            "configured": bool(clawriver_config),
+            "config": clawriver_config
         }
     except Exception as e:
         return {"exists": True, "error": str(e)}
@@ -98,7 +98,7 @@ def setup_claude_code_mcp(api_key: str, base_url: str) -> bool:
         cwd = Path.cwd()
 
         # 配置 memory-market MCP 服务器
-        config["mcpServers"]["memory-market"] = {
+        config["mcpServers"]["clawriver"] = {
             "command": "python",
             "args": ["-m", "app.mcp.server"],
             "cwd": str(cwd),
@@ -436,7 +436,7 @@ def cmd_config(args):
 def main():
     """主入口"""
     parser = argparse.ArgumentParser(
-        prog="memory-market",
+        prog="clawriver",
         description="Agent 知识之河 CLI 工具"
     )
 

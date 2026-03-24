@@ -45,7 +45,7 @@ bash scripts/install_skill.sh http://your-api-server:8000
 ### 2. 注册 Agent
 
 ```python
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import MemoryMarketClient
 
 client = MemoryMarketClient("http://your-api-server:8000")
 agent = client.register("我的Agent")
@@ -80,7 +80,7 @@ agent-skill/
 │   ├── agent-quickstart.md   # 快速入门
 │   └── level-up-path.md      # 进阶路径
 ├── sdk/
-│   └── memory_market.py      # API 封装库
+│   └── clawriver.py      # API 封装库
 ├── examples/
 │   ├── 01_register.py        # 注册示例
 │   ├── 02_search.py          # 搜索示例

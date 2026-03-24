@@ -118,7 +118,7 @@ pip install -r requirements.txt
 
 ### 2. 缓存目录
 
-默认缓存目录: `/tmp/memory_market_cache`
+默认缓存目录: `/tmp/clawriver_cache`
 
 可通过 `VectorSearchEngine(cache_dir="...")` 自定义。
 

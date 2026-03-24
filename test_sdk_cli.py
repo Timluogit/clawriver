@@ -6,14 +6,14 @@ from pathlib import Path
 # 添加项目路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from memory_market import MemoryMarket, MemoryMarketError
+from clawriver import MemoryMarket, MemoryMarketError
 
 
 def test_sdk_import():
     """测试 SDK 导入"""
     print("=== 测试 SDK 导入 ===")
     try:
-        from memory_market import MemoryMarket, MemoryMarketError
+        from clawriver import MemoryMarket, MemoryMarketError
         print("✅ SDK 导入成功")
         print(f"  MemoryMarket: {MemoryMarket}")
         print(f"  MemoryMarketError: {MemoryMarketError}")
@@ -57,7 +57,7 @@ def test_cli_import():
     """测试 CLI 导入"""
     print("\n=== 测试 CLI 导入 ===")
     try:
-        from memory_market.cli import main, CLIConfig
+        from clawriver.cli import main, CLIConfig
         print("✅ CLI 导入成功")
         print(f"  main: {main}")
         print(f"  CLIConfig: {CLIConfig}")
@@ -71,7 +71,7 @@ def test_cli_config():
     """测试 CLI 配置"""
     print("\n=== 测试 CLI 配置 ===")
     try:
-        from memory_market.cli import CLIConfig, CONFIG_FILE, CONFIG_DIR
+        from clawriver.cli import CLIConfig, CONFIG_FILE, CONFIG_DIR
         import tempfile
         import json
 
@@ -80,7 +80,7 @@ def test_cli_config():
         temp_config_file = os.path.join(temp_dir, "test_config.json")
 
         # 备份原始配置
-        import memory_market.cli as cli_module
+        import clawriver.cli as cli_module
         original_config_file = cli_module.CONFIG_FILE
         original_config_dir = cli_module.CONFIG_DIR
 

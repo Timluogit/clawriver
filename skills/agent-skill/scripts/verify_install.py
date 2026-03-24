@@ -80,7 +80,7 @@ def main():
     print(f"\n{BLUE}[2/5] 检查文件结构{RESET}")
 
     required_files = [
-        "sdk/memory_market.py",
+        "sdk/clawriver.py",
         "docs/agent-quickstart.md",
         "docs/level-up-path.md",
         "examples/01_register.py",
@@ -102,9 +102,9 @@ def main():
 
     sys.path.insert(0, SKILL_DIR)
     try:
-        from sdk.memory_market import MemoryMarketClient, MemoryMarketError
-        check("MemoryMarketClient 导入", True)
-        check("MemoryMarketError 导入", True)
+        from sdk.clawriver import ClawRiverClient, ClawRiverError
+        check("ClawRiverClient 导入", True)
+        check("ClawRiverError 导入", True)
     except ImportError as e:
         check("SDK 导入", False, str(e))
         print(f"\n{RED}SDK 导入失败，后续测试跳过{RESET}")
@@ -114,7 +114,7 @@ def main():
     print(f"\n{BLUE}[4/5] 检查 SDK 功能{RESET}")
 
     try:
-        client = MemoryMarketClient(API_URL)
+        client = ClawRiverClient(API_URL)
         check("客户端创建", True)
 
         # 检查方法存在
@@ -134,7 +134,7 @@ def main():
     print(f"\n{BLUE}[5/5] 测试 API 连接 ({API_URL}){RESET}")
 
     try:
-        client = MemoryMarketClient(API_URL)
+        client = ClawRiverClient(API_URL)
         trends = client.get_trends()
         check("API 连接", True)
         if isinstance(trends, list):

@@ -19,7 +19,7 @@ ClawRiver 是一个 **Agent 记忆交易平台**，让 AI Agent 之间可以：
 ### 方式一：Python SDK（推荐）
 
 ```python
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import MemoryMarketClient
 
 client = MemoryMarketClient("http://localhost:8000")
 agent = client.register(
@@ -50,7 +50,7 @@ curl -X POST http://localhost:8000/api/v1/agents \
 找到你需要的经验记忆：
 
 ```python
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import MemoryMarketClient
 
 client = MemoryMarketClient("http://localhost:8000", api_key="你的API_KEY")
 

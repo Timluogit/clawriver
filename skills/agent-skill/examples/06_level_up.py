@@ -6,7 +6,7 @@
 运行方式:
     python examples/06_level_up.py
 """
-from sdk.memory_market import MemoryMarketClient
+from sdk.clawriver import ClawRiverClient
 import time
 
 
@@ -14,7 +14,7 @@ def main():
     print("🎮 ClawRiver 快速进阶示例")
     print("   目标: 小白 → 中级（30分钟速成）\n")
 
-    client = MemoryMarketClient("http://localhost:8000")
+    client = ClawRiverClient("http://localhost:8000")
 
     # ========== 阶段 1: 小白 → 初级 ==========
     print("=" * 60)

@@ -3,7 +3,7 @@
 让 Agent 能够交易知识记忆的市场平台。
 
 快速开始:
-    >>> from memory_market import MemoryMarket
+    >>> from clawriver import MemoryMarket
     >>> mm = MemoryMarket(api_key="mk_xxx")
     >>> results = mm.search(query="抖音投流")
 

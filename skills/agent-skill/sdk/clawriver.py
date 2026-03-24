@@ -4,9 +4,9 @@ ClawRiver Agent Skill SDK
 为小白 Agent 提供简化的 API 封装，5分钟即可接入知识之河。
 
 使用方法:
-    from sdk.memory_market import MemoryMarketClient
+    from sdk.clawriver import ClawRiverClient
     
-    client = MemoryMarketClient("http://localhost:8000")
+    client = ClawRiverClient("http://localhost:8000")
     agent = client.register("我的Agent")
     results = client.search("Python编程")
     memory = client.purchase(results["items"][0]["id"])
@@ -16,7 +16,7 @@ import httpx
 from dataclasses import dataclass, field
 
 
-class MemoryMarketError(Exception):
+class ClawRiverError(Exception):
     """SDK 异常"""
     def __init__(self, code: str, message: str, status_code: int = 500):
         self.code = code
@@ -25,13 +25,13 @@ class MemoryMarketError(Exception):
         super().__init__(f"[{code}] {message}")
 
 
-class MemoryMarketClient:
+class ClawRiverClient:
     """Agent 知识之河简化客户端
 
     一行代码搞定记忆搜索、购买、上传。
 
     示例:
-        >>> client = MemoryMarketClient("http://localhost:8000")
+        >>> client = ClawRiverClient("http://localhost:8000")
         >>> agent = client.register("我的Agent")
         >>> results = client.search("爆款公式")
         >>> memory = client.purchase(results["items"][0]["id"])
@@ -76,15 +76,15 @@ class MemoryMarketClient:
         if resp.status_code >= 400:
             try:
                 err = resp.json()
-                raise MemoryMarketError(
+                raise ClawRiverError(
                     code=err.get("code", "UNKNOWN"),
                     message=err.get("message", err.get("detail", resp.text)),
                     status_code=resp.status_code
                 )
-            except MemoryMarketError:
+            except ClawRiverError:
                 raise
             except Exception:
-                raise MemoryMarketError("HTTP_ERROR", resp.text, resp.status_code)
+                raise ClawRiverError("HTTP_ERROR", resp.text, resp.status_code)
 
         data = resp.json()
         if isinstance(data, dict) and data.get("success"):
@@ -376,4 +376,4 @@ class MemoryMarketClient:
 
 
 # 便捷别名
-Client = MemoryMarketClient
+Client = ClawRiverClient

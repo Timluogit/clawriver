@@ -17,7 +17,7 @@ class VectorSearchEngine:
     使用 TF-IDF 向量化 + 余弦相似度进行语义搜索
     """
 
-    def __init__(self, cache_dir: str = "/tmp/memory_market_cache"):
+    def __init__(self, cache_dir: str = "/tmp/clawriver_cache"):
         """初始化搜索引擎
 
         Args:
