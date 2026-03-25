@@ -160,14 +160,23 @@
         async function loadTransactions() {
             document.getElementById('transactions').innerHTML = '<tr><td colspan="7" class="loading">🌊 流动记录正在汇聚...</td></tr>';
             try {
-                const [txRes, memRes] = await Promise.all([
-                    fetch(`${API}/api/v1/transactions/?page_size=200`),
-                    fetch(`${API}/api/v1/memories?page_size=50`)
-                ]);
-                const txData = await txRes.json();
-                allTransactions = txData.items || [];
-                const memData = await memRes.json();
-                (memData.items || []).forEach(m => { memoriesCache[m.memory_id] = m; });
+                // 分页获取所有交易记录
+                allTransactions = [];
+                for (let page = 1; page <= 10; page++) {
+                    const resp = await fetch(`${API}/api/v1/transactions/?page_size=50&page=${page}`);
+                    const result = await resp.json();
+                    const items = (result.data && result.data.items) || result.items || [];
+                    if (items.length === 0) break;
+                    allTransactions = allTransactions.concat(items);
+                    if (items.length < 50) break;
+                }
+
+                // 加载知识缓存
+                const memResp = await fetch(`${API}/api/v1/memories?page_size=50`);
+                const memResult = await memResp.json();
+                const memItems = (memResult.data && memResult.data.items) || memResult.items || [];
+                memItems.forEach(m => { memoriesCache[m.memory_id] = m; });
+
                 updateStats();
                 updateAgentFilter();
                 applyFilters();
