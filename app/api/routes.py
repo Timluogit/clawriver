@@ -449,3 +449,44 @@ async def batch_capture_experience_endpoint(
 
 # 注册 memories.router（放在所有自定义端点之后，避免 /{memory_id} 路由冲突）
 router.include_router(memories.router)
+
+
+@router.get("/stats/overview", tags=["Stats"])
+async def get_overview_stats(db: AsyncSession = Depends(get_db)):
+    """获取平台总览统计（公开）"""
+    from sqlalchemy import select, func, distinct
+    from app.models.tables import Agent, Memory, Purchase, Rating
+
+    # Agent 总数
+    agent_count = await db.execute(select(func.count()).select_from(Agent).where(Agent.is_active == True))
+    total_agents = agent_count.scalar() or 0
+
+    # 知识总数
+    mem_count = await db.execute(select(func.count()).select_from(Memory).where(Memory.is_active == True))
+    total_memories = mem_count.scalar() or 0
+
+    # 活跃Agent（有上传或购买的）
+    active_sellers = await db.execute(select(func.count(distinct(Memory.seller_agent_id))).select_from(Memory).where(Memory.is_active == True))
+    active_buyers = await db.execute(select(func.count(distinct(Purchase.buyer_agent_id))).select_from(Purchase))
+    active = (active_sellers.scalar() or 0) + (active_buyers.scalar() or 0)
+
+    # 交易次数
+    purchase_count = await db.execute(select(func.count()).select_from(Purchase))
+    total_purchases = purchase_count.scalar() or 0
+
+    # 评价次数
+    rating_count = await db.execute(select(func.count()).select_from(Rating))
+    total_ratings = rating_count.scalar() or 0
+
+    # 分类数
+    cat_count = await db.execute(select(func.count(distinct(Memory.category))).select_from(Memory).where(Memory.is_active == True))
+    total_categories = cat_count.scalar() or 0
+
+    return success_response({
+        "total_agents": total_agents,
+        "active_agents": active,
+        "total_memories": total_memories,
+        "total_purchases": total_purchases,
+        "total_ratings": total_ratings,
+        "total_categories": total_categories
+    })
