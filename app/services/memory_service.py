@@ -1,4 +1,6 @@
 """记忆服务"""
+import json
+import re
 from typing import Optional, List, Literal
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update, and_, or_, desc, case, literal_column
@@ -17,6 +19,73 @@ from math import log10
 def gen_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex[:12]}"
 
+def calc_executability_score(content: dict, summary: str = "") -> dict:
+    """计算知识的Agent可执行度（0-100）"""
+    score = 0
+    reasons = []
+    full_text = json.dumps(content, ensure_ascii=False) if isinstance(content, dict) else str(content)
+    full_text += " " + (summary or "")
+
+    # 1. 变量模板检测
+    variables = re.findall(r'\{[a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]{0,29}\}', full_text)
+    if variables:
+        score += min(len(variables) * 15, 45)
+        reasons.append(f"包含{len(variables)}个可填充变量")
+    else:
+        reasons.append("无可填充变量模板")
+
+    # 2. 条件逻辑
+    logic = re.findall(r'(if|when|否则|如果|条件|判断|case|switch|elif|else)', full_text, re.IGNORECASE)
+    if logic:
+        score += min(len(logic) * 8, 20)
+        reasons.append(f"包含{len(logic)}处条件逻辑")
+
+    # 3. 结构化程度
+    if isinstance(content, dict):
+        field_count = len(content)
+        max_depth = 0
+        def get_depth(d, depth=0):
+            nonlocal max_depth
+            max_depth = max(max_depth, depth)
+            if isinstance(d, dict):
+                for v in d.values(): get_depth(v, depth + 1)
+            elif isinstance(d, list):
+                for item in d: get_depth(item, depth + 1)
+        get_depth(content)
+        if field_count >= 3:
+            score += 10
+            reasons.append(f"结构化内容({field_count}个字段)")
+        if max_depth >= 2:
+            score += 5
+            reasons.append(f"多层嵌套({max_depth}层)")
+
+    # 4. 可执行代码/API
+    exec_p = re.findall(r'(curl|POST|GET|PUT|DELETE|api|endpoint|sdk|pip install|npm install|import|from|def |function|class )', full_text, re.IGNORECASE)
+    if exec_p:
+        score += min(len(exec_p) * 5, 15)
+        reasons.append(f"包含可执行代码/API({len(exec_p)}处)")
+
+    # 5. 步骤/流程
+    steps = re.findall(r'(步骤|step|第[一二三四五六七八九十\d]步|阶段|流程|→|=>|->|then)', full_text, re.IGNORECASE)
+    if steps:
+        score += min(len(steps) * 3, 10)
+        reasons.append(f"包含操作步骤({len(steps)}步)")
+
+    # 6. 内容长度
+    content_len = len(full_text)
+    if not variables and content_len < 100:
+        score = max(score - 20, 0)
+        reasons.append("内容过短且无变量模板")
+    elif content_len >= 500:
+        score += 5
+        reasons.append("内容充分(500+字)")
+    elif content_len >= 200:
+        score += 2
+
+    score = min(score, 100)
+    level = "excellent" if score >= 70 else "usable" if score >= 40 else "partial" if score >= 20 else "useless"
+    return {"score": score, "reasons": reasons, "level": level}
+
 def get_agent_level(total_transactions: int, avg_score: float = 0) -> str:
     """计算Agent等级
     - 新手(newbie): <10次交易
@@ -33,32 +102,26 @@ def get_agent_level(total_transactions: int, avg_score: float = 0) -> str:
     return "newbie"
 
 def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation: float = 5.0, seller_total_sales: int = 0) -> MemoryResponse:
-    """转换为响应格式"""
-    import json as _json
-
-    # 生成内容预览（前50字）
+    """转换为响应格式（Agent视角：展示结构而非文字）"""
+    # 生成内容预览：展示结构和变量
     content_preview = None
-    if memory.summary:
-        content_preview = memory.summary[:50] + ("..." if len(memory.summary) > 50 else "")
-    elif memory.content:
+    if memory.content:
         try:
-            content = memory.content if isinstance(memory.content, dict) else _json.loads(memory.content)
-            # 提取文本内容
-            text_parts = []
+            content = memory.content if isinstance(memory.content, dict) else json.loads(memory.content)
             if isinstance(content, dict):
-                for v in content.values():
+                preview_parts = []
+                for k, v in list(content.items())[:3]:
                     if isinstance(v, str):
-                        text_parts.append(v)
+                        preview_parts.append(f"{k}: {v[:60]}")
+                    elif isinstance(v, dict):
+                        preview_parts.append(f"{k}: {{...{len(v)}个字段}}")
                     elif isinstance(v, list):
-                        for item in v:
-                            if isinstance(item, str):
-                                text_parts.append(item)
-                            elif isinstance(item, dict):
-                                text_parts.extend(str(sv) for sv in item.values() if isinstance(sv, str))
-            raw_text = " ".join(text_parts)[:50]
-            content_preview = raw_text + ("..." if len(" ".join(text_parts)) > 50 else "")
+                        preview_parts.append(f"{k}: [{len(v)}项]")
+                content_preview = " | ".join(preview_parts)[:120]
+            else:
+                content_preview = str(content)[:120]
         except (TypeError, ValueError, KeyError):
-            content_preview = str(memory.content)[:50] + "..."
+            content_preview = str(memory.content)[:120]
 
     return MemoryResponse(
         memory_id=memory.memory_id,
@@ -77,18 +140,28 @@ def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation:
         favorite_count=memory.favorite_count,
         avg_score=memory.avg_score,
         verification_score=memory.verification_score,
+        executability_score=getattr(memory, 'executability_score', 0) or 0,
         created_at=memory.created_at,
         updated_at=memory.updated_at
     )
 
 async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> MemoryResponse:
-    """上传记忆"""
+    """上传记忆（带Agent可执行度检测）"""
     # 检查卖家
     seller = await db.execute(select(Agent).where(Agent.agent_id == seller_id))
     seller = seller.scalar_one_or_none()
     if not seller:
         raise ValueError("卖家不存在")
-    
+
+    # ===== Agent可执行度检测 =====
+    exec_result = calc_executability_score(req.content, req.summary)
+    if exec_result["score"] < 15:
+        raise ValueError(
+            f"知识可执行度过低({exec_result['score']}/100)。"
+            f"Agent视角：{'; '.join(exec_result['reasons'])}。"
+            f"请添加可填充的变量模板{{变量名}}、结构化JSON内容或可执行的步骤。"
+        )
+
     memory = Memory(
         memory_id=gen_id("mem"),
         seller_agent_id=seller_id,
@@ -99,7 +172,8 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
         content=req.content,
         format_type=req.format_type,
         price=req.price,
-        verification_data=req.verification_data
+        verification_data=req.verification_data,
+        executability_score=exec_result["score"]
     )
     
     # 计算验证分数
@@ -375,7 +449,7 @@ async def purchase_memory(db: AsyncSession, buyer_id: str, memory_id: str) -> Pu
     )
 
 async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> RateResponse:
-    """评价记忆"""
+    """评价记忆（支持更新已有评价）"""
     # 检查是否购买过
     purchase = await db.execute(
         select(Purchase).where(
@@ -385,15 +459,30 @@ async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> Rate
     if not purchase.scalar_one_or_none():
         raise PermissionError("未购买此记忆")
     
-    # 检查是否已评价
+    # 检查是否已评价 — 支持更新
     existing = await db.execute(
         select(Rating).where(
             and_(Rating.buyer_agent_id == buyer_id, Rating.memory_id == req.memory_id)
         )
     )
-    if existing.scalar_one_or_none():
-        raise ValueError("已评价此记忆")
-    
+    existing_rating = existing.scalar_one_or_none()
+
+    if existing_rating:
+        # 更新已有评价
+        old_score = existing_rating.score
+        existing_rating.score = req.score
+        existing_rating.comment = req.comment
+        existing_rating.effectiveness = req.effectiveness
+        existing_rating.created_at = datetime.now()
+
+        memory = await db.execute(select(Memory).where(Memory.memory_id == req.memory_id))
+        memory = memory.scalar_one_or_none()
+        memory.total_score = memory.total_score - old_score + req.score
+        memory.avg_score = memory.total_score / memory.score_count if memory.score_count > 0 else req.score
+
+        await db.commit()
+        return RateResponse(success=True, message="评价已更新", new_avg_score=memory.avg_score)
+
     # 创建评价
     rating = Rating(
         rating_id=gen_id("rat"),

@@ -216,6 +216,7 @@
                         <span class="badge badge-category">${esc(m.category)}</span>
                         <span class="badge badge-type">${formatType(m.format_type)}</span>
                         ${m.avg_score > 0 ? `<span class="badge badge-score">⭐ ${m.avg_score.toFixed(1)}</span>` : ''}
+                        ${m.executability_score > 0 ? `<span class="badge" style="background:${m.executability_score >= 70 ? 'rgba(16,185,129,0.12);color:#10b981' : m.executability_score >= 40 ? 'rgba(251,191,36,0.12);color:#fbbf24' : 'rgba(239,68,68,0.12);color:#ef4444'}">🎯 可执行${m.executability_score}%</span>` : ''}
                         <span>💫 ${m.purchase_count || 0} 次汲取</span>
                         <span>❤️ ${m.favorite_count || 0} 收藏</span>
                     </div>

@@ -93,6 +93,7 @@ class MemoryResponse(BaseModel):
     favorite_count: int
     avg_score: float
     verification_score: Optional[float]
+    executability_score: int = Field(default=0, description="Agent可执行度（0-100）")
     created_at: datetime
     updated_at: datetime
 

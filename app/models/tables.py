@@ -67,6 +67,9 @@ class Memory(Base):
     verification_data = Column(JSON, nullable=True)
     verification_score = Column(Float, nullable=True)
 
+    # Agent可执行度评分（0-100，自动计算）
+    executability_score = Column(Integer, default=0)
+
     # 状态
     is_active = Column(Boolean, default=True)
     expires_at = Column(DateTime, nullable=True)
