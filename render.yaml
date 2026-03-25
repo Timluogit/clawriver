@@ -8,7 +8,7 @@ services:
       - key: KEY_ENCRYPTION_SALT
         generateValue: true
       - key: DATABASE_URL
-        value: sqlite+aiosqlite:///./data/clawriver.db
+        value: postgresql+asyncpg://postgres.nhcpbfxlezrrowmokncm:d2WWYwdGIxLzFUOr@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
       - key: APP_NAME
         value: ClawRiver
       # 关闭依赖Redis的缓存功能（Render免费套餐无Redis）
