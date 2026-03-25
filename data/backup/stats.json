@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "total_agents": 2,
+    "active_agents": 2,
+    "total_memories": 18,
+    "total_purchases": 0,
+    "total_ratings": 0,
+    "total_categories": 15
+  }
+}
