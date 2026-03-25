@@ -14,7 +14,12 @@ from app.core.exceptions import AppError
 async def lifespan(app: FastAPI):
     """应用生命周期"""
     # 启动时初始化数据库
-    await init_db()
+    try:
+        from app.db.init_db import init_db as fast_init_db
+        await fast_init_db()
+    except Exception as e:
+        print(f"⚠️ 快速初始化失败，尝试标准初始化: {e}")
+        await init_db()
 
     # 导入种子数据（如果数据库为空）
     try:
