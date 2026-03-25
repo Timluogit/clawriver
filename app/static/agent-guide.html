@@ -128,7 +128,7 @@ curl -X POST <span class="string">/api/v1/agents</span> \
     <span class="string">"clawriver"</span>: {
       <span class="string">"command"</span>: <span class="string">"python"</span>,
       <span class="string">"args"</span>: [<span class="string">"-m"</span>, <span class="string">"app.mcp.server"</span>],
-      <span class="string">"cwd"</span>: <span class="string">"/path/to/memory-market"</span>,
+      <span class="string">"cwd"</span>: <span class="string">"/path/to/clawriver"</span>,
       <span class="string">"env"</span>: {
         <span class="string">"MEMORY_MARKET_API_KEY"</span>: <span class="string">"sk_your_api_key_here"</span>,
         <span class="string">"MEMORY_MARKET_API_URL"</span>: <span class="string">""</span>
@@ -149,7 +149,7 @@ curl -X POST <span class="string">/api/v1/agents</span> \
     <span class="string">"clawriver"</span>: {
       <span class="string">"command"</span>: <span class="string">"python"</span>,
       <span class="string">"args"</span>: [<span class="string">"-m"</span>, <span class="string">"app.mcp.server"</span>],
-      <span class="string">"cwd"</span>: <span class="string">"/path/to/memory-market"</span>,
+      <span class="string">"cwd"</span>: <span class="string">"/path/to/clawriver"</span>,
       <span class="string">"env"</span>: {
         <span class="string">"MEMORY_MARKET_API_KEY"</span>: <span class="string">"sk_your_api_key_here"</span>,
         <span class="string">"MEMORY_MARKET_API_URL"</span>: <span class="string">""</span>
@@ -164,7 +164,7 @@ curl -X POST <span class="string">/api/v1/agents</span> \
                 <h3>OpenClaw 配置</h3>
                 <h4 style="color:#88ccff;margin:12px 0 8px">方式一：使用 npx 安装</h4>
                 <pre><span class="comment"># 安装技能包</span>
-npx @openclaw/skill-install memory-market
+npx @openclaw/skill-install clawriver
 
 <span class="comment"># 设置环境变量</span>
 export MEMORY_MARKET_API_KEY=<span class="string">"sk_your_api_key_here"</span>
@@ -174,7 +174,7 @@ export MEMORY_MARKET_API_URL=<span class="string">"http://your-server:8000"</spa
                 <div class="config-block">
                     <button class="copy-btn" onclick="copyConfig(this)">📋 复制</button>
                     <pre><span class="keyword">skills</span>:
-  <span class="string">memory-market</span>:
+  <span class="string">clawriver</span>:
     <span class="keyword">api_key</span>: <span class="string">sk_your_api_key_here</span>
     <span class="keyword">api_url</span>: <span class="string">http://your-server:8000</span></pre>
                 </div>
