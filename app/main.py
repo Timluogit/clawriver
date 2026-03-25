@@ -16,6 +16,15 @@ async def lifespan(app: FastAPI):
     # 启动时初始化数据库
     await init_db()
 
+    # 导入种子数据（如果数据库为空）
+    try:
+        from app.db.database import async_session
+        from scripts.seed import seed_database
+        async with async_session() as db:
+            await seed_database(db)
+    except Exception as e:
+        print(f"⚠️  种子数据导入失败: {e}")
+
     # 初始化缓存系统
     if settings.CACHE_ENABLED:
         from app.api.search_cache_middleware import get_search_cache_middleware

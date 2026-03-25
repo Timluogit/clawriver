@@ -1,0 +1,157 @@
+[
+  {
+    "title": "GitHub PR 自动审查流程",
+    "category": "通用/开发效率",
+    "summary": "用gh CLI自动拉取PR diff并生成代码审查意见的完整流程",
+    "content": {
+      "步骤1_拉取diff": "gh pr diff {pr_number} --repo {owner/repo} > /tmp/pr.diff",
+      "步骤2_分析变更": "读取diff，识别新增函数、删除代码、潜在bug",
+      "步骤3_生成审查": "将分析结果格式化为审查意见",
+      "步骤4_提交评论": "gh pr comment {pr_number} --repo {owner/repo} --body \"{审查意见}\"",
+      "if_无变更": "if diff为空 then 跳过审查"
+    },
+    "price": 10
+  },
+  {
+    "title": "Docker 容器部署模板",
+    "category": "通用/DevOps",
+    "summary": "从Dockerfile到部署的完整流程模板",
+    "content": {
+      "Dockerfile模板": "FROM {基础镜像}\nWORKDIR /app\nCOPY {源码路径} .\nRUN {构建命令}\nCMD [\"{启动命令}\"]",
+      "构建": "docker build -t {镜像名}:{版本号} -f {Dockerfile路径} .",
+      "推送": "docker push {仓库地址}/{镜像名}:{版本号}",
+      "部署": "kubectl apply -f {k8s配置文件} -n {命名空间}",
+      "if_构建失败": "if exit_code != 0 then 检查日志 docker logs {容器名}"
+    },
+    "price": 20
+  },
+  {
+    "title": "数据库慢查询优化",
+    "category": "通用/数据库",
+    "summary": "SQL慢查询分析和优化的标准流程",
+    "content": {
+      "步骤1_定位慢查询": "EXPLAIN ANALYZE {SQL语句}",
+      "步骤2_分析执行计划": "检查 seq_scan/index_scan、rows、cost",
+      "步骤3_添加索引": "CREATE INDEX idx_{表名}_{字段} ON {表名}({字段})",
+      "步骤4_验证优化": "再次执行 EXPLAIN ANALYZE 对比 cost",
+      "判断标准": "if cost > 10000 then 需要优化 if rows > 100000 then 考虑分表"
+    },
+    "price": 15
+  },
+  {
+    "title": "小红书爆款标题公式",
+    "category": "小红书/文案",
+    "summary": "5个可直接套用的标题模板，输入变量自动生成",
+    "content": {
+      "公式1_痛点型": "{人群}必看！{痛点}终于有救了",
+      "公式2_数字型": "{数字}个让你{效果}的{主题}技巧",
+      "公式3_反差型": "从{糟糕状态}到{理想状态}，我只用了{方法}",
+      "公式4_悬念型": "千万别{常见行为}！{惊人发现}",
+      "公式5_权威型": "{权威来源}都在用的{主题}方法"
+    },
+    "price": 0
+  },
+  {
+    "title": "抖音短视频脚本模板",
+    "category": "抖音/内容创作",
+    "summary": "3种爆款短视频脚本结构",
+    "content": {
+      "模板1_黄金3秒": "hook:{冲突问题或悬念}→展开:{解决方案}→结尾:{行动号召}",
+      "模板2_教程型": "问题:{目标受众的痛点}→步骤1→步骤2→步骤3→效果展示",
+      "模板3_故事型": "起:{角色+背景}→承:{冲突+转折}→合:{结局+金句}",
+      "拍摄要点": "if 时长>60秒 then 分段 if 无hook then 完播率<30%"
+    },
+    "price": 25
+  },
+  {
+    "title": "公众号爆款标题公式",
+    "category": "微信/公众号",
+    "summary": "10个高点击率标题模板",
+    "content": {
+      "公式1": "{数字}个{人群}必知的{主题}",
+      "公式2": "{名人/权威}都在用的{主题}方法",
+      "公式3": "从{糟糕状态}到{理想状态}，我只做了{一件事}",
+      "公式4": "{主题}的{数字}个误区，第{N}个你一定中过",
+      "公式5": "月薪{数字}的人，{习惯/方法}有什么不同？"
+    },
+    "price": 15
+  },
+  {
+    "title": "Python 文件处理工具箱",
+    "category": "通用/编程",
+    "summary": "常用文件操作的Python代码模板",
+    "content": {
+      "读取CSV": "import pandas as pd\ndf = pd.read_csv(\"{文件路径}\", encoding=\"{编码}\")",
+      "写入JSON": "import json\nwith open(\"{文件路径}\",\"w\",encoding=\"utf-8\") as f:\n    json.dump({数据}, f, ensure_ascii=False, indent=2)",
+      "批量重命名": "import os\nfor f in os.listdir(\"{目录}\"):\n    os.rename(os.path.join(\"{目录}\",f), os.path.join(\"{目录}\", f.replace(\"{旧词}\",\"{新词}\")))",
+      "if_文件不存在": "if not os.path.exists(\"{路径}\") then 创建或报错"
+    },
+    "price": 20
+  },
+  {
+    "title": "curl API 调用模板",
+    "category": "通用/API",
+    "summary": "REST API调用的curl命令模板",
+    "content": {
+      "GET请求": "curl -s \"{url}?{参数}={值}\" -H \"Authorization: Bearer {TOKEN}\"",
+      "POST_JSON": "curl -s -X POST \"{url}\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {TOKEN}\" -d '{\"{key}\":\"{value}\"}'",
+      "文件上传": "curl -s -X POST \"{url}\" -H \"Authorization: Bearer {TOKEN}\" -F \"file=@{文件路径}\"",
+      "带重试": "curl -s --retry 3 --retry-delay 2 --max-time 30 \"{url}\"",
+      "错误处理": "if HTTP_CODE != 200 then 检查TOKEN和参数"
+    },
+    "price": 10
+  },
+  {
+    "title": "正则表达式速查表",
+    "category": "通用/编程",
+    "summary": "常用正则模式和Python调用示例",
+    "content": {
+      "邮箱匹配": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+      "手机号匹配": "^1[3-9]\\d{9}$",
+      "URL匹配": "https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}[/\\w.-]*",
+      "Python调用": "import re\npattern = r\"{正则}\"\nmatches = re.findall(pattern, {文本})",
+      "if无匹配": "if len(matches) == 0 then 调整正则或检查输入格式"
+    },
+    "price": 15
+  },
+  {
+    "title": "Linux 运维常用命令",
+    "category": "通用/运维",
+    "summary": "服务器管理和故障排查的常用命令",
+    "content": {
+      "查看进程": "ps aux | grep {进程名}",
+      "查看端口": "lsof -i :{端口号} 或 netstat -tlnp | grep {端口号}",
+      "查看磁盘": "df -h && du -sh {目录}/*",
+      "查看内存": "free -h && top -bn1 | head -5",
+      "日志查看": "tail -f {日志文件} | grep --color {关键词}",
+      "if_CPU高": "if %CPU > 80 then 用top找出高CPU进程并分析"
+    },
+    "price": 10
+  },
+  {
+    "title": "Markdown 文档模板库",
+    "category": "通用/文档",
+    "summary": "5种常用Markdown文档结构模板",
+    "content": {
+      "README模板": "# {项目名}\n## 简介\n{简介}\n## 安装\n```bash\n{安装命令}\n```\n## 使用\n{使用说明}",
+      "周报模板": "# 周报 {日期范围}\n## 本周完成\n- {完成项}\n## 下周计划\n- {计划项}",
+      "API文档模板": "## {接口名}\n**URL**: {method} {path}\n**参数**: {参数表}\n**返回**: {返回格式}",
+      "技术方案模板": "# {方案名}\n## 背景\n{背景}\n## 方案\n{方案描述}\n## 优缺点\n| 优点 | 缺点 |\n|---|---|\n| {优点} | {缺点} |"
+    },
+    "price": 20
+  },
+  {
+    "title": "Git 分支管理模板",
+    "category": "通用/开发效率",
+    "summary": "Git分支创建、合并、冲突解决的标准流程",
+    "content": {
+      "创建分支": "git checkout -b {分支名}",
+      "合并分支": "git merge {分支名}",
+      "冲突解决": "手动解决冲突文件后 git add . && git commit",
+      "删除分支": "git branch -d {分支名}",
+      "rebase": "git rebase {目标分支}",
+      "if_冲突多": "if 冲突文件>5 then 建议分批合并"
+    },
+    "price": 0
+  }
+]
