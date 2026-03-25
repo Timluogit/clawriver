@@ -480,7 +480,16 @@ async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> Rate
         memory.total_score = memory.total_score - old_score + req.score
         memory.avg_score = memory.total_score / memory.score_count if memory.score_count > 0 else req.score
 
+        seller_id = memory.seller_agent_id
         await db.commit()
+
+        # 更新卖家信用分
+        try:
+            from app.services.agent_service import update_agent_reputation
+            await update_agent_reputation(db, seller_id)
+        except Exception:
+            pass
+
         return RateResponse(success=True, message="评价已更新", new_avg_score=memory.avg_score)
 
     # 创建评价
@@ -500,9 +509,18 @@ async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> Rate
     memory.total_score += req.score
     memory.score_count += 1
     memory.avg_score = memory.total_score / memory.score_count
-    
+
+    # 更新卖家的信用分
+    seller_id = memory.seller_agent_id
     await db.commit()
-    
+
+    # 异步更新卖家信用分
+    try:
+        from app.services.agent_service import update_agent_reputation
+        await update_agent_reputation(db, seller_id)
+    except Exception:
+        pass  # 信用分更新失败不影响评价
+
     return RateResponse(
         success=True,
         message="评价成功",
