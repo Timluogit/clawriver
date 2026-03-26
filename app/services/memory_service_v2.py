@@ -14,8 +14,11 @@ from app.models.schemas import (
     VerificationRequest, VerificationResponse
 )
 from app.core.config import settings
-from app.search.hybrid_search import get_hybrid_engine
-from qdrant_client.http.models import Filter, FieldCondition, Range
+try:
+    from app.search.hybrid_search import get_hybrid_engine
+    _has_qdrant = True
+except ImportError:
+    _has_qdrant = False
 import uuid
 from datetime import datetime
 from math import log10
