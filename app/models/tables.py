@@ -844,7 +844,7 @@ class UserPermission(Base):
 
     # 索引和约束
     __table_args__ = (
-        UniqueConstraint('agent_id', 'permission_id', 'scope', name='uq_user_permission_scope'),
+        UniqueConstraint('agent_id', 'permission_id', name='uq_user_permission'),
         Index('idx_user_permissions_agent', 'agent_id'),
         Index('idx_user_permissions_permission', 'permission_id'),
         Index('idx_user_permissions_agent_active', 'agent_id', 'expires_at'),

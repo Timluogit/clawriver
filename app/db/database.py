@@ -3,7 +3,18 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import settings
 
-engine = create_async_engine(settings.DATABASE_URL, echo=settings.DEBUG)
+# 根据数据库类型配置连接参数
+_connect_args = {}
+if "postgresql" in settings.DATABASE_URL:
+    # Neon/PostgreSQL: 禁用 prepared statements（兼容 connection pooler）
+    _connect_args = {"statement_cache_size": 0}
+
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    echo=settings.DEBUG,
+    connect_args=_connect_args,
+    pool_pre_ping=True,  # 自动检测断开的连接
+)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 class Base(DeclarativeBase):
