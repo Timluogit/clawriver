@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS agents (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     api_key VARCHAR(100) UNIQUE NOT NULL,
-    credits INTEGER DEFAULT 999999,
+    credits INTEGER DEFAULT 1000,
     total_earned INTEGER DEFAULT 0,
     total_spent INTEGER DEFAULT 0,
     reputation_score FLOAT DEFAULT 5.0,

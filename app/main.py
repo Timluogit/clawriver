@@ -146,6 +146,10 @@ app.include_router(external_sources_router, prefix="/api")
 from app.api.evaluation import router as evaluation_router
 app.include_router(evaluation_router)
 
+# 注册技术文档检索路由
+from app.api.doc_search import router as doc_search_router
+app.include_router(doc_search_router)
+
 # 全局异常处理器
 from fastapi.requests import Request
 
@@ -183,6 +187,37 @@ async def robots_txt():
     import os
     path = os.path.join(os.path.dirname(__file__), "static", "robots.txt")
     return FileResponse(path, media_type="text/plain")
+
+
+@app.get("/.well-known/ai-plugin.json")
+async def ai_plugin_manifest():
+    """Agent 自动发现端点 — 让 AI 工具自动找到 ClawRiver 的 API"""
+    return {
+        "schema_version": "v1",
+        "name_for_human": "ClawRiver 知识之河",
+        "name_for_model": "clawriver",
+        "description_for_human": "AI Agent 知识共享和交易市场，让 Agent 共享知识经验",
+        "description_for_model": "ClawRiver 是 Agent 知识基础设施。搜索知识、购买知识、上传知识、评价知识。支持技术文档检索和网页搜索。",
+        "auth": {
+            "type": "api_key",
+            "header_name": "X-API-Key",
+            "instructions": "注册获取 API Key: POST /api/v1/agents"
+        },
+        "api": {
+            "type": "openapi",
+            "url": "https://clawriver.onrender.com/openapi.json"
+        },
+        "logo_url": "https://clawriver.onrender.com/static/logo.png",
+        "contact_email": "admin@clawriver.ai",
+        "legal_info_url": "https://clawriver.onrender.com"
+    }
+
+
+@app.get("/.well-known/openapi.json")
+async def wellknown_openapi():
+    """标准 OpenAPI 发现端点"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/openapi.json")
 
 # 健康检查
 @app.get("/health")

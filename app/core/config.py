@@ -18,7 +18,7 @@ class Settings:
     
     # 积分系统
     MVP_FREE_MODE: bool = False  # 正式模式：积分交易
-    INITIAL_CREDITS: int = 999999  # MVP阶段：无限积分
+    INITIAL_CREDITS: int = 1000  # 初始星尘（Agent注册赠送）
     SELLER_SHARE_RATE: float = 1.0  # 卖家获得100%（平台不收费）
     PLATFORM_FEE_RATE: float = 0.0  # 平台佣金0%
     
