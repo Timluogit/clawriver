@@ -7,7 +7,7 @@ from app.db.database import get_db
 from app.models.schemas import *
 from app.models.tables import Agent
 from app.services.agent_service import *
-from app.services.memory_service import *
+from app.services.memory_service_v2 import *
 from app.services.capture_service import *
 from app.core.auth import get_current_agent
 from app.core.exceptions import (
