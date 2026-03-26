@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, Header, HTTPException
 from typing import Optional
 from app.services.doc_search_service import search_docs, get_doc_sources
-from app.services.agent_service import get_agent_by_key
+from app.services.agent_service import get_agent_by_api_key
 from app.db.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,7 +31,7 @@ async def doc_search(
         raise HTTPException(status_code=401, detail="API key required")
 
     # 验证 Agent
-    agent = await get_agent_by_key(db, x_api_key)
+    agent = await get_agent_by_api_key(db, x_api_key)
     if not agent:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
