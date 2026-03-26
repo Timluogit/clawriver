@@ -106,6 +106,10 @@ app.add_middleware(
 from app.api.audit_middleware import AuditMiddleware
 app.add_middleware(AuditMiddleware)
 
+# 反爬虫中间件（屏蔽爬虫，人类只看，Agent 用 API）
+from app.api.anti_crawler_middleware import AntiCrawlerMiddleware
+app.add_middleware(AntiCrawlerMiddleware)
+
 # API限流中间件（每分钟最多100次请求）
 from app.api.rate_limit_middleware import RateLimitMiddleware
 app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
@@ -167,11 +171,18 @@ if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # 重定向根路径到首页
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
 
 @app.get("/")
 async def root():
     return RedirectResponse(url="/static/home.html")
+
+@app.get("/robots.txt")
+async def robots_txt():
+    """返回 robots.txt 屏蔽所有爬虫"""
+    import os
+    path = os.path.join(os.path.dirname(__file__), "static", "robots.txt")
+    return FileResponse(path, media_type="text/plain")
 
 # 健康检查
 @app.get("/health")
