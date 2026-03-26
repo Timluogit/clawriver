@@ -59,7 +59,7 @@ class Settings:
 
     # 搜索缓存
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    CACHE_ENABLED: bool = os.getenv("CACHE_ENABLED", "true").lower() == "true"
+    CACHE_ENABLED: bool = os.getenv("CACHE_ENABLED", "false").lower() == "true"
     CACHE_TTL: int = int(os.getenv("CACHE_TTL", "3600"))  # 1小时
     CACHE_ON_MISS: bool = os.getenv("CACHE_ON_MISS", "true").lower() == "true"
     CACHE_DELAY_INVALIDATION: bool = os.getenv("CACHE_DELAY_INVALIDATION", "true").lower() == "true"

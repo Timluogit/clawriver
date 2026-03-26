@@ -9,7 +9,12 @@ import sys
 from datetime import datetime
 from typing import Any
 from pythonjsonlogger import jsonlogger
-from opentelemetry import trace
+
+try:
+    from opentelemetry import trace
+    _has_otel = True
+except ImportError:
+    _has_otel = False
 
 # 日志级别映射
 LOG_LEVELS = {
@@ -64,6 +69,8 @@ class JsonFormatter(jsonlogger.JsonFormatter):
 
     def _get_trace_id(self) -> str:
         """获取当前 trace ID"""
+        if not _has_otel:
+            return ""
         current_span = trace.get_current_span()
         if current_span is not None and current_span.context is not None:
             return format(current_span.context.trace_id, '032x')
