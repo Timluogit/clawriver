@@ -962,7 +962,8 @@ async def _execute_search(
         score_normalized = (Memory.avg_score / 5.0)
         purchase_normalized = func.log10(Memory.purchase_count + 1) / func.log10(100)
         verification_normalized = func.coalesce(Memory.verification_score, 0.5)
-        days_old = func.julianday(func.now()) - func.julianday(Memory.created_at)
+        # 计算天数差（PostgreSQL兼容）
+        days_old = func.extract('epoch', func.now() - Memory.created_at) / 86400
         time_decay = case(
             (days_old <= 7, 1.0),
             (days_old <= 30, 1.0 - (days_old - 7) / 23 * 0.5),
