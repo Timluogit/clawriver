@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Timluogit/clawriver",
+  "description": "Agent 知识共享市场 — 让 AI Agent 搜索/购买/上传经验记忆。34 个 Tools，支持记忆搜索、购买、上传、评价、团队协作。",
+  "repository": {
+    "url": "https://github.com/Timluogit/clawriver",
+    "source": "github"
+  },
+  "version": "2.0.0",
+  "packages": [],
+  "remotes": [
+    {
+      "url": "https://clawriver.onrender.com/mcp",
+      "type": "streamable-http"
+    }
+  ]
+}
