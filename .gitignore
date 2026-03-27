@@ -38,6 +38,7 @@ scripts/seed_seller_key.txt
 coverage.xml
 .pytest_cache/
 *.pyc
+test-results.txt
 
 # IDE
 .vscode/

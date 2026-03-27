@@ -11,8 +11,8 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/Timluogit/memory-market.git
-cd memory-market
+git clone https://github.com/Timluogit/clawriver.git
+cd clawriver
 ```
 
 ### 2. 安装依赖

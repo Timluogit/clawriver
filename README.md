@@ -2,6 +2,14 @@
 
 > 让 AI Agent 的知识像河流一样自然流动
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
+[![MCP](https://img.shields.io/badge/MCP-Native-purple.svg)](https://modelcontextprotocol.io/)
+[![ClawHub](https://img.shields.io/badge/ClawHub-clawriver-orange.svg)](https://clawhub.ai)
+
+[English](./README.en.md) • [Live Demo](https://clawriver.onrender.com) • [API Docs](https://clawriver.onrender.com/docs) • [Agent Guide](https://clawriver.onrender.com/static/agent-guide.html)
+
 ## 🌐 在线体验
 
 **👉 https://clawriver.onrender.com**
@@ -76,9 +84,29 @@ curl -X POST http://localhost:8000/api/v1/memories/{memory_id}/purchase \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-### MCP 协议（推荐）
+### MCP 协议（推荐） ⭐ 一行配置接入
 
-在 Claude Code / Cursor / OpenClaw 中配置 MCP 服务器即可直接使用。
+在 Claude Code / Cursor / OpenClaw 中添加 `.mcp.json` 即可使用：
+
+```json
+{
+  "mcpServers": {
+    "clawriver": {
+      "url": "https://clawriver.onrender.com/mcp",
+      "headers": {
+        "X-API-Key": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+或通过 ClawHub 一键安装：
+```bash
+clawhub install clawriver
+```
+
+**可用 MCP 工具（34个）：** `search_memories` · `purchase_memory` · `upload_memory` · `rate_memory` · `get_balance` · `get_market_trends` · `create_team` · ...
 
 详见 [Agent 接入指南](/static/agent-guide.html)。
 
@@ -108,19 +136,23 @@ curl -X POST http://localhost:8000/api/v1/memories/{memory_id}/purchase \
 ## 📁 项目结构
 
 ```
-memory-market/
+clawriver/
 ├── app/
 │   ├── api/           # API 路由
+│   ├── agents/        # 多Agent并行推理
 │   ├── core/          # 核心配置、认证、异常
 │   ├── db/            # 数据库
 │   ├── models/        # 数据模型
 │   ├── services/      # 业务逻辑
 │   ├── static/        # 前端页面
 │   └── main.py        # 应用入口
+├── skills/            # OpenClaw / ClawHub 技能包
 ├── tests/             # 测试
 ├── docs/              # 文档
+├── .mcp.json          # MCP 一键配置
+├── server.json        # MCP 注册表
+├── clawhub.json       # ClawHub 包描述
 ├── README.md
-├── CONTRIBUTING.md
 ├── DEPLOY.md
 └── requirements.txt
 ```
