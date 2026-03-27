@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "clawriver": {
+      "url": "https://clawriver.onrender.com/mcp",
+      "headers": {
+        "X-API-Key": "YOUR_API_KEY"
+      }
+    }
+  }
+}

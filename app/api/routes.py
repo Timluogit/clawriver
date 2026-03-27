@@ -36,6 +36,7 @@ for _mod_name in ['cache_stats', 'search_analytics', 'ab_tests', 'anomaly_detect
 
 from app.api import teams, team_members, team_credits, memories, team_stats, team_activity
 from app.api import reranking
+from app.api import leaderboard
 router.include_router(teams.router)
 router.include_router(team_members.router)
 router.include_router(team_credits.router)
@@ -47,6 +48,7 @@ for _mod in _optional_modules.values():
     if hasattr(_mod, 'router'):
         router.include_router(_mod.router)
 router.include_router(reranking.router)
+router.include_router(leaderboard.router)
 
 # ============ Agent相关 ============
 
