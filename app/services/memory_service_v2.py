@@ -237,6 +237,90 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
 
     return memory_to_response(memory, seller.name, seller.reputation_score)
 
+
+async def _fallback_search(
+    db: AsyncSession,
+    base_stmt,
+    query: str,
+    page: int = 1,
+    page_size: int = 10,
+    sort_by: str = "relevance"
+) -> dict:
+    """纯 SQL 关键词搜索（无 Qdrant 回退方案）"""
+    from app.models.tables import Agent
+
+    stmt = base_stmt
+
+    # 关键词匹配
+    if query:
+        search_filter = or_(
+            Memory.title.contains(query),
+            Memory.summary.contains(query),
+            Memory.category.contains(query),
+        )
+        stmt = stmt.where(search_filter)
+
+    # 排序
+    if sort_by == "created_at":
+        stmt = stmt.order_by(desc(Memory.created_at))
+    elif sort_by == "purchase_count":
+        stmt = stmt.order_by(desc(Memory.purchase_count))
+    elif sort_by == "price":
+        stmt = stmt.order_by(Memory.price)
+    else:
+        # 默认：综合评分
+        stmt = stmt.order_by(desc(Memory.avg_score), desc(Memory.purchase_count))
+
+    # 分页
+    offset = (page - 1) * page_size
+    stmt = stmt.offset(offset).limit(page_size)
+
+    result = await db.execute(stmt)
+    memories = result.scalars().all()
+
+    # 获取总数
+    count_stmt = select(func.count(Memory.memory_id)).where(Memory.is_active == True)
+    if query:
+        count_stmt = count_stmt.where(search_filter)
+    count_result = await db.execute(count_stmt)
+    total = count_result.scalar() or 0
+
+    # 获取卖家信息
+    items = []
+    for mem in memories:
+        seller_result = await db.execute(
+            select(Agent.name, Agent.reputation_score).where(Agent.agent_id == mem.seller_agent_id)
+        )
+        seller = seller_result.first()
+        items.append({
+            "memory_id": mem.memory_id,
+            "seller_agent_id": mem.seller_agent_id,
+            "seller_name": seller.name if seller else "unknown",
+            "seller_reputation": seller.reputation_score if seller else 5.0,
+            "title": mem.title,
+            "category": mem.category,
+            "tags": mem.tags or [],
+            "summary": mem.summary,
+            "content_preview": str(mem.content)[:200] if mem.content else "",
+            "format_type": mem.format_type,
+            "price": mem.price,
+            "purchase_count": mem.purchase_count,
+            "favorite_count": mem.favorite_count,
+            "avg_score": mem.avg_score,
+            "verification_score": mem.verification_score,
+            "executability_score": 0,
+            "created_at": mem.created_at.isoformat() if mem.created_at else None,
+        })
+
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "search_type": "keyword_fallback",
+    }
+
+
 async def search_memories(
     db: AsyncSession,
     query: str = "",
@@ -289,23 +373,33 @@ async def search_memories(
     if max_price < 999999:
         base_stmt = base_stmt.where(Memory.price <= max_price)
 
-    # 使用混合搜索引擎
-    hybrid_engine = get_hybrid_engine()
-
-    return await hybrid_engine.search(
-        db=db,
-        query=query,
-        base_stmt=base_stmt,
-        search_type=search_type,
-        top_k=page_size * page,  # 获取足够的结果用于分页
-        min_score=0.1,
-        semantic_weight=0.6,
-        keyword_weight=0.4,
-        enable_rerank=True,
-        page=page,
-        page_size=page_size,
-        sort_by=sort_by
-    )
+    # 使用混合搜索引擎（Qdrant 可用时）或回退到关键词搜索
+    if _has_qdrant:
+        hybrid_engine = get_hybrid_engine()
+        return await hybrid_engine.search(
+            db=db,
+            query=query,
+            base_stmt=base_stmt,
+            search_type=search_type,
+            top_k=page_size * page,
+            min_score=0.1,
+            semantic_weight=0.6,
+            keyword_weight=0.4,
+            enable_rerank=True,
+            page=page,
+            page_size=page_size,
+            sort_by=sort_by
+        )
+    else:
+        # 回退：纯 SQL 关键词搜索
+        return await _fallback_search(
+            db=db,
+            base_stmt=base_stmt,
+            query=query,
+            page=page,
+            page_size=page_size,
+            sort_by=sort_by
+        )
 
 async def get_memory_detail(db: AsyncSession, memory_id: str, buyer_id: str = None) -> MemoryDetail:
     """获取记忆详情
