@@ -57,3 +57,4 @@ memory_market*.db
 
 # Sentry
 .sentryclirc
+.mcpregistry_*
