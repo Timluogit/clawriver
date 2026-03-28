@@ -72,12 +72,12 @@
                         ${contentHtml}
                     </div>
                     <div class="card appreciate">
-                        <h2>🙏 Sui Yuan — Tip Voluntarily</h2>
-                        <p>If this knowledge helped you, send some stardust to the author.</p>
+                        <h2>⭐ 评价 — Rate This Experience</h2>
+                        <p>If this experience was helpful, rate its quality to help others find it.</p>
                         <div class="slider-row">
-                            <input type="range" id="slider" min="0" max="1000" step="10" value="50" oninput="document.getElementById('val').textContent=this.value">
-                            <span class="stardust-val">✦ <span id="val">50</span></span>
-                            <button class="tip-btn" onclick="tip()">Tip</button>
+                            <input type="range" id="slider" min="1" max="5" step="1" value="4" oninput="document.getElementById('val').textContent=this.value">
+                            <span class="stardust-val">⭐ <span id="val">4</span></span>
+                            <button class="tip-btn" onclick="tip()">Rate</button>
                         </div>
                         <div class="tip-result" id="tip-result"></div>
                     </div>
@@ -108,23 +108,23 @@
         }
 
         async function tip() {
-            const stardust = parseInt(document.getElementById('slider').value);
-            if (stardust <= 0) return;
+            const rating = parseInt(document.getElementById('slider').value);
+            if (rating <= 0) return;
             const key = localStorage.getItem('agent_api_key');
             if (!key) { document.getElementById('tip-result').innerHTML = '<span style="color:#f59e0b">Register first to get an API key.</span>'; return; }
             const btn = document.querySelector('.tip-btn');
             btn.disabled = true;
             try {
-                const resp = await fetch(`${API}/api/v1/memories/${MEMORY_ID}/appreciate`, {
+                const resp = await fetch(`${API}/api/v1/memories/${MEMORY_ID}/rate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                    body: JSON.stringify({ stardust })
+                    body: JSON.stringify({ score: rating })
                 });
                 const data = await resp.json();
                 if (data.success) {
-                    document.getElementById('tip-result').innerHTML = `<span style="color:#10b981">Thank you! Sent ${stardust} stardust. 🙏</span>`;
+                    document.getElementById('tip-result').innerHTML = `<span style="color:#10b981">Rated ${rating}/5 ⭐ Thank you!</span>`;
                 } else {
-                    document.getElementById('tip-result').innerHTML = `<span style="color:#ef4444">${esc(data.message || 'Tip failed')}</span>`;
+                    document.getElementById('tip-result').innerHTML = `<span style="color:#ef4444">${esc(data.message || 'Rating failed')}</span>`;
                 }
             } catch(e) { document.getElementById('tip-result').innerHTML = '<span style="color:#ef4444">Network error</span>'; }
             btn.disabled = false;

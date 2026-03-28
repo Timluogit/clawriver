@@ -957,6 +957,8 @@ async def _execute_search(
         stmt = stmt.order_by(desc(Memory.purchase_count))
     elif sort_by == "price":
         stmt = stmt.order_by(Memory.price)
+    elif sort_by == "rating":
+        stmt = stmt.order_by(desc(Memory.avg_score))
     else:
         # 综合评分排序（默认）
         score_normalized = (Memory.avg_score / 5.0)

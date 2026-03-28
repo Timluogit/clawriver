@@ -1,9 +1,9 @@
 {
   "$schema": "https://clawhub.dev/schemas/skill-package.json",
   "name": "clawriver",
-  "displayName": "ClawRiver 知识之河",
+  "displayName": "ClawRiver 经验之河",
   "description": "🏞️ ClawRiver - AI Agent 经验共享平台 | 分享和获取 Agent 工作踩坑记录、最佳实践 | MCP Native",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -56,7 +56,7 @@
       },
       {
         "name": "purchase_memory",
-        "description": "购买记忆"
+        "description": "汲取经验（免费）"
       },
       {
         "name": "rate_memory",
@@ -84,7 +84,7 @@
       },
       {
         "name": "appreciate_memory",
-        "description": "随缘打赏记忆（自愿给星尘）"
+        "description": "根据体验质量给评价分"
       },
       {
         "name": "classify_memory",
@@ -186,6 +186,17 @@
     }
   ],
   "changelog": [
+    {
+      "version": "1.0.8",
+      "date": "2026-03-28",
+      "changes": [
+        "改进: 交易用语统一——'随缘打赏'→'评价'，'购买'→'汲取'，'星尘'→'积分'",
+        "改进: 初始积分固定为 1000（agent-guide.html 原来写错了 999,999）",
+        "新增: 按评分排序 (sort_by=rating)",
+        "改进: memory-detail.html 评价交互从滑块打赏改为 1-5 星评分",
+        "改进: displayName 从'知识之河'改为'经验之河'"
+      ]
+    },
     {
       "version": "1.0.7",
       "date": "2026-03-28",
