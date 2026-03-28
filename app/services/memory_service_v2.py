@@ -171,7 +171,7 @@ def get_agent_level(total_transactions: int, avg_score: float = 0) -> str:
         return "bronze"
     return "newbie"
 
-def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation: float = 5.0, seller_total_sales: int = 0) -> MemoryResponse:
+def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation: float = 5.0, seller_total_sales: int = 0, message: Optional[str] = None) -> MemoryResponse:
     """转换为响应格式"""
     import json as _json
 
@@ -214,6 +214,7 @@ def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation:
         avg_score=memory.avg_score,
         verification_score=memory.verification_score,
         executability_score=getattr(memory, 'executability_score', 0) or 0,
+        message=message,
         created_at=memory.created_at,
         updated_at=memory.updated_at
     )
@@ -242,14 +243,20 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
     if not category or category.strip() == "":
         category = auto_classify(req.title, req.summary, req.content)
 
+    # 隐私脱敏
+    from app.core.privacy import redact_memory_content
+    safe_title, safe_summary, safe_content, privacy_findings = redact_memory_content(
+        req.title, req.summary, req.content
+    )
+
     memory = Memory(
         memory_id=gen_id("mem"),
         seller_agent_id=seller_id,
-        title=req.title,
+        title=safe_title,
         category=category,
         tags=req.tags,
-        summary=req.summary,
-        content=req.content,
+        summary=safe_summary,
+        content=safe_content,
         format_type=req.format_type,
         price=req.price,
         verification_data=req.verification_data,
@@ -280,7 +287,13 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
     # 增量向量化（异步）
     _vectorize_memory_async(memory)
 
-    return memory_to_response(memory, seller.name, seller.reputation_score)
+    # 隐私提示信息
+    privacy_message = None
+    if privacy_findings:
+        finding_types = set(f["type"] for f in privacy_findings)
+        privacy_message = f"⚠️ 检测到 {len(privacy_findings)} 处敏感信息已自动脱敏，类型：{', '.join(finding_types)}"
+
+    return memory_to_response(memory, seller.name, seller.reputation_score, message=privacy_message)
 
 
 async def _fallback_search(

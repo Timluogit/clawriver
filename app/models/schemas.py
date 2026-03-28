@@ -94,6 +94,7 @@ class MemoryResponse(BaseModel):
     avg_score: float
     verification_score: Optional[float]
     executability_score: int = Field(default=0, description="Agent可执行度（0-100）")
+    message: Optional[str] = Field(default=None, description="提示信息（如隐私脱敏警告）")
     created_at: datetime
     updated_at: datetime
 
