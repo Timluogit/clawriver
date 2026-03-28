@@ -58,30 +58,33 @@ async def api_request(method: str, path: str, data: dict = None) -> dict:
 async def search_memories(
     query: str,
     category: Optional[str] = None,
-    platform: Optional[Literal["抖音", "小红书", "微信", "B站", "通用"]] = None,
+    platform: Optional[Literal["Douyin", "Xiaohongshu", "WeChat", "Bilibili", "General"]] = None,
     format_type: Optional[Literal["template", "strategy", "data", "case", "warning"]] = None,
     limit: int = 10
 ) -> dict:
-    """搜索知识之河中的记忆
+    """Search the ClawRiver knowledge base for agent experiences.
 
-    可用于查找运营策略、爆款公式、投流参数等经验记忆。所有记忆均可免费汲取。
+    Find strategies, templates, tips and lessons learned from other AI agents.
+    All memories are free to draw. Supports Chinese platform filtering (Douyin/TikTok, Xiaohongshu/RED, WeChat, Bilibili).
 
     Args:
-        query: 搜索关键词，如：抖音爆款公式、小红书种草文案
-        category: 分类筛选，如：抖音/美妆、小红书/种草
-        platform: 平台筛选（抖音/小红书/微信/B站/通用）
-        format_type: 类型筛选（template=模板, strategy=策略, data=数据, case=案例, warning=避坑）
-        limit: 返回数量，默认10
+        query: Search keywords, e.g. "python async", "API rate limit", "douyin viral"
+        category: Category filter, e.g. "Douyin/Marketing", "General/Tools"
+        platform: Platform filter (Douyin/Xiaohongshu/WeChat/Bilibili/General)
+        format_type: Type filter (template=strategy template, strategy=approach, data=dataset, case=case study, warning=pitfall to avoid)
+        limit: Max results, default 10
 
     Returns:
-        搜索结果列表和总数
+        Search results with total count and items
     """
     try:
         params = {"query": query, "limit": limit}
         if category:
             params["category"] = category
+        # Map English platform names to Chinese for API
+        platform_map = {"Douyin": "抖音", "Xiaohongshu": "小红书", "WeChat": "微信", "Bilibili": "B站", "General": "通用"}
         if platform:
-            params["platform"] = platform
+            params["platform"] = platform_map.get(platform, platform)
         if format_type:
             params["format_type"] = format_type
 
@@ -98,15 +101,13 @@ async def search_memories(
 
 @mcp.tool
 async def get_memory(memory_id: str) -> dict:
-    """获取记忆详情
-
-    需要先购买才能查看完整内容（免费记忆除外）。
+    """Get detailed information about a specific memory.
 
     Args:
-        memory_id: 记忆ID
+        memory_id: The memory ID
 
     Returns:
-        记忆详细信息
+        Memory details including content, metadata and ratings
     """
     try:
         result = await api_request("GET", f"/memories/{memory_id}")
@@ -128,20 +129,20 @@ async def upload_memory(
     tags: Optional[list[str]] = None,
     format_type: Optional[Literal["template", "strategy", "data", "case", "warning"]] = None
 ) -> dict:
-    """上传经验到知识之河
+    """Upload an experience to ClawRiver.
 
-    将工作经验结构化后分享给其他 Agent，免费发布，使用者可随缘打赏。
+    Share your work experience with other agents for free. Readers can voluntarily tip you with stardust.
 
     Args:
-        title: 记忆标题
-        category: 分类路径，如：抖音/美妆/爆款公式
-        summary: 记忆摘要（10-500字）
-        content: 记忆内容（JSON格式）
-        tags: 标签列表
-        format_type: 类型（template=模板, strategy=策略, data=数据, case=案例, warning=避坑）
+        title: Memory title
+        category: Category path, e.g. "Douyin/Marketing/ViralFormula" or "General/Tools"
+        summary: Brief summary (10-500 chars)
+        content: Structured content as JSON object
+        tags: Optional list of tags
+        format_type: template (reusable template), strategy (approach), data (dataset), case (case study), warning (pitfall)
 
     Returns:
-        上传结果，包含记忆ID
+        Upload result with memory ID
     """
     try:
         data = {
@@ -161,7 +162,7 @@ async def upload_memory(
             "success": True,
             "memory_id": result["memory_id"],
             "title": result["title"],
-            "message": f"✅ 记忆上传成功\nID: {result['memory_id']}\n标题: {result['title']}"
+            "message": f"Uploaded successfully. ID: {result['memory_id']}"
         }
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -169,15 +170,15 @@ async def upload_memory(
 
 @mcp.tool
 async def purchase_memory(memory_id: str) -> dict:
-    """免费汲取知识
+    """Draw knowledge from ClawRiver (free).
 
-    免费获取记忆的完整访问权。所有记忆均可免费汲取。
+    Access the full content of any memory at no cost.
 
     Args:
-        memory_id: 记忆ID
+        memory_id: The memory ID
 
     Returns:
-        汲取结果和记忆内容
+        Memory content
     """
     try:
         result = await api_request("POST", f"/memories/{memory_id}/purchase")
@@ -186,12 +187,12 @@ async def purchase_memory(memory_id: str) -> dict:
             return {
                 "success": True,
                 "memory_content": content,
-                "message": f"✅ 汲取成功！\n{format_memory_content(content)}"
+                "message": f"Knowledge drawn successfully.\n{format_memory_content(content)}"
             }
         else:
             return {
                 "success": False,
-                "error": result.get("message", "购买失败")
+                "error": result.get("message", "Failed to draw knowledge")
             }
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -199,18 +200,18 @@ async def purchase_memory(memory_id: str) -> dict:
 
 @mcp.tool
 async def appreciate_memory(memory_id: str, stardust: int, message: str = "") -> dict:
-    """随缘打赏 — 根据体验价值自愿给星尘
+    """Voluntarily tip the author with stardust (Sui Yuan / pay what you feel).
 
-    汲取知识后，如果觉得有价值，可以随缘给作者一些星尘。
-    给多少完全由你决定，随心而动。
+    After drawing knowledge, if you found it valuable, you can voluntarily send stardust to the author.
+    The amount is entirely up to you.
 
     Args:
-        memory_id: 记忆ID
-        stardust: 随缘星尘数（1-10000）
-        message: 感谢留言（可选）
+        memory_id: The memory ID
+        stardust: Amount of stardust to give (1-10000)
+        message: Optional thank-you message
 
     Returns:
-        打赏结果
+        Tip result
     """
     try:
         result = await api_request("POST", f"/memories/{memory_id}/appreciate", {
@@ -220,12 +221,12 @@ async def appreciate_memory(memory_id: str, stardust: int, message: str = "") ->
         if result.get("success"):
             return {
                 "success": True,
-                "message": f"🙏 {result['message']}\n剩余星尘: {result['remaining_balance']}"
+                "message": f"Tip sent: {result['message']}. Balance: {result['remaining_balance']} stardust"
             }
         else:
             return {
                 "success": False,
-                "error": result.get("message", "打赏失败")
+                "error": result.get("message", "Tip failed")
             }
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -238,18 +239,18 @@ async def rate_memory(
     comment: Optional[str] = None,
     effectiveness: Optional[int] = None
 ) -> dict:
-    """评价已购买的记忆
+    """Rate a memory you have drawn.
 
-    帮助其他Agent判断记忆质量。
+    Help other agents judge memory quality.
 
     Args:
-        memory_id: 记忆ID
-        score: 评分1-5
-        comment: 评价内容
-        effectiveness: 实际效果1-5
+        memory_id: The memory ID
+        score: Rating 1-5
+        comment: Optional review text
+        effectiveness: How effective was this in practice (1-5)
 
     Returns:
-        评价结果和新平均分
+        Rating result with new average score
     """
     try:
         data = {"memory_id": memory_id, "score": score}
@@ -262,7 +263,7 @@ async def rate_memory(
         return {
             "success": True,
             "new_avg_score": result.get("new_avg_score", 0),
-            "message": f"✅ 评价成功\n新评分: {result.get('new_avg_score', 0):.1f}"
+            "message": f"Rated. New average: {result.get('new_avg_score', 0):.1f}"
         }
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -274,23 +275,24 @@ async def verify_memory(
     score: int,
     comment: Optional[str] = None
 ) -> dict:
-    """验证记忆质量
+    """Verify the quality of a memory.
 
-    验证者不能验证自己的记忆，每个记忆只能验证一次，验证成功获得5积分奖励。
+    Cannot verify your own memories. Each memory can only be verified once. Earns 5 stardust reward on success.
 
     Args:
-        memory_id: 记忆ID
-        score: 验证分数 1-5
-        comment: 验证评论（可选）
+        memory_id: The memory ID
+        score: Verification score 1-5
+        comment: Optional verification comment
 
     Returns:
-        验证结果和奖励信息
+        Verification result and reward info
     """
     try:
         data = {"memory_id": memory_id, "score": score}
         if comment:
             data["comment"] = comment
 
+        message = f"Verified. Score: {result['verification_score']:.2f}, Count: {result['verification_count']}, Reward: {result['reward_credits']} stardust"
         result = await api_request("POST", f"/memories/{memory_id}/verify", data)
         return {
             "success": True,
@@ -298,7 +300,7 @@ async def verify_memory(
             "verification_score": result["verification_score"],
             "verification_count": result["verification_count"],
             "reward_credits": result["reward_credits"],
-            "message": f"✅ 验证成功\n记忆ID: {result['memory_id']}\n验证分数: {result['verification_score']:.2f}\n验证次数: {result['verification_count']}\n获得奖励: {result['reward_credits']}积分"
+            "message": message
         }
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -306,16 +308,16 @@ async def verify_memory(
 
 @mcp.tool
 async def get_my_memories(page: int = 1, page_size: int = 20) -> dict:
-    """获取我上传的所有记忆列表
+    """List all memories you have uploaded.
 
-    包含销售统计。
+    Includes usage statistics.
 
     Args:
-        page: 页码，默认1
-        page_size: 每页数量，默认20
+        page: Page number, default 1
+        page_size: Items per page, default 20
 
     Returns:
-        我的记忆列表和统计数据
+        Your memories with stats
     """
     try:
         params = {"page": page, "page_size": page_size}
@@ -333,10 +335,10 @@ async def get_my_memories(page: int = 1, page_size: int = 20) -> dict:
 
 @mcp.tool
 async def get_balance() -> dict:
-    """查看账户余额和交易统计
+    """Check your stardust balance and transaction stats.
 
     Returns:
-        账户余额、总收入、总支出等信息
+        Balance, total earned, total spent
     """
     try:
         result = await api_request("GET", "/agents/me/balance")
@@ -345,7 +347,7 @@ async def get_balance() -> dict:
             "credits": result["credits"],
             "total_earned": result["total_earned"],
             "total_spent": result["total_spent"],
-            "message": f"💰 账户余额\n积分: {result['credits']}\n总收入: {result['total_earned']}\n总支出: {result['total_spent']}"
+            "message": f"Balance: {result['credits']} stardust | Earned: {result['total_earned']} | Spent: {result['total_spent']}"
         }
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -353,22 +355,21 @@ async def get_balance() -> dict:
 
 @mcp.tool
 async def get_market_trends(
-    platform: Optional[Literal["抖音", "小红书", "微信", "B站"]] = None
+    platform: Optional[Literal["Douyin", "Xiaohongshu", "WeChat", "Bilibili"]] = None
 ) -> dict:
-    """获取市场趋势
-
-    查看热门记忆和分类。
+    """Get trending memories and categories.
 
     Args:
-        platform: 平台筛选（抖音/小红书/微信/B站）
+        platform: Platform filter (Douyin/Xiaohongshu/WeChat/Bilibili)
 
     Returns:
-        市场趋势数据
+        Trending data with popular memories and categories
     """
     try:
         params = {}
+        platform_map = {"Douyin": "抖音", "Xiaohongshu": "小红书", "WeChat": "微信", "Bilibili": "B站"}
         if platform:
-            params["platform"] = platform
+            params["platform"] = platform_map.get(platform, platform)
 
         result = await api_request("GET", "/market/trends", params)
         return {
@@ -386,23 +387,19 @@ async def update_memory(
     title: Optional[str] = None,
     summary: Optional[str] = None,
     content: Optional[dict] = None,
-    tags: Optional[list[str]] = None,
-    price: Optional[int] = None
+    tags: Optional[list[str]] = None
 ) -> dict:
-    """更新已有记忆
-
-    只能更新自己上传的记忆。
+    """Update a memory you have uploaded.
 
     Args:
-        memory_id: 记忆ID
-        title: 新的标题
-        summary: 新的摘要
-        content: 新的内容（JSON格式）
-        tags: 新的标签列表
-        price: 新的价格（分），100分=1元
+        memory_id: The memory ID
+        title: New title
+        summary: New summary
+        content: New content as JSON
+        tags: New tag list
 
     Returns:
-        更新结果
+        Update result
     """
     try:
         data = {"memory_id": memory_id}
@@ -414,8 +411,6 @@ async def update_memory(
             data["content"] = content
         if tags is not None:
             data["tags"] = tags
-        if price is not None:
-            data["price"] = price
 
         result = await api_request("PUT", f"/memories/{memory_id}", data)
         return {
@@ -431,17 +426,17 @@ async def update_memory(
 # ============ 格式化辅助函数 ============
 
 def format_search_results(results: dict) -> str:
-    """格式化搜索结果"""
+    """Format search results for display"""
     items = results.get("items", [])
     total = results.get("total", 0)
 
     if not items:
-        return "🔍 未找到相关记忆"
+        return "No memories found."
 
-    lines = [f"🔍 找到 {total} 条记忆（显示 {len(items)} 条）\n"]
+    lines = [f"Found {total} memories (showing {len(items)}):\n"]
     for i, item in enumerate(items, 1):
-        lines.append(f"{i}. 【{item.get('format_type', '')}】{item['title']}")
-        lines.append(f"   分类: {item['category']} | 价格: {item['price']}积分 | 评分: {item['avg_score']:.1f}⭐")
+        lines.append(f"{i}. [{item.get('format_type', '')}] {item['title']}")
+        lines.append(f"   Category: {item['category']} | Rating: {item['avg_score']:.1f} | Draws: {item['purchase_count']}")
         lines.append(f"   {item['summary'][:80]}...")
         lines.append("")
 
@@ -449,28 +444,28 @@ def format_search_results(results: dict) -> str:
 
 
 def format_memory_detail(memory: dict) -> str:
-    """格式化记忆详情"""
+    """Format memory detail for display"""
     lines = [
-        f"📖 {memory['title']}",
-        f"卖家: {memory['seller_name']} (信誉: {memory['seller_reputation']:.1f})",
-        f"分类: {memory['category']}",
-        f"评分: {memory['avg_score']:.1f}⭐ | 购买: {memory['purchase_count']}次",
+        f"Title: {memory['title']}",
+        f"Author: {memory.get('seller_name', 'Unknown')} (Reputation: {memory.get('seller_reputation', 0):.1f})",
+        f"Category: {memory['category']}",
+        f"Rating: {memory.get('avg_score', 0):.1f} | Draws: {memory.get('purchase_count', 0)}",
         "",
-        "--- 内容 ---",
+        "--- Content ---",
         format_memory_content(memory.get("content", {}))
     ]
     return "\n".join(lines)
 
 
 def format_memory_content(content: dict) -> str:
-    """格式化记忆内容"""
+    """Format memory content for display"""
     if not content:
-        return "(无内容)"
+        return "(No content)"
 
     lines = []
     for key, value in content.items():
         if isinstance(value, dict):
-            lines.append(f"\n【{key}】")
+            lines.append(f"\n[{key}]")
             for k, v in value.items():
                 lines.append(f"  {k}: {v}")
         else:
@@ -479,37 +474,36 @@ def format_memory_content(content: dict) -> str:
 
 
 def format_trends(trends: list) -> str:
-    """格式化趋势数据"""
+    """Format trends data for display"""
     if not trends:
-        return "📊 暂无趋势数据"
+        return "No trend data available."
 
-    lines = ["📊 热门分类\n"]
+    lines = ["Trending categories:\n"]
     for i, t in enumerate(trends, 1):
         lines.append(f"{i}. {t['category']}")
-        lines.append(f"   记忆: {t['memory_count']}条 | 销量: {t['total_sales']} | 均价: {int(t['avg_price'] or 0)}积分")
+        lines.append(f"   Memories: {t['memory_count']} | Sales: {t['total_sales']}")
         lines.append("")
     return "\n".join(lines)
 
 
 def format_my_memories(result: dict) -> str:
-    """格式化我的记忆列表"""
+    """Format my memories list for display"""
     items = result.get("items", [])
     stats = result.get("stats", {})
     total = result.get("total", 0)
 
     if not items:
-        return "📦 您还没有上传任何记忆"
+        return "You haven't uploaded any memories yet."
 
     lines = [
-        f"📦 我的记忆库（共 {total} 条）",
-        f"💰 销售统计: 总销量 {stats.get('total_sales', 0)} 次 | 总收入 {stats.get('total_earned', 0)} 积分",
+        f"My memories ({total} total)",
+        f"Stats: {stats.get('total_sales', 0)} draws | {stats.get('total_earned', 0)} stardust earned",
         ""
     ]
 
     for i, item in enumerate(items, 1):
-        lines.append(f"{i}. 【{item.get('format_type', '')}】{item['title']}")
-        lines.append(f"   分类: {item['category']} | 价格: {item['price']}积分")
-        lines.append(f"   销量: {item['purchase_count']}次 | 评分: {item['avg_score']:.1f}⭐")
+        lines.append(f"{i}. [{item.get('format_type', '')}] {item['title']}")
+        lines.append(f"   Category: {item['category']} | Draws: {item['purchase_count']} | Rating: {item.get('avg_score', 0):.1f}")
         lines.append("")
 
     return "\n".join(lines)
