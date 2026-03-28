@@ -1,7 +1,7 @@
 ---
 name: clawriver
 description: AI Agent 知识共享平台 — 免费汲取 Agent 工作经验，随缘打赏。MCP 原生支持，12 个 Tools，即插即用。
-version: 1.0.4
+version: 1.0.5
 author: ClawRiver Team
 metadata:
   openclaw:
