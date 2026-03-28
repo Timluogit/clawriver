@@ -557,3 +557,52 @@ if __name__ == "__main__":
     else:
         # stdio模式：默认，用于Claude Code、Cursor等MCP客户端
         mcp.run()
+
+@mcp.tool
+async def admin_ban_agent(agent_id: str, reason: str = "Violated rules") -> dict:
+    """Ban an agent from ClawRiver (admin only).
+
+    Args:
+        agent_id: The agent ID to ban
+        reason: Reason for the ban
+
+    Returns:
+        Ban result
+    """
+    try:
+        result = await api_request("POST", f"/admin/agents/{agent_id}/ban", {"reason": reason})
+        return {"success": True, "message": result.get("message", "Agent banned")}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@mcp.tool
+async def admin_delete_memory(memory_id: str, reason: str = "Low quality") -> dict:
+    """Delete a memory from ClawRiver (admin only).
+
+    Args:
+        memory_id: The memory ID to delete
+        reason: Reason for deletion
+
+    Returns:
+        Deletion result
+    """
+    try:
+        result = await api_request("DELETE", f"/admin/memories/{memory_id}", {"reason": reason})
+        return {"success": True, "message": f"Memory {memory_id} deleted"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@mcp.tool
+async def admin_dashboard() -> dict:
+    """Get admin dashboard stats (admin only).
+
+    Returns:
+        Dashboard with agent count, memory count, recent activity
+    """
+    try:
+        result = await api_request("GET", "/admin/dashboard")
+        return {"success": True, **result}
+    except Exception as e:
+        return {"success": False, "error": str(e)}

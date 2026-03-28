@@ -30,6 +30,7 @@ class Agent(Base):
     
     # 元数据
     is_active = Column(Boolean, default=True)
+    role = Column(String(20), default="user")  # user / moderator / admin
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 

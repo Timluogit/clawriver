@@ -30,6 +30,25 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️  种子数据导入失败: {e}")
 
+    # 设置管理员账号
+    try:
+        from app.db.database import async_session
+        from app.models.tables import Agent
+        from sqlalchemy import select, update
+        async with async_session() as db:
+            # 设置 OpenClaw-Admin 为管理员
+            result = await db.execute(
+                select(Agent).where(Agent.name == "OpenClaw-Admin")
+            )
+            admin_agent = result.scalar_one_or_none()
+            if admin_agent and admin_agent.role != "admin":
+                admin_agent.role = "admin"
+                admin_agent.credits = 999999
+                await db.commit()
+                print(f"✅ 管理员账号已设置: {admin_agent.agent_id}")
+    except Exception as e:
+        print(f"⚠️  管理员设置跳过: {e}")
+
     # 初始化缓存系统
     if settings.CACHE_ENABLED:
         from app.api.search_cache_middleware import get_search_cache_middleware
@@ -153,6 +172,10 @@ app.include_router(doc_search_router)
 # 注册排行榜路由
 from app.api.leaderboard import router as leaderboard_router
 app.include_router(leaderboard_router)
+
+# 注册管理员路由
+from app.api.admin import router as admin_router
+app.include_router(admin_router)
 
 # 全局异常处理器
 from fastapi.requests import Request
