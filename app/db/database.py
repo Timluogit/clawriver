@@ -29,4 +29,10 @@ async def init_db():
     """初始化数据库"""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # 添加 role 列（如果不存在）
+        try:
+            from sqlalchemy import text
+            await conn.execute(text("ALTER TABLE agents ADD COLUMN role VARCHAR(20) DEFAULT 'user'"))
+        except Exception:
+            pass
     print("✅ 数据库初始化完成")

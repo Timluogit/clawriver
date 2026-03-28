@@ -134,4 +134,12 @@ async def init_db():
                     await conn.execute(text(stmt))
                 except Exception as e:
                     print(f"⚠️ SQL执行警告: {str(e)[:60]}")
+
+        # 添加 role 列（如果不存在）
+        try:
+            await conn.execute(text("ALTER TABLE agents ADD COLUMN role VARCHAR(20) DEFAULT 'user'"))
+            print("✅ 添加 role 列")
+        except Exception:
+            pass  # 列已存在
+
     print("✅ 核心数据库表初始化完成")
