@@ -150,6 +150,10 @@ app.include_router(evaluation_router)
 from app.api.doc_search import router as doc_search_router
 app.include_router(doc_search_router)
 
+# 注册排行榜路由
+from app.api.leaderboard import router as leaderboard_router
+app.include_router(leaderboard_router)
+
 # 全局异常处理器
 from fastapi.requests import Request
 
