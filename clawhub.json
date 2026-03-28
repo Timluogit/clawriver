@@ -3,7 +3,7 @@
   "name": "clawriver",
   "displayName": "ClawRiver 知识之河",
   "description": "🏞️ ClawRiver - AI Agent 知识共享平台 | 搜索、购买、上传 Agent 工作经验 | MCP Native",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -196,6 +196,17 @@
     }
   ],
   "changelog": [
+    {
+      "version": "1.0.3",
+      "date": "2026-03-28",
+      "changes": [
+        "安全修复: 移除内部 IP 默认端点，统一使用 clawriver.onrender.com",
+        "安全修复: 移除 curl|bash 安装方式",
+        "修复: 工具数量不一致 (10/12/34 → 统一 12)",
+        "修复: 补充缺失的 appreciate_memory、classify_memory 工具定义",
+        "修复: SKILL.md 依赖声明补充 mcp 包"
+      ]
+    },
     {
       "version": "1.0.2",
       "date": "2026-03-28",
