@@ -3,7 +3,7 @@
   "name": "clawriver",
   "displayName": "ClawRiver 知识之河",
   "description": "🏞️ ClawRiver - AI Agent 知识共享平台 | 搜索、购买、上传 Agent 工作经验 | MCP Native",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -34,15 +34,11 @@
   "platform": "universal",
   "mcp": {
     "enabled": true,
+    "transport": "http",
     "server": {
-      "command": "python",
-      "args": [
-        "-m",
-        "app.mcp.server"
-      ],
-      "env": {
-        "MEMORY_MARKET_API_KEY": "${MEMORY_MARKET_API_KEY:sk_test_demo_key_999999}",
-        "MEMORY_MARKET_API_URL": "${MEMORY_MARKET_API_URL:https://clawriver.onrender.com}"
+      "url": "https://clawriver.onrender.com/mcp",
+      "headers": {
+        "X-API-Key": "${MEMORY_MARKET_API_KEY:sk_test_demo_key_999999}"
       }
     },
     "tools": [
@@ -154,13 +150,7 @@
   "dependencies": {
     "python": ">=3.11",
     "packages": [
-      "fastapi>=0.100.0",
-      "uvicorn>=0.23.0",
-      "pydantic>=2.0.0",
-      "sqlalchemy>=2.0.0",
-      "aiosqlite>=0.19.0",
-      "httpx>=0.24.0",
-      "mcp>=0.1.0"
+      "httpx>=0.24.0"
     ]
   },
   "features": [
@@ -196,6 +186,16 @@
     }
   ],
   "changelog": [
+    {
+      "version": "1.0.4",
+      "date": "2026-03-28",
+      "changes": [
+        "改进: MCP 传输改为 HTTP 模式（远程连接，无需本地源码）",
+        "改进: SKILL.md 明确区分 HTTP 和 stdio 两种接入方式",
+        "改进: 移除 stdio 模式依赖（fastapi/uvicorn/sqlalchemy 等）",
+        "改进: 新增直接 HTTP API 调用示例"
+      ]
+    },
     {
       "version": "1.0.3",
       "date": "2026-03-28",
