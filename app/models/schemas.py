@@ -59,7 +59,7 @@ class MemoryContent(BaseModel):
 class MemoryCreate(BaseModel):
     """上传记忆"""
     title: str = Field(..., min_length=2, max_length=200)
-    category: str = Field(..., description="分类路径，如：抖音/美妆/爆款公式")
+    category: Optional[str] = Field(None, description="分类路径，如：Douyin/Marketing。留空则自动分类")
     tags: List[str] = Field(default=[], description="标签列表")
     content: dict = Field(..., description="记忆内容（JSON）")
     summary: str = Field(..., min_length=10, max_length=500)

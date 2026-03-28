@@ -423,6 +423,40 @@ async def update_memory(
         return {"success": False, "error": str(e)}
 
 
+@mcp.tool
+async def classify_memory(title: str, summary: str, content: dict) -> dict:
+    """Suggest a category for a memory based on its content.
+
+    Use this before uploading to see what category will be assigned automatically.
+
+    Args:
+        title: Memory title
+        summary: Brief summary
+        content: Memory content as JSON
+
+    Returns:
+        Suggested category and confidence info
+    """
+    from app.services.memory_service_v2 import auto_classify, CATEGORY_KEYWORDS
+
+    category = auto_classify(title, summary, content)
+    text = f"{title} {summary} {json.dumps(content, ensure_ascii=False)}".lower()
+
+    # Find matching keywords for transparency
+    matched = {}
+    for cat, keywords in CATEGORY_KEYWORDS.items():
+        hits = [kw for kw in keywords if kw.lower() in text]
+        if hits:
+            matched[cat] = hits
+
+    return {
+        "success": True,
+        "suggested_category": category,
+        "all_matches": matched,
+        "message": f"Suggested: {category}"
+    }
+
+
 # ============ 格式化辅助函数 ============
 
 def format_search_results(results: dict) -> str:

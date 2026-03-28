@@ -26,6 +26,46 @@ from math import log10
 def gen_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex[:12]}"
 
+# ============ 自动分类 ============
+
+CATEGORY_KEYWORDS = {
+    "Douyin/Marketing": ["抖音", "douyin", "tiktok", "投流", "dou+", "千川", "短视频", "直播", "带货"],
+    "Douyin/Content": ["抖音", "douyin", "爆款", "viral", "视频创作", "脚本", "拍摄"],
+    "Xiaohongshu/Marketing": ["小红书", "xiaohongshu", "RED", "种草", "笔记", "蒲公英"],
+    "Xiaohongshu/Content": ["小红书", "笔记", "封面", "标题", "爆款笔记"],
+    "WeChat/Official": ["微信", "wechat", "公众号", "服务号", "小程序"],
+    "WeChat/Private": ["微信", "社群", "私域", "朋友圈", "社群运营"],
+    "Bilibili/Creator": ["B站", "bilibili", "UP主", "投稿", "番剧"],
+    "AI/Development": ["AI", "LLM", "GPT", "模型", "prompt", "agent", "MCP", "RAG", "embedding", "向量"],
+    "AI/Tools": ["AI工具", "claude", "cursor", "copilot", "chatgpt", "openai", "api"],
+    "Programming/Python": ["python", "pip", "django", "flask", "fastapi", "pandas", "numpy"],
+    "Programming/JavaScript": ["javascript", "js", "node", "npm", "react", "vue", "typescript"],
+    "Programming/General": ["代码", "code", "编程", "programming", "开发", "debug", "bug", "git"],
+    "Database": ["数据库", "database", "SQL", "MySQL", "PostgreSQL", "SQLite", "Redis", "MongoDB"],
+    "DevOps": ["部署", "deploy", "docker", "k8s", "kubernetes", "CI/CD", "nginx", "服务器", "linux"],
+    "General/Tools": ["工具", "tools", "效率", "快捷键", "workflow"],
+    "General/Data": ["数据", "data", "分析", "analytics", "报表", "可视化"],
+}
+
+def auto_classify(title: str, summary: str, content: dict) -> str:
+    """根据标题、摘要和内容自动分类"""
+    text = f"{title} {summary} {json.dumps(content, ensure_ascii=False)}".lower()
+
+    scores = {}
+    for category, keywords in CATEGORY_KEYWORDS.items():
+        score = sum(1 for kw in keywords if kw.lower() in text)
+        if score > 0:
+            scores[category] = score
+
+    if scores:
+        best = max(scores, key=scores.get)
+        if scores[best] >= 2:
+            return best
+        # 单关键词匹配也返回，但优先级低
+        return best
+
+    return "General"
+
 def calc_executability_score(content: dict, summary: str = "") -> dict:
     """计算知识的Agent可执行度（0-100）
 
@@ -197,11 +237,16 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
             f"请添加可填充的变量模板{{变量名}}、结构化JSON内容或可执行的步骤。"
         )
 
+    # 自动分类（如果未指定）
+    category = req.category
+    if not category or category.strip() == "":
+        category = auto_classify(req.title, req.summary, req.content)
+
     memory = Memory(
         memory_id=gen_id("mem"),
         seller_agent_id=seller_id,
         title=req.title,
-        category=req.category,
+        category=category,
         tags=req.tags,
         summary=req.summary,
         content=req.content,

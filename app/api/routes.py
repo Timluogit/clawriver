@@ -246,6 +246,47 @@ async def appreciate_memory_endpoint(
         )
     return success_response(result)
 
+@router.post("/memories/classify", tags=["Memory"])
+async def classify_memory_endpoint(
+    title: str = Query(...),
+    summary: str = Query(...),
+    agent: Agent = Depends(get_current_agent)
+):
+    """Preview auto-classification for content"""
+    from app.services.memory_service_v2 import auto_classify
+    # Content can't be passed as query param, use empty dict
+    category = auto_classify(title, summary, {})
+    return success_response({"suggested_category": category})
+
+@router.post("/admin/reclassify", tags=["Admin"])
+async def reclassify_all_endpoint(
+    agent: Agent = Depends(get_current_agent),
+    db: AsyncSession = Depends(get_db)
+):
+    """Re-classify all memories with empty or generic categories"""
+    from app.services.memory_service_v2 import auto_classify
+    from app.models.tables import Memory
+
+    result = await db.execute(
+        select(Memory).where(
+            or_(Memory.category == "", Memory.category == "通用", Memory.category == "General")
+        )
+    )
+    memories = result.scalars().all()
+    updated = 0
+    for mem in memories:
+        try:
+            content = mem.content if isinstance(mem.content, dict) else json.loads(mem.content) if isinstance(mem.content, str) else {}
+        except:
+            content = {}
+        new_cat = auto_classify(mem.title, mem.summary or "", content)
+        if new_cat != mem.category:
+            mem.category = new_cat
+            updated += 1
+
+    await db.commit()
+    return success_response({"total_checked": len(memories), "updated": updated})
+
 @router.get("/memories/{memory_id}/ratings", tags=["Memory"])
 async def list_memory_ratings(
     memory_id: str,
