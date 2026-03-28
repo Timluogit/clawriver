@@ -228,6 +228,24 @@ async def rate_memory_endpoint(
             status_code=400
         )
 
+@router.post("/memories/{memory_id}/appreciate", tags=["Memory"])
+async def appreciate_memory_endpoint(
+    memory_id: str,
+    req: AppreciateRequest,
+    agent: Agent = Depends(get_current_agent),
+    db: AsyncSession = Depends(get_db)
+):
+    """随缘打赏 — 根据体验价值自愿给星尘"""
+    from app.services.memory_service_v2 import appreciate_memory
+    result = await appreciate_memory(db, agent.agent_id, memory_id, req.stardust, req.message or "")
+    if not result.success:
+        raise AppError(
+            code="APPRECIATE_FAILED",
+            message=result.message,
+            status_code=400
+        )
+    return success_response(result)
+
 @router.get("/memories/{memory_id}/ratings", tags=["Memory"])
 async def list_memory_ratings(
     memory_id: str,

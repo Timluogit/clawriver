@@ -484,69 +484,26 @@ async def purchase_memory(db: AsyncSession, buyer_id: str, memory_id: str) -> Pu
     if not buyer:
         return PurchaseResponse(success=False, message="买家不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # MVP免费模式：跳过余额检查
-    price = memory.price
-    if settings.MVP_FREE_MODE:
-        price = 0  # 免费！
-    elif buyer.credits < price:
-        return PurchaseResponse(success=False, message="积分不足", memory_id=memory_id, credits_spent=price, remaining_credits=buyer.credits)
-
-    # 计算分配（5%平台佣金，95%给卖家）
-    COMMISSION_RATE = 0.05
-    platform_fee = int(price * COMMISSION_RATE) if price > 0 else 0
-    seller_income = price - platform_fee
-
-    # 扣买家积分
-    buyer.credits -= price
-    buyer.total_spent += price
-    buyer.total_purchases += 1
-
-    # 加卖家积分（扣除佣金后）
-    seller = await db.execute(select(Agent).where(Agent.agent_id == memory.seller_agent_id))
-    seller = seller.scalar_one_or_none()
-    seller.credits += seller_income
-    seller.total_earned += seller_income
-    seller.total_sales += 1
+    # 随缘模式：所有记忆免费汲取
+    price = 0
 
     # 更新记忆统计
     memory.purchase_count += 1
 
-    # 创建购买记录（含平台佣金）
+    # 创建汲取记录
     purchase = Purchase(
         purchase_id=gen_id("pur"),
         buyer_agent_id=buyer_id,
         seller_agent_id=memory.seller_agent_id,
         memory_id=memory_id,
-        amount=price,
-        seller_income=seller_income,
-        platform_fee=platform_fee
+        amount=0,
+        seller_income=0,
+        platform_fee=0
     )
     db.add(purchase)
 
-    # 创建交易流水
-    tx_buyer = Transaction(
-        agent_id=buyer_id,
-        tx_type="purchase",
-        amount=-price,
-        balance_after=buyer.credits,
-        related_id=memory_id,
-        description=f"购买记忆: {memory.title}",
-        commission=0
-    )
-    tx_seller = Transaction(
-        agent_id=memory.seller_agent_id,
-        tx_type="sale",
-        amount=seller_income,
-        balance_after=seller.credits,
-        related_id=memory_id,
-        description=f"销售记忆: {memory.title}",
-        commission=platform_fee
-    )
-    db.add(tx_buyer)
-    db.add(tx_seller)
-
-    # 更新平台统计
-    await _update_platform_stats(db, price, platform_fee)
+    # 更新买家统计
+    buyer.total_purchases += 1
 
     await db.commit()
 
@@ -562,9 +519,9 @@ async def purchase_memory(db: AsyncSession, buyer_id: str, memory_id: str) -> Pu
 
     return PurchaseResponse(
         success=True,
-        message="购买成功",
+        message="汲取成功，知识已汇入",
         memory_id=memory_id,
-        credits_spent=price,
+        credits_spent=0,
         remaining_credits=buyer.credits,
         memory_content=memory_content
     )
@@ -761,6 +718,78 @@ async def get_my_memories(
             "total_earned": total_earned
         }
     }
+
+async def appreciate_memory(db: AsyncSession, buyer_id: str, memory_id: str, stardust: int, message: str = ""):
+    """随缘打赏 — 使用者根据体验价值自愿给星尘"""
+    from app.models.schemas import AppreciateResponse
+
+    # 获取记忆
+    result = await db.execute(select(Memory).where(Memory.memory_id == memory_id))
+    memory = result.scalar_one_or_none()
+    if not memory:
+        return AppreciateResponse(success=False, message="记忆不存在", stardust_given=0, remaining_balance=0)
+
+    # 不能打赏自己
+    if memory.seller_agent_id == buyer_id:
+        return AppreciateResponse(success=False, message="不能打赏自己的记忆", stardust_given=0, remaining_balance=0)
+
+    # 获取买家
+    buyer_result = await db.execute(select(Agent).where(Agent.agent_id == buyer_id))
+    buyer = buyer_result.scalar_one_or_none()
+    if not buyer:
+        return AppreciateResponse(success=False, message="用户不存在", stardust_given=0, remaining_balance=0)
+
+    if buyer.credits < stardust:
+        return AppreciateResponse(success=False, message=f"星尘不足（当前 {buyer.credits}，需要 {stardust}）", stardust_given=0, remaining_balance=buyer.credits)
+
+    # 计算分配（5%平台费，95%给作者）
+    COMMISSION_RATE = 0.05
+    platform_fee = int(stardust * COMMISSION_RATE)
+    seller_income = stardust - platform_fee
+
+    # 扣买家星尘
+    buyer.credits -= stardust
+    buyer.total_spent += stardust
+
+    # 加卖家星尘
+    seller_result = await db.execute(select(Agent).where(Agent.agent_id == memory.seller_agent_id))
+    seller = seller_result.scalar_one_or_none()
+    if seller:
+        seller.credits += seller_income
+        seller.total_earned += seller_income
+
+    # 创建打赏记录
+    purchase = Purchase(
+        purchase_id=gen_id("pur"),
+        buyer_agent_id=buyer_id,
+        seller_agent_id=memory.seller_agent_id,
+        memory_id=memory_id,
+        amount=stardust,
+        seller_income=seller_income,
+        platform_fee=platform_fee
+    )
+    db.add(purchase)
+
+    # 创建交易流水
+    tx = Transaction(
+        agent_id=buyer_id,
+        tx_type="appreciate",
+        amount=-stardust,
+        balance_after=buyer.credits,
+        related_id=memory_id,
+        description=f"随缘星尘: {memory.title}" + (f" — {message}" if message else ""),
+        commission=platform_fee
+    )
+    db.add(tx)
+
+    await db.commit()
+
+    return AppreciateResponse(
+        success=True,
+        message=f"已送出 {stardust} 星尘，感谢你的随缘 🙏",
+        stardust_given=stardust,
+        remaining_balance=buyer.credits
+    )
 
 async def verify_memory(
     db: AsyncSession,

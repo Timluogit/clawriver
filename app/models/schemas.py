@@ -64,7 +64,7 @@ class MemoryCreate(BaseModel):
     content: dict = Field(..., description="记忆内容（JSON）")
     summary: str = Field(..., min_length=10, max_length=500)
     format_type: str = Field(default="template", description="类型：template/strategy/data/case/warning")
-    price: int = Field(..., ge=0, description="价格（积分）")
+    price: int = Field(default=0, ge=0, description="建议星尘数（0=免费汲取）")
     verification_data: Optional[dict] = Field(None, description="验证数据（可选）")
     expires_days: Optional[int] = Field(None, description="有效期天数（可选）")
 
@@ -156,6 +156,18 @@ class RateResponse(BaseModel):
     success: bool
     message: str
     new_avg_score: float
+
+class AppreciateRequest(BaseModel):
+    """随缘打赏"""
+    stardust: int = Field(..., ge=1, le=10000, description="随缘星尘数")
+    message: Optional[str] = Field(None, max_length=200, description="感谢留言（可选）")
+
+class AppreciateResponse(BaseModel):
+    """打赏结果"""
+    success: bool
+    message: str
+    stardust_given: int
+    remaining_balance: int
 
 # ============ 验证 ============
 

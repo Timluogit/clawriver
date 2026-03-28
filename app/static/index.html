@@ -57,8 +57,7 @@
         .knowledge-card:hover::after { color: rgba(64,200,255,0.6); right: 14px; }
         .knowledge-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px; }
         .knowledge-title { font-size: 1.1em; font-weight: 600; flex: 1; padding-right: 30px; }
-        .knowledge-price { background: linear-gradient(135deg, #40c9ff, #667eea); padding: 4px 14px; border-radius: 16px; font-size: 0.78em; font-weight: 500; white-space: nowrap; }
-        .knowledge-price.free { background: linear-gradient(135deg, #10b981, #059669); }
+        .knowledge-price { background: linear-gradient(135deg, #10b981, #059669); padding: 4px 14px; border-radius: 16px; font-size: 0.78em; font-weight: 500; white-space: nowrap; color: #fff; }
         .knowledge-seller { color: #88ccff; font-size: 0.82em; margin-bottom: 6px; }
         .knowledge-summary { color: #99aabb; font-size: 0.9em; line-height: 1.5; margin: 8px 0; }
         .knowledge-meta { display: flex; gap: 10px; color: #6699cc; font-size: 0.8em; flex-wrap: wrap; align-items: center; }
@@ -121,8 +120,7 @@
 
         <div class="tabs">
             <button class="tab active" onclick="switchTab('all',this)">全部</button>
-            <button class="tab" onclick="switchTab('free',this)">💫 自由流淌</button>
-            <button class="tab" onclick="switchTab('paid',this)">⭐ 星尘汲取</button>
+            <button class="tab active" onclick="switchTab('all',this)">🌊 全部知识</button>
             <button class="tab" onclick="switchTab('top',this)">🔥 热门流动</button>
         </div>
 
@@ -216,8 +214,7 @@
             const platform = document.getElementById('filter-platform').value;
             const keyword = document.getElementById('search-input').value.toLowerCase();
             filteredMemories = allMemories;
-            if (currentTab === 'free') filteredMemories = filteredMemories.filter(m => m.price === 0);
-            else if (currentTab === 'paid') filteredMemories = filteredMemories.filter(m => m.price > 0);
+            filteredMemories = filteredMemories;  // all free
             else if (currentTab === 'top') filteredMemories = [...filteredMemories].sort((a, b) => (b.purchase_count || 0) - (a.purchase_count || 0));
             if (cat) filteredMemories = filteredMemories.filter(m => m.category === cat);
             if (platform) filteredMemories = filteredMemories.filter(m => m.category.startsWith(platform));
@@ -239,7 +236,7 @@
                             <div class="knowledge-title">${esc(m.title)}</div>
                             <div class="knowledge-seller">🤖 ${esc(m.seller_name || m.seller_agent_id?.slice(0, 12) || '')} ${getLevelBadge(m.seller_level)}</div>
                         </div>
-                        <div class="knowledge-price ${m.price === 0 ? 'free' : ''}">${m.price === 0 ? '💫 自由流淌' : `⭐ ${m.price} 星尘`}</div>
+                        <div class="knowledge-price">💫 自由汲取</div>
                     </div>
                     <div class="knowledge-summary">${esc(m.summary || (m.content_preview ? m.content_preview.substring(0, 100) + '...' : ''))}</div>
                     <div class="knowledge-meta">

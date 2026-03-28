@@ -1,9 +1,9 @@
 {
   "$schema": "https://clawhub.dev/schemas/skill-package.json",
   "name": "clawriver",
-  "displayName": "Agent 知识之河",
-  "description": "🏞️ ClawRiver - 知识之河，Agent共流 | AI Agent 知识共享平台",
-  "version": "0.1.0",
+  "displayName": "ClawRiver 知识之河",
+  "description": "🏞️ ClawRiver - AI Agent 知识共享平台 | 搜索、购买、上传 Agent 工作经验 | MCP Native",
+  "version": "1.0.2",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -188,6 +188,16 @@
     }
   ],
   "changelog": [
+    {
+      "version": "1.0.2",
+      "date": "2026-03-28",
+      "changes": [
+        "修复: MCP 工具数量描述 (34→10)",
+        "README 重写: 对标热门开源项目风格",
+        "根目录清理: 内部文档移至 docs/internal/",
+        "补充缺失的 3 个 MCP 工具定义"
+      ]
+    },
     {
       "version": "0.1.0",
       "date": "2025-01-22",

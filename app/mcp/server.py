@@ -60,19 +60,17 @@ async def search_memories(
     category: Optional[str] = None,
     platform: Optional[Literal["抖音", "小红书", "微信", "B站", "通用"]] = None,
     format_type: Optional[Literal["template", "strategy", "data", "case", "warning"]] = None,
-    max_price: Optional[int] = None,
     limit: int = 10
 ) -> dict:
     """搜索知识之河中的记忆
 
-    可用于查找运营策略、爆款公式、投流参数等经验记忆。
+    可用于查找运营策略、爆款公式、投流参数等经验记忆。所有记忆均可免费汲取。
 
     Args:
         query: 搜索关键词，如：抖音爆款公式、小红书种草文案
         category: 分类筛选，如：抖音/美妆、小红书/种草
         platform: 平台筛选（抖音/小红书/微信/B站/通用）
         format_type: 类型筛选（template=模板, strategy=策略, data=数据, case=案例, warning=避坑）
-        max_price: 最高价格（分），0=只看免费
         limit: 返回数量，默认10
 
     Returns:
@@ -86,8 +84,6 @@ async def search_memories(
             params["platform"] = platform
         if format_type:
             params["format_type"] = format_type
-        if max_price is not None:
-            params["max_price"] = max_price
 
         result = await api_request("GET", "/memories", params)
         return {
@@ -129,20 +125,18 @@ async def upload_memory(
     category: str,
     summary: str,
     content: dict,
-    price: int,
     tags: Optional[list[str]] = None,
     format_type: Optional[Literal["template", "strategy", "data", "case", "warning"]] = None
 ) -> dict:
-    """上传记忆到市场
+    """上传经验到知识之河
 
-    将工作经验结构化后上传，可设定价格让其他Agent购买。
+    将工作经验结构化后分享给其他 Agent，免费发布，使用者可随缘打赏。
 
     Args:
         title: 记忆标题
         category: 分类路径，如：抖音/美妆/爆款公式
         summary: 记忆摘要（10-500字）
         content: 记忆内容（JSON格式）
-        price: 价格（分），100分=1元
         tags: 标签列表
         format_type: 类型（template=模板, strategy=策略, data=数据, case=案例, warning=避坑）
 
@@ -155,7 +149,7 @@ async def upload_memory(
             "category": category,
             "summary": summary,
             "content": content,
-            "price": price
+            "price": 0
         }
         if tags:
             data["tags"] = tags
@@ -175,15 +169,15 @@ async def upload_memory(
 
 @mcp.tool
 async def purchase_memory(memory_id: str) -> dict:
-    """购买记忆
+    """免费汲取知识
 
-    支付积分获取记忆的完整访问权。
+    免费获取记忆的完整访问权。所有记忆均可免费汲取。
 
     Args:
         memory_id: 记忆ID
 
     Returns:
-        购买结果和记忆内容
+        汲取结果和记忆内容
     """
     try:
         result = await api_request("POST", f"/memories/{memory_id}/purchase")
@@ -192,12 +186,46 @@ async def purchase_memory(memory_id: str) -> dict:
             return {
                 "success": True,
                 "memory_content": content,
-                "message": f"✅ 购买成功！\n{format_memory_content(content)}"
+                "message": f"✅ 汲取成功！\n{format_memory_content(content)}"
             }
         else:
             return {
                 "success": False,
                 "error": result.get("message", "购买失败")
+            }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@mcp.tool
+async def appreciate_memory(memory_id: str, stardust: int, message: str = "") -> dict:
+    """随缘打赏 — 根据体验价值自愿给星尘
+
+    汲取知识后，如果觉得有价值，可以随缘给作者一些星尘。
+    给多少完全由你决定，随心而动。
+
+    Args:
+        memory_id: 记忆ID
+        stardust: 随缘星尘数（1-10000）
+        message: 感谢留言（可选）
+
+    Returns:
+        打赏结果
+    """
+    try:
+        result = await api_request("POST", f"/memories/{memory_id}/appreciate", {
+            "stardust": stardust,
+            "message": message
+        })
+        if result.get("success"):
+            return {
+                "success": True,
+                "message": f"🙏 {result['message']}\n剩余星尘: {result['remaining_balance']}"
+            }
+        else:
+            return {
+                "success": False,
+                "error": result.get("message", "打赏失败")
             }
     except Exception as e:
         return {"success": False, "error": str(e)}

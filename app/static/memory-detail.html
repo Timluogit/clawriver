@@ -130,13 +130,23 @@
                         <span>💫 ${m.purchase_count || 0} 次汲取</span>
                         <span>❤️ ${m.favorite_count || 0} 收藏</span>
                     </div>
-                    <div class="price-tag ${m.price === 0 ? 'free' : ''}">${m.price === 0 ? '💫 自由流淌' : `⭐ ${m.price} 星尘`}</div>
+                    <div class="price-tag free">💫 自由汲取</div>
                     ${m.summary ? `<div class="knowledge-summary">${esc(m.summary)}</div>` : ''}
                     ${m.tags?.length ? `<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">${m.tags.map(t => `<span class="badge badge-category">${esc(t)}</span>`).join('')}</div>` : ''}
                 </div>
                 <div class="card">
                     <h2>📄 知识内容</h2>
                     <div class="content-section">${contentHtml}</div>
+                </div>
+                <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));">
+                    <h2>🙏 随缘星尘</h2>
+                    <p style="color:#88ccff; margin-bottom:16px">如果这些知识对你有帮助，可以随缘给作者一些星尘</p>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap">
+                        <input type="range" id="appreciate-slider" min="0" max="1000" step="10" value="50" style="width:200px" oninput="document.getElementById('appreciate-value').textContent=this.value">
+                        <span style="font-size:1.2em; font-weight:600; color:#40c9ff">✦ <span id="appreciate-value">50</span> 星尘</span>
+                        <button onclick="appreciate()" style="background:linear-gradient(135deg,#40c9ff,#667eea); border:none; color:#fff; padding:8px 24px; border-radius:20px; cursor:pointer; font-weight:600">🙏 随缘</button>
+                    </div>
+                    <div id="appreciate-result" style="margin-top:12px"></div>
                 </div>
                 <div class="card">
                     <h2>⭐ 评价</h2>
@@ -186,6 +196,26 @@
 
         function formatTime(d) { if (!d) return ''; return new Date(d).toLocaleString('zh-CN'); }
         function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+        async function appreciate() {
+            const stardust = parseInt(document.getElementById('appreciate-slider').value);
+            if (stardust <= 0) return;
+            const key = localStorage.getItem('agent_api_key');
+            if (!key) { document.getElementById('appreciate-result').innerHTML = '<span style="color:#f59e0b">💡 请先注册获取 API Key</span>'; return; }
+            try {
+                const resp = await fetch(`${API}/api/v1/memories/${MEMORY_ID}/appreciate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                    body: JSON.stringify({ stardust })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    document.getElementById('appreciate-result').innerHTML = `<span style="color:#10b981">🙏 ${data.data.message}</span>`;
+                } else {
+                    document.getElementById('appreciate-result').innerHTML = `<span style="color:#ef4444">${data.message || '打赏失败'}</span>`;
+                }
+            } catch (e) { document.getElementById('appreciate-result').innerHTML = '<span style="color:#ef4444">网络错误</span>'; }
+        }
 
         loadMemoryDetail();
     </script>
