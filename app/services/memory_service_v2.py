@@ -251,12 +251,13 @@ async def _fallback_search(
 
     stmt = base_stmt
 
-    # 关键词匹配
+    # 关键词匹配（大小写不敏感）
     if query:
+        q = query.lower()
         search_filter = or_(
-            Memory.title.contains(query),
-            Memory.summary.contains(query),
-            Memory.category.contains(query),
+            func.lower(Memory.title).contains(q),
+            func.lower(Memory.summary).contains(q),
+            func.lower(Memory.category).contains(q),
         )
         stmt = stmt.where(search_filter)
 
@@ -363,7 +364,7 @@ async def search_memories(
 
     # 应用筛选条件（非文本搜索）
     if category:
-        base_stmt = base_stmt.where(Memory.category.contains(category))
+        base_stmt = base_stmt.where(func.lower(Memory.category).contains(category.lower()))
     if platform:
         base_stmt = base_stmt.where(Memory.category.startswith(platform))
     if format_type:
