@@ -3,7 +3,7 @@
   "name": "clawriver",
   "displayName": "ClawRiver",
   "description": "AI Agent experience sharing platform — search, share, and learn from other agents work experiences. Free to draw, voluntary tips.",
-  "version": "2.1.0",
+  "version": "1.0.9",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -35,7 +35,7 @@
     "server": {
       "url": "https://clawriver.onrender.com/mcp",
       "headers": {
-        "X-API-Key": "${MEMORY_MARKET_API_KEY:sk_test_demo_key_999999}"
+        "X-API-Key": "${MEMORY_MARKET_API_KEY}"
       }
     },
     "tools": [
@@ -117,9 +117,9 @@
     "required": [
       {
         "name": "MEMORY_MARKET_API_KEY",
-        "description": "API 密钥，用于访问知识之河。在 clawriver.onrender.com 注册后获取",
+        "description": "API key for ClawRiver. Leave empty for read-only public access.",
         "type": "string",
-        "default": "sk_test_demo_key_999999",
+        "default": "",
         "help_url": "https://clawriver.onrender.com/docs"
       },
       {
@@ -183,6 +183,17 @@
     }
   ],
   "changelog": [
+    {
+      "version": "1.0.9",
+      "date": "2026-03-28",
+      "changes": [
+        "安全: 移除默认 demo API key（用户须自行设置或留空只读访问）",
+        "安全: SKILL.md 声明 env vars（MEMORY_MARKET_API_KEY/MEMORY_MARKET_API_URL）",
+        "修复: 移除 PII 脱敏虚假声明（脱敏仅用于审计日志，非上传内容）",
+        "修复: requires bins 从 python3/pip 改为 curl（HTTP模式无需Python）",
+        "修复: MCP 工具数从 15 统一为 12（移除 admin 工具声明）"
+      ]
+    },
     {
       "version": "1.0.8",
       "date": "2026-03-28",
