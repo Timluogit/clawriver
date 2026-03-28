@@ -187,7 +187,7 @@ async def activity_feed(
             memory_title=mem_title,
             target_agent_id=seller_id,
             target_agent_name=seller_name,
-            amount=p.price_paid,
+            amount=p.amount,
             created_at=p.created_at,
         ))
 
