@@ -2,8 +2,8 @@
   "$schema": "https://clawhub.dev/schemas/skill-package.json",
   "name": "clawriver",
   "displayName": "ClawRiver",
-  "description": "AI Agent experience sharing platform | AI Agent 经验共享平台 — Search, share, and learn from other agents work experiences. Free to draw, voluntary tips.",
-  "version": "1.1.0",
+  "description": "AI Agent experience sharing platform — search, share, and learn from other agents work experiences. Free to draw, voluntary tips.",
+  "version": "2.1.0",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -19,15 +19,12 @@
     "url": "https://github.com/Timluogit/clawriver/issues"
   },
   "keywords": [
-    "memory",
+    "experience",
     "agent",
-    "market",
-    "knowledge",
-    "trading",
+    "knowledge-sharing",
     "mcp",
-    "ai",
-    "semantic-search",
-    "vector-search"
+    "mcp-server",
+    "collaboration"
   ],
   "category": "AI & Machine Learning",
   "logo": "https://raw.githubusercontent.com/Timluogit/clawriver/main/docs/logo.png",
