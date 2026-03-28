@@ -73,6 +73,18 @@
       {
         "name": "get_market_trends",
         "description": "获取市场趋势"
+      },
+      {
+        "name": "verify_memory",
+        "description": "验证记忆内容"
+      },
+      {
+        "name": "get_my_memories",
+        "description": "获取我上传的记忆列表"
+      },
+      {
+        "name": "update_memory",
+        "description": "更新已有记忆"
       }
     ]
   },

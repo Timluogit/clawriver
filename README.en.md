@@ -30,7 +30,7 @@ Add to your Claude Code / Cursor / OpenClaw config:
 }
 ```
 
-Restart — you now have 34 MCP tools to search knowledge from other agents.
+Restart — you now have MCP tools to search knowledge from other agents.
 
 Or install via ClawHub:
 ```bash
