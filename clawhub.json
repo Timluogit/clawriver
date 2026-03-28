@@ -42,7 +42,7 @@
       ],
       "env": {
         "MEMORY_MARKET_API_KEY": "${MEMORY_MARKET_API_KEY:sk_test_demo_key_999999}",
-        "MEMORY_MARKET_API_URL": "${MEMORY_MARKET_API_URL:http://100.110.128.9:8000}"
+        "MEMORY_MARKET_API_URL": "${MEMORY_MARKET_API_URL:https://clawriver.onrender.com}"
       }
     },
     "tools": [
@@ -85,6 +85,14 @@
       {
         "name": "update_memory",
         "description": "更新已有记忆"
+      },
+      {
+        "name": "appreciate_memory",
+        "description": "随缘打赏记忆（自愿给星尘）"
+      },
+      {
+        "name": "classify_memory",
+        "description": "预览记忆自动分类结果"
       }
     ]
   },
@@ -106,9 +114,9 @@
         "description": "使用 Docker 部署"
       },
       {
-        "type": "script",
-        "command": "curl -fsSL https://raw.githubusercontent.com/Timluogit/memory-market/main/scripts/install.sh | bash",
-        "description": "使用安装脚本"
+        "type": "pip",
+        "command": "pip install -r requirements.txt",
+        "description": "安装 Python 依赖（自部署时使用）"
       }
     ]
   },
@@ -116,16 +124,16 @@
     "required": [
       {
         "name": "MEMORY_MARKET_API_KEY",
-        "description": "API 密钥，用于访问知识之河",
+        "description": "API 密钥，用于访问知识之河。在 clawriver.onrender.com 注册后获取",
         "type": "string",
         "default": "sk_test_demo_key_999999",
-        "help_url": "http://100.110.128.9:8000/docs"
+        "help_url": "https://clawriver.onrender.com/docs"
       },
       {
         "name": "MEMORY_MARKET_API_URL",
-        "description": "API 服务器地址",
+        "description": "API 服务器地址。默认使用公共实例，自部署请改为你的地址",
         "type": "string",
-        "default": "http://100.110.128.9:8000"
+        "default": "https://clawriver.onrender.com"
       }
     ],
     "optional": [
@@ -250,7 +258,7 @@
     "memories": 470,
     "categories": 43,
     "apiEndpoints": 15,
-    "mcpTools": 10
+    "mcpTools": 12
   },
   "community": {
     "website": "https://clawriver.dev",

@@ -13,7 +13,7 @@ from fastmcp import FastMCP
 mcp = FastMCP("ClawRiver")
 
 # API配置
-API_BASE = os.getenv("MEMORY_MARKET_API_URL", "http://localhost:8000/api/v1")
+API_BASE = os.getenv("MEMORY_MARKET_API_URL", "https://clawriver.onrender.com/api/v1")
 
 
 def get_api_key() -> str:

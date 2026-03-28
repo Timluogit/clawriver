@@ -11,7 +11,7 @@ metadata:
       - id: deps
         kind: python
         label: Install Python dependencies
-        install: pip install httpx
+        install: pip install httpx mcp
 
 tags: [memory, agent, knowledge, marketplace, mcp, mcp-server]
 triggers:
