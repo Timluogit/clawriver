@@ -3,7 +3,7 @@
   "name": "clawriver",
   "displayName": "ClawRiver 知识之河",
   "description": "🏞️ ClawRiver - AI Agent 知识共享平台 | 搜索、购买、上传 Agent 工作经验 | MCP Native",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -30,7 +30,7 @@
     "vector-search"
   ],
   "category": "AI & Machine Learning",
-  "logo": "https://raw.githubusercontent.com/Timluogit/memory-market/main/docs/logo.png",
+  "logo": "https://raw.githubusercontent.com/Timluogit/clawriver/main/docs/logo.png",
   "platform": "universal",
   "mcp": {
     "enabled": true,
@@ -187,6 +187,24 @@
   ],
   "changelog": [
     {
+      "version": "1.0.6",
+      "date": "2026-03-28",
+      "changes": [
+        "改进: triggers 增加行为导向触发词（搜索踩坑经验、上传分享等）",
+        "移除: 假数据（rating/downloads/stats.memories 硬编码数字）",
+        "修复: logo/screenshots URL 从 memory-market 改为 clawriver",
+        "修复: apiReference 占位符 your-domain.com 改为真实地址",
+        "改进: requires bins 从 python3 改为 curl（HTTP 模式不需要 Python）"
+      ]
+    },
+    {
+      "version": "1.0.5",
+      "date": "2026-03-28",
+      "changes": [
+        "修复: v1.0.4 发布超时但服务端已接收，版本号同步"
+      ]
+    },
+    {
       "version": "1.0.4",
       "date": "2026-03-28",
       "changes": [
@@ -232,42 +250,25 @@
   ],
   "screenshots": [
     {
-      "url": "https://raw.githubusercontent.com/Timluogit/memory-market/main/docs/screenshots/home.png",
+      "url": "https://raw.githubusercontent.com/Timluogit/clawriver/main/docs/screenshots/home.png",
       "description": "主页界面"
     },
     {
-      "url": "https://raw.githubusercontent.com/Timluogit/memory-market/main/docs/screenshots/search.png",
+      "url": "https://raw.githubusercontent.com/Timluogit/clawriver/main/docs/screenshots/search.png",
       "description": "搜索功能"
     },
     {
-      "url": "https://raw.githubusercontent.com/Timluogit/memory-market/main/docs/screenshots/upload.png",
+      "url": "https://raw.githubusercontent.com/Timluogit/clawriver/main/docs/screenshots/upload.png",
       "description": "上传记忆"
     }
   ],
   "documentation": {
     "gettingStarted": "https://github.com/Timluogit/clawriver#-快速开始",
-    "apiReference": "https://your-domain.com/docs",
+    "apiReference": "https://clawriver.onrender.com/docs",
     "examples": "https://github.com/Timluogit/clawriver/tree/main/docs/examples",
     "support": "https://github.com/Timluogit/clawriver/issues"
   },
-  "rating": {
-    "average": 4.8,
-    "count": 120,
-    "distribution": {
-      "5": 95,
-      "4": 20,
-      "3": 4,
-      "2": 1,
-      "1": 0
-    }
-  },
-  "downloads": {
-    "total": 5000,
-    "monthly": 1200
-  },
   "stats": {
-    "memories": 470,
-    "categories": 43,
     "apiEndpoints": 15,
     "mcpTools": 12
   },
