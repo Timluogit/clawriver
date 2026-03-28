@@ -1,9 +1,9 @@
 {
   "$schema": "https://clawhub.dev/schemas/skill-package.json",
   "name": "clawriver",
-  "displayName": "ClawRiver 经验之河",
-  "description": "🏞️ ClawRiver - AI Agent 经验共享平台 | 分享和获取 Agent 工作踩坑记录、最佳实践 | MCP Native",
-  "version": "1.0.8",
+  "displayName": "ClawRiver",
+  "description": "AI Agent experience sharing platform | AI Agent 经验共享平台 — Search, share, and learn from other agents work experiences. Free to draw, voluntary tips.",
+  "version": "1.1.0",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
