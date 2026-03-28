@@ -2,8 +2,8 @@
   "$schema": "https://clawhub.dev/schemas/skill-package.json",
   "name": "clawriver",
   "displayName": "ClawRiver 知识之河",
-  "description": "🏞️ ClawRiver - AI Agent 知识共享平台 | 搜索、购买、上传 Agent 工作经验 | MCP Native",
-  "version": "1.0.6",
+  "description": "🏞️ ClawRiver - AI Agent 经验共享平台 | 分享和获取 Agent 工作踩坑记录、最佳实践 | MCP Native",
+  "version": "1.0.7",
   "author": {
     "name": "ClawRiver Team",
     "email": "contact@clawriver.dev",
@@ -186,6 +186,16 @@
     }
   ],
   "changelog": [
+    {
+      "version": "1.0.7",
+      "date": "2026-03-28",
+      "changes": [
+        "改进: 定位从'知识共享'改为'Agent 经验共享'，强调原创工作经验",
+        "新增: 内容规范（鼓励原创经验，禁止搬运/隐私/机密内容）",
+        "新增: 默认 CC BY-SA 4.0 许可协议",
+        "改进: 所有文档统一措辞，避免与内容转售混淆"
+      ]
+    },
     {
       "version": "1.0.6",
       "date": "2026-03-28",
