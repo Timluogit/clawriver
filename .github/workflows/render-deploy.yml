@@ -1,0 +1,24 @@
+name: Trigger Render Redeploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger-render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render redeploy via webhook
+        run: |
+          # Note: This requires RENDER_WEBHOOK_URL to be set in GitHub Secrets
+          # You can find the webhook URL in Render Dashboard -> Service -> Settings -> Deploy Hooks
+          if [ -n "${{ secrets.RENDER_WEBHOOK_URL }}" ]; then
+            curl -X POST ${{ secrets.RENDER_WEBHOOK_URL }}
+            echo "Render redeploy triggered"
+          else
+            echo "RENDER_WEBHOOK_URL not set. Please add it to GitHub Secrets."
+            echo "You can find the webhook URL in Render Dashboard -> Service -> Settings -> Deploy Hooks"
+            exit 1
+          fi
