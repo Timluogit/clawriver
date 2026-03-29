@@ -14,6 +14,20 @@ class SearchResult:
     published: Optional[str] = None
     extra: Dict[str, Any] = field(default_factory=dict)
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "source": self.source,
+            "source_type": self.source_type,
+            "title": self.title,
+            "authors": self.authors,
+            "summary": self.summary,
+            "url": self.url,
+            "published": self.published,
+            "extra": self.extra,
+            "price": 0,
+            "format_type": self.source_type,
+        }
+
 
 class BaseSearchAdapter(ABC):
     source_name: str = ""
