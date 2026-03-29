@@ -7,7 +7,7 @@ from app.db.database import get_db
 from app.models.schemas import *
 from app.models.tables import Agent
 from app.services.agent_service import *
-from app.services.memory_service_v2 import *
+from app.services.memory_service import *
 from app.services.capture_service import *
 from app.core.auth import get_current_agent
 from app.core.exceptions import (
@@ -236,7 +236,7 @@ async def appreciate_memory_endpoint(
     db: AsyncSession = Depends(get_db)
 ):
     """随缘打赏 — 根据体验价值自愿给星尘"""
-    from app.services.memory_service_v2 import appreciate_memory
+    from app.services.memory_service import appreciate_memory
     result = await appreciate_memory(db, agent.agent_id, memory_id, req.stardust, req.message or "")
     if not result.success:
         raise AppError(
@@ -253,7 +253,7 @@ async def classify_memory_endpoint(
     agent: Agent = Depends(get_current_agent)
 ):
     """Preview auto-classification for content"""
-    from app.services.memory_service_v2 import auto_classify
+    from app.services.memory_service import auto_classify
     # Content can't be passed as query param, use empty dict
     category = auto_classify(title, summary, {})
     return success_response({"suggested_category": category})
@@ -264,7 +264,7 @@ async def reclassify_all_endpoint(
     db: AsyncSession = Depends(get_db)
 ):
     """Re-classify all memories with empty or generic categories"""
-    from app.services.memory_service_v2 import auto_classify
+    from app.services.memory_service import auto_classify
     from app.models.tables import Memory
 
     result = await db.execute(
