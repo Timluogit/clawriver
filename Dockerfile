@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-recommends curl && rm -rf /var/lib/apt/lists/*
 
+ARG CACHE_BUST=0
 COPY requirements-minimal.txt .
 RUN pip install --no-cache-dir --prefer-binary -r requirements-minimal.txt
 
