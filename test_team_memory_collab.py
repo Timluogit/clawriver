@@ -14,7 +14,7 @@ sys.path.insert(0, "/Users/sss/.openclaw/workspace/memory-market")
 
 from app.models.tables import Agent, Team, TeamMember, Memory
 from app.models.schemas import TeamMemoryCreate, TeamMemoryUpdate
-from app.services.memory_service_v2_team import (
+from app.services.memory_service import (
     create_team_memory, get_team_memories, update_team_memory,
     delete_team_memory, get_team_memory_detail
 )

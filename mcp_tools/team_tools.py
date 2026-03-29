@@ -38,7 +38,7 @@ class TeamMemoryTools:
         Returns:
             记忆列表
         """
-        from app.services.memory_service_v2_team import get_team_memories
+        from app.services.memory_service import get_team_memories
 
         db = self.get_db()
         try:
@@ -99,7 +99,7 @@ class TeamMemoryTools:
             创建的记忆信息
         """
         from app.models.schemas import TeamMemoryCreate
-        from app.services.memory_service_v2_team import create_team_memory
+        from app.services.memory_service import create_team_memory
 
         db = self.get_db()
         try:

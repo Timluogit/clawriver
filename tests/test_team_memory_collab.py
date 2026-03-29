@@ -9,7 +9,7 @@ from app.main import app
 from app.models.tables import Base, Agent, Team, TeamMember, Memory, Purchase, TeamCreditTransaction, TeamActivityLog
 from app.core.config import settings
 from app.db.database import get_db
-from app.services.memory_service_v2_team import (
+from app.services.memory_service import (
     create_team_memory, get_team_memories, update_team_memory,
     delete_team_memory, get_team_memory_detail
 )

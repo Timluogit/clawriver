@@ -1,32 +1,104 @@
-"""记忆服务"""
+"""记忆服务 - 统一版本
+
+升级后的记忆服务，集成 Qdrant 向量搜索和团队记忆功能
+"""
 import json
 import re
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update, and_, or_, desc, case, literal_column
-from app.models.tables import Agent, Memory, Purchase, Rating, Transaction, Verification, PlatformStats, MemoryVersion
+from sqlalchemy.orm import selectinload
+from app.models.tables import (
+    Agent, Memory, Purchase, Rating, Transaction, Verification,
+    PlatformStats, MemoryVersion, Team, TeamMember, TeamActivityLog
+)
 from app.models.schemas import (
     MemoryCreate, MemoryUpdate, MemoryResponse, MemoryDetail,
     MemoryList, PurchaseResponse, RateRequest, RateResponse,
-    VerificationRequest, VerificationResponse
+    VerificationRequest, VerificationResponse,
+    TeamMemoryCreate, TeamMemoryUpdate, TeamMemoryResponse,
+    TeamMemoryDetail, TeamMemoryList
 )
 from app.core.config import settings
-from app.search.vector_search import get_search_engine
+from app.core.exceptions import AppError, NOT_FOUND, FORBIDDEN
+try:
+    from app.search.hybrid_search import get_hybrid_engine
+    _has_qdrant = True
+except ImportError:
+    _has_qdrant = False
 import uuid
 from datetime import datetime
 from math import log10
 
+
 def gen_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex[:12]}"
 
+
+# ============ 自动分类 ============
+
+CATEGORY_KEYWORDS = {
+    "Douyin/Marketing": ["抖音", "douyin", "tiktok", "投流", "dou+", "千川", "短视频", "直播", "带货"],
+    "Douyin/Content": ["抖音", "douyin", "爆款", "viral", "视频创作", "脚本", "拍摄"],
+    "Xiaohongshu/Marketing": ["小红书", "xiaohongshu", "RED", "种草", "笔记", "蒲公英"],
+    "Xiaohongshu/Content": ["小红书", "笔记", "封面", "标题", "爆款笔记"],
+    "WeChat/Official": ["微信", "wechat", "公众号", "服务号", "小程序"],
+    "WeChat/Private": ["微信", "社群", "私域", "朋友圈", "社群运营"],
+    "Bilibili/Creator": ["B站", "bilibili", "UP主", "投稿", "番剧"],
+    "AI/Development": ["AI", "LLM", "GPT", "模型", "prompt", "agent", "MCP", "RAG", "embedding", "向量"],
+    "AI/Tools": ["AI工具", "claude", "cursor", "copilot", "chatgpt", "openai", "api"],
+    "Programming/Python": ["python", "pip", "django", "flask", "fastapi", "pandas", "numpy"],
+    "Programming/JavaScript": ["javascript", "js", "node", "npm", "react", "vue", "typescript"],
+    "Programming/General": ["代码", "code", "编程", "programming", "开发", "debug", "bug", "git"],
+    "Database": ["数据库", "database", "SQL", "MySQL", "PostgreSQL", "SQLite", "Redis", "MongoDB"],
+    "DevOps": ["部署", "deploy", "docker", "k8s", "kubernetes", "CI/CD", "nginx", "服务器", "linux"],
+    "General/Tools": ["工具", "tools", "效率", "快捷键", "workflow"],
+    "General/Data": ["数据", "data", "分析", "analytics", "报表", "可视化"],
+}
+
+
+def auto_classify(title: str, summary: str, content: dict) -> str:
+    """根据标题、摘要和内容自动分类"""
+    text = f"{title} {summary} {json.dumps(content, ensure_ascii=False)}".lower()
+
+    scores = {}
+    for category, keywords in CATEGORY_KEYWORDS.items():
+        score = sum(1 for kw in keywords if kw.lower() in text)
+        if score > 0:
+            scores[category] = score
+
+    if scores:
+        best = max(scores, key=scores.get)
+        if scores[best] >= 2:
+            return best
+        # 单关键词匹配也返回，但优先级低
+        return best
+
+    return "General"
+
+
 def calc_executability_score(content: dict, summary: str = "") -> dict:
-    """计算知识的Agent可执行度（0-100）"""
+    """计算知识的Agent可执行度（0-100）
+
+    评判标准（Agent视角）：
+    - 有没有可填充的变量模板 {xxx}
+    - 有没有条件判断逻辑 (if/else/when)
+    - 有没有明确的输入输出格式
+    - 内容是否结构化（JSON层数、字段数）
+    - 是否包含可执行的命令/API/代码
+
+    Returns:
+        {"score": int, "reasons": list, "level": str}
+    """
+    import re
+
     score = 0
     reasons = []
     full_text = json.dumps(content, ensure_ascii=False) if isinstance(content, dict) else str(content)
     full_text += " " + (summary or "")
 
-    # 1. 变量模板检测
+    # 1. 变量模板检测 {variable_name} - 最关键的指标
+    # 匹配 {中文或英文变量名} — 模板变量如 {人群}、{topic}
     variables = re.findall(r'\{[a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]{0,29}\}', full_text)
     if variables:
         score += min(len(variables) * 15, 45)
@@ -34,24 +106,28 @@ def calc_executability_score(content: dict, summary: str = "") -> dict:
     else:
         reasons.append("无可填充变量模板")
 
-    # 2. 条件逻辑
-    logic = re.findall(r'(if|when|否则|如果|条件|判断|case|switch|elif|else)', full_text, re.IGNORECASE)
-    if logic:
-        score += min(len(logic) * 8, 20)
-        reasons.append(f"包含{len(logic)}处条件逻辑")
+    # 2. 条件逻辑检测
+    logic_patterns = re.findall(r'(if|when|否则|如果|条件|判断|case|switch|elif|else)', full_text, re.IGNORECASE)
+    if logic_patterns:
+        score += min(len(logic_patterns) * 8, 20)
+        reasons.append(f"包含{len(logic_patterns)}处条件逻辑")
 
-    # 3. 结构化程度
+    # 3. 结构化程度（JSON层数和字段数）
     if isinstance(content, dict):
         field_count = len(content)
+        # 检查嵌套层数
         max_depth = 0
         def get_depth(d, depth=0):
             nonlocal max_depth
             max_depth = max(max_depth, depth)
             if isinstance(d, dict):
-                for v in d.values(): get_depth(v, depth + 1)
+                for v in d.values():
+                    get_depth(v, depth + 1)
             elif isinstance(d, list):
-                for item in d: get_depth(item, depth + 1)
+                for item in d:
+                    get_depth(item, depth + 1)
         get_depth(content)
+
         if field_count >= 3:
             score += 10
             reasons.append(f"结构化内容({field_count}个字段)")
@@ -59,19 +135,19 @@ def calc_executability_score(content: dict, summary: str = "") -> dict:
             score += 5
             reasons.append(f"多层嵌套({max_depth}层)")
 
-    # 4. 可执行代码/API
-    exec_p = re.findall(r'(curl|POST|GET|PUT|DELETE|api|endpoint|sdk|pip install|npm install|import|from|def |function|class )', full_text, re.IGNORECASE)
-    if exec_p:
-        score += min(len(exec_p) * 5, 15)
-        reasons.append(f"包含可执行代码/API({len(exec_p)}处)")
+    # 4. 可执行命令/API检测
+    exec_patterns = re.findall(r'(curl|POST|GET|PUT|DELETE|api|endpoint|sdk|pip install|npm install|import|from|def |function|class )', full_text, re.IGNORECASE)
+    if exec_patterns:
+        score += min(len(exec_patterns) * 5, 15)
+        reasons.append(f"包含可执行代码/API({len(exec_patterns)}处)")
 
-    # 5. 步骤/流程
-    steps = re.findall(r'(步骤|step|第[一二三四五六七八九十\d]步|阶段|流程|→|=>|->|then)', full_text, re.IGNORECASE)
-    if steps:
-        score += min(len(steps) * 3, 10)
-        reasons.append(f"包含操作步骤({len(steps)}步)")
+    # 5. 步骤/流程检测
+    step_patterns = re.findall(r'(步骤|step|第[一二三四五六七八九十\d]步|阶段|流程|流程图|→|=>|->|then)', full_text, re.IGNORECASE)
+    if step_patterns:
+        score += min(len(step_patterns) * 3, 10)
+        reasons.append(f"包含操作步骤({len(step_patterns)}步)")
 
-    # 6. 内容长度
+    # 6. 内容长度（有变量时不惩罚短内容，Agent关心的是模板而非字数）
     content_len = len(full_text)
     if not variables and content_len < 100:
         score = max(score - 20, 0)
@@ -83,16 +159,22 @@ def calc_executability_score(content: dict, summary: str = "") -> dict:
         score += 2
 
     score = min(score, 100)
-    level = "excellent" if score >= 70 else "usable" if score >= 40 else "partial" if score >= 20 else "useless"
+
+    # 等级判定
+    if score >= 70:
+        level = "excellent"  # 可直接执行
+    elif score >= 40:
+        level = "usable"  # 需要少量补充
+    elif score >= 20:
+        level = "partial"  # 需要大量补充
+    else:
+        level = "useless"  # 正确的废话
+
     return {"score": score, "reasons": reasons, "level": level}
 
+
 def get_agent_level(total_transactions: int, avg_score: float = 0) -> str:
-    """计算Agent等级
-    - 新手(newbie): <10次交易
-    - 铜牌(bronze): 10-50次交易
-    - 银牌(silver): 50-100次交易
-    - 金牌(gold): >100次交易
-    """
+    """计算Agent等级"""
     if total_transactions >= 100:
         return "gold"
     elif total_transactions >= 50:
@@ -101,14 +183,18 @@ def get_agent_level(total_transactions: int, avg_score: float = 0) -> str:
         return "bronze"
     return "newbie"
 
-def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation: float = 5.0, seller_total_sales: int = 0) -> MemoryResponse:
-    """转换为响应格式（Agent视角：展示结构而非文字）"""
-    # 生成内容预览：展示结构和变量
+
+def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation: float = 5.0, seller_total_sales: int = 0, message: Optional[str] = None) -> MemoryResponse:
+    """转换为响应格式"""
+    import json as _json
+
+    # 生成内容预览：Agent视角 - 展示结构和变量，而非文字摘要
     content_preview = None
     if memory.content:
         try:
-            content = memory.content if isinstance(memory.content, dict) else json.loads(memory.content)
+            content = memory.content if isinstance(memory.content, dict) else _json.loads(memory.content)
             if isinstance(content, dict):
+                # 提取变量模板作为预览（Agent关心的）
                 preview_parts = []
                 for k, v in list(content.items())[:3]:
                     if isinstance(v, str):
@@ -141,9 +227,11 @@ def memory_to_response(memory: Memory, seller_name: str = "", seller_reputation:
         avg_score=memory.avg_score,
         verification_score=memory.verification_score,
         executability_score=getattr(memory, 'executability_score', 0) or 0,
+        message=message,
         created_at=memory.created_at,
         updated_at=memory.updated_at
     )
+
 
 async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> MemoryResponse:
     """上传记忆（带Agent可执行度检测）"""
@@ -155,6 +243,8 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
 
     # ===== Agent可执行度检测 =====
     exec_result = calc_executability_score(req.content, req.summary)
+
+    # 质量门槛：可执行度 < 15 的知识禁止上传
     if exec_result["score"] < 15:
         raise ValueError(
             f"知识可执行度过低({exec_result['score']}/100)。"
@@ -162,29 +252,40 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
             f"请添加可填充的变量模板{{变量名}}、结构化JSON内容或可执行的步骤。"
         )
 
+    # 自动分类（如果未指定）
+    category = req.category
+    if not category or category.strip() == "":
+        category = auto_classify(req.title, req.summary, req.content)
+
+    # 隐私脱敏
+    from app.core.privacy import redact_memory_content
+    safe_title, safe_summary, safe_content, privacy_findings = redact_memory_content(
+        req.title, req.summary, req.content
+    )
+
     memory = Memory(
         memory_id=gen_id("mem"),
         seller_agent_id=seller_id,
-        title=req.title,
-        category=req.category,
+        title=safe_title,
+        category=category,
         tags=req.tags,
-        summary=req.summary,
-        content=req.content,
+        summary=safe_summary,
+        content=safe_content,
         format_type=req.format_type,
         price=req.price,
         verification_data=req.verification_data,
         executability_score=exec_result["score"]
     )
-    
+
     # 计算验证分数
     if req.verification_data:
         memory.verification_score = _calc_verification_score(req.verification_data)
-    
+
     # 设置过期时间
     if req.expires_days:
         from datetime import datetime, timedelta
         memory.expires_at = datetime.now() + timedelta(days=req.expires_days)
-    
+
     db.add(memory)
 
     # 更新卖家统计
@@ -197,7 +298,103 @@ async def upload_memory(db: AsyncSession, seller_id: str, req: MemoryCreate) -> 
     await create_memory_version(db, memory, changelog="初始版本")
     await db.commit()
 
-    return memory_to_response(memory, seller.name, seller.reputation_score)
+    # 增量向量化（异步）
+    _vectorize_memory_async(memory)
+
+    # 隐私提示信息
+    privacy_message = None
+    if privacy_findings:
+        finding_types = set(f["type"] for f in privacy_findings)
+        privacy_message = f"⚠️ 检测到 {len(privacy_findings)} 处敏感信息已自动脱敏，类型：{', '.join(finding_types)}"
+
+    return memory_to_response(memory, seller.name, seller.reputation_score, message=privacy_message)
+
+
+async def _fallback_search(
+    db: AsyncSession,
+    base_stmt,
+    query: str,
+    page: int = 1,
+    page_size: int = 10,
+    sort_by: str = "relevance"
+) -> dict:
+    """纯 SQL 关键词搜索 — 单次 JOIN 查询（避免 N+1）"""
+    from app.models.tables import Agent
+
+    # ===== 修复: 使用 JOIN 避免 N+1 =====
+    stmt = base_stmt  # base_stmt 已包含 .join(Agent)
+
+    # 关键词匹配（大小写不敏感）
+    search_filter = None
+    if query:
+        q = query.lower()
+        search_filter = or_(
+            func.lower(Memory.title).contains(q),
+            func.lower(Memory.summary).contains(q),
+            func.lower(Memory.category).contains(q),
+        )
+        stmt = stmt.where(search_filter)
+
+    # 排序
+    if sort_by == "created_at":
+        stmt = stmt.order_by(desc(Memory.created_at))
+    elif sort_by == "purchase_count":
+        stmt = stmt.order_by(desc(Memory.purchase_count))
+    elif sort_by == "price":
+        stmt = stmt.order_by(Memory.price)
+    else:
+        stmt = stmt.order_by(desc(Memory.avg_score), desc(Memory.purchase_count))
+
+    # 获取总数
+    count_stmt = select(func.count(Memory.memory_id)).select_from(Memory).where(
+        Memory.is_active == True
+    )
+    if search_filter:
+        count_stmt = count_stmt.where(search_filter)
+    total = (await db.execute(count_stmt)).scalar() or 0
+
+    # 分页
+    offset = (page - 1) * page_size
+    stmt = stmt.offset(offset).limit(page_size)
+
+    # 单次 JOIN 查询获取记忆 + 卖家信息
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    items = []
+    for row in rows:
+        mem = row[0]   # Memory 对象
+        seller_name = row[1] if len(row) > 1 else "unknown"
+        seller_rep = row[2] if len(row) > 2 else 5.0
+
+        items.append({
+            "memory_id": mem.memory_id,
+            "seller_agent_id": mem.seller_agent_id,
+            "seller_name": seller_name or "unknown",
+            "seller_reputation": seller_rep or 5.0,
+            "title": mem.title,
+            "category": mem.category,
+            "tags": mem.tags or [],
+            "summary": mem.summary,
+            "content_preview": str(mem.content)[:200] if mem.content else "",
+            "format_type": mem.format_type,
+            "price": mem.price,
+            "purchase_count": mem.purchase_count,
+            "favorite_count": mem.favorite_count,
+            "avg_score": mem.avg_score,
+            "verification_score": mem.verification_score,
+            "executability_score": getattr(mem, 'executability_score', 0) or 0,
+            "created_at": mem.created_at.isoformat() if mem.created_at else None,
+        })
+
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "search_type": "keyword_fallback",
+    }
+
 
 async def search_memories(
     db: AsyncSession,
@@ -210,9 +407,9 @@ async def search_memories(
     page: int = 1,
     page_size: int = 10,
     sort_by: str = "relevance",  # relevance, created_at, purchase_count, price
-    search_type: Literal["keyword", "semantic", "hybrid"] = "hybrid"
+    search_type: Literal["vector", "keyword", "hybrid"] = "hybrid"
 ) -> MemoryList:
-    """搜索记忆
+    """搜索记忆（使用 Qdrant 向量搜索）
 
     Args:
         db: 数据库会话
@@ -225,11 +422,15 @@ async def search_memories(
         page: 页码
         page_size: 每页数量
         sort_by: 排序方式 (relevance=综合评分, created_at=创建时间, purchase_count=购买次数, price=价格)
-        search_type: 搜索类型 (keyword=关键词, semantic=语义, hybrid=混合，默认hybrid)
+        search_type: 搜索类型 (vector=向量搜索, keyword=关键词, hybrid=混合，默认hybrid)
 
     Returns:
         记忆列表
     """
+    # 验证 search_type 参数
+    if search_type not in ["vector", "keyword", "hybrid"]:
+        search_type = "hybrid"
+
     # 基础查询（不含关键词过滤）
     base_stmt = select(Memory, Agent.name, Agent.reputation_score).join(
         Agent, Memory.seller_agent_id == Agent.agent_id
@@ -237,7 +438,7 @@ async def search_memories(
 
     # 应用筛选条件（非文本搜索）
     if category:
-        base_stmt = base_stmt.where(Memory.category.contains(category))
+        base_stmt = base_stmt.where(func.lower(Memory.category).contains(category.lower()))
     if platform:
         base_stmt = base_stmt.where(Memory.category.startswith(platform))
     if format_type:
@@ -247,50 +448,42 @@ async def search_memories(
     if max_price < 999999:
         base_stmt = base_stmt.where(Memory.price <= max_price)
 
-    # 根据搜索类型选择策略
-    if search_type == "semantic":
-        # 纯语义搜索
-        return await _semantic_search(
-            db, query, base_stmt, page, page_size, sort_by
-        )
-    elif search_type == "keyword":
-        # 纯关键词搜索（原有逻辑）
-        return await _keyword_search(
-            db, query, base_stmt, page, page_size, sort_by
+    # 使用混合搜索引擎（Qdrant 可用时）或回退到关键词搜索
+    if _has_qdrant:
+        hybrid_engine = get_hybrid_engine()
+        return await hybrid_engine.search(
+            db=db,
+            query=query,
+            base_stmt=base_stmt,
+            search_type=search_type,
+            top_k=page_size * page,
+            min_score=0.1,
+            semantic_weight=0.6,
+            keyword_weight=0.4,
+            enable_rerank=True,
+            page=page,
+            page_size=page_size,
+            sort_by=sort_by
         )
     else:
-        # 混合搜索（默认）
-        return await _hybrid_search(
-            db, query, base_stmt, page, page_size, sort_by
+        # 回退：纯 SQL 关键词搜索
+        return await _fallback_search(
+            db=db,
+            base_stmt=base_stmt,
+            query=query,
+            page=page,
+            page_size=page_size,
+            sort_by=sort_by
         )
-
-
-async def _keyword_search(
-    db: AsyncSession,
-    query: str,
-    base_stmt,
-    page: int,
-    page_size: int,
-    sort_by: str
-) -> MemoryList:
-    """关键词搜索"""
-    stmt = base_stmt
-
-    # 关键词过滤
-    if query:
-        stmt = stmt.where(
-            or_(
-                Memory.title.ilike(f"%{query}%"),
-                Memory.summary.ilike(f"%{query}%")
-            )
-        )
-
-    # 使用通用搜索执行逻辑
-    return await _execute_search(stmt, db, page, page_size, sort_by)
 
 
 async def get_memory_detail(db: AsyncSession, memory_id: str, buyer_id: str = None) -> MemoryDetail:
-    """获取记忆详情"""
+    """获取记忆详情
+
+    Agent视角：
+    - 免费知识：直接展示完整内容（Agent需要立即评估是否有用）
+    - 付费知识：需先汲取（购买）才能查看完整内容
+    """
     result = await db.execute(
         select(Memory, Agent.name, Agent.reputation_score).join(
             Agent, Memory.seller_agent_id == Agent.agent_id
@@ -302,15 +495,19 @@ async def get_memory_detail(db: AsyncSession, memory_id: str, buyer_id: str = No
 
     memory, seller_name, seller_reputation = row
 
-    # 检查是否已购买（免费记忆除外）
+    # 免费知识：任何人可直接查看完整内容
+    # 付费知识：需要已购买（或自己上传的）
     if buyer_id and memory.price > 0:
+        # 检查是否已购买
         purchase = await db.execute(
             select(Purchase).where(
                 and_(Purchase.buyer_agent_id == buyer_id, Purchase.memory_id == memory_id)
             )
         )
         if not purchase.scalar_one_or_none():
-            raise PermissionError("未购买此记忆")
+            # 检查是否是自己上传的
+            if memory.seller_agent_id != buyer_id:
+                raise PermissionError("未购买此记忆")
 
     # 处理 content 字段：如果是字符串则解析为 dict
     import json
@@ -336,96 +533,56 @@ async def get_memory_detail(db: AsyncSession, memory_id: str, buyer_id: str = No
         verification_data=verification_data
     )
 
+
 async def purchase_memory(db: AsyncSession, buyer_id: str, memory_id: str) -> PurchaseResponse:
     """购买记忆"""
-    # 获取记忆
-    result = await db.execute(select(Memory).where(Memory.memory_id == memory_id))
-    memory = result.scalar_one_or_none()
-    if not memory:
-        return PurchaseResponse(success=False, message="记忆不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
-    
-    # 检查是否已购买
-    existing = await db.execute(
-        select(Purchase).where(
-            and_(Purchase.buyer_agent_id == buyer_id, Purchase.memory_id == memory_id)
+    # Use a transaction to prevent race conditions
+    async with db.begin():
+        # 获取记忆 (with FOR UPDATE lock to prevent race conditions)
+        result = await db.execute(select(Memory).where(Memory.memory_id == memory_id).with_for_update())
+        memory = result.scalar_one_or_none()
+        if not memory:
+            return PurchaseResponse(success=False, message="记忆不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
+
+        # 检查是否已购买
+        existing = await db.execute(
+            select(Purchase).where(
+                and_(Purchase.buyer_agent_id == buyer_id, Purchase.memory_id == memory_id)
+            )
         )
-    )
-    if existing.scalar_one_or_none():
-        return PurchaseResponse(success=False, message="已购买此记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
-    
-    # 检查是否是自己的记忆
-    if memory.seller_agent_id == buyer_id:
-        return PurchaseResponse(success=False, message="不能购买自己的记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
-    
-    # 获取买家
-    buyer = await db.execute(select(Agent).where(Agent.agent_id == buyer_id))
-    buyer = buyer.scalar_one_or_none()
-    if not buyer:
-        return PurchaseResponse(success=False, message="买家不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
-    
-    # MVP免费模式：跳过余额检查
-    price = memory.price
-    if settings.MVP_FREE_MODE:
-        price = 0  # 免费！
-    elif buyer.credits < price:
-        return PurchaseResponse(success=False, message="积分不足", memory_id=memory_id, credits_spent=price, remaining_credits=buyer.credits)
+        if existing.scalar_one_or_none():
+            return PurchaseResponse(success=False, message="已购买此记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # 计算分配（5%平台佣金，95%给卖家）
-    COMMISSION_RATE = 0.05
-    platform_fee = int(price * COMMISSION_RATE) if price > 0 else 0
-    seller_income = price - platform_fee
+        # 检查是否是自己的记忆
+        if memory.seller_agent_id == buyer_id:
+            return PurchaseResponse(success=False, message="不能购买自己的记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # 扣买家积分
-    buyer.credits -= price
-    buyer.total_spent += price
-    buyer.total_purchases += 1
+        # 获取买家 (with FOR UPDATE lock)
+        buyer = await db.execute(select(Agent).where(Agent.agent_id == buyer_id).with_for_update())
+        buyer = buyer.scalar_one_or_none()
+        if not buyer:
+            return PurchaseResponse(success=False, message="买家不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # 加卖家积分（扣除佣金后）
-    seller = await db.execute(select(Agent).where(Agent.agent_id == memory.seller_agent_id))
-    seller = seller.scalar_one_or_none()
-    seller.credits += seller_income
-    seller.total_earned += seller_income
-    seller.total_sales += 1
+        # 随缘模式：所有记忆免费汲取
+        price = 0
 
-    # 更新记忆统计
-    memory.purchase_count += 1
+        # 更新记忆统计
+        memory.purchase_count += 1
 
-    # 创建购买记录（含平台佣金）
-    purchase = Purchase(
-        purchase_id=gen_id("pur"),
-        buyer_agent_id=buyer_id,
-        seller_agent_id=memory.seller_agent_id,
-        memory_id=memory_id,
-        amount=price,
-        seller_income=seller_income,
-        platform_fee=platform_fee
-    )
-    db.add(purchase)
+        # 创建汲取记录
+        purchase = Purchase(
+            purchase_id=gen_id("pur"),
+            buyer_agent_id=buyer_id,
+            seller_agent_id=memory.seller_agent_id,
+            memory_id=memory_id,
+            amount=0,
+            seller_income=0,
+            platform_fee=0
+        )
+        db.add(purchase)
 
-    # 创建交易流水
-    tx_buyer = Transaction(
-        agent_id=buyer_id,
-        tx_type="purchase",
-        amount=-price,
-        balance_after=buyer.credits,
-        related_id=memory_id,
-        description=f"购买记忆: {memory.title}",
-        commission=0
-    )
-    tx_seller = Transaction(
-        agent_id=memory.seller_agent_id,
-        tx_type="sale",
-        amount=seller_income,
-        balance_after=seller.credits,
-        related_id=memory_id,
-        description=f"销售记忆: {memory.title}",
-        commission=platform_fee
-    )
-    db.add(tx_buyer)
-    db.add(tx_seller)
-
-    # 更新平台统计
-    await _update_platform_stats(db, price, platform_fee)
+        # 更新买家统计
+        buyer.total_purchases += 1
 
     await db.commit()
 
@@ -441,16 +598,20 @@ async def purchase_memory(db: AsyncSession, buyer_id: str, memory_id: str) -> Pu
 
     return PurchaseResponse(
         success=True,
-        message="购买成功",
+        message="汲取成功，知识已汇入",
         memory_id=memory_id,
-        credits_spent=price,
+        credits_spent=0,
         remaining_credits=buyer.credits,
         memory_content=memory_content
     )
 
+
 async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> RateResponse:
-    """评价记忆（支持更新已有评价）"""
-    # 检查是否购买过
+    """评价记忆（支持更新已有评价）
+
+    Agent深入使用知识后可以更新评价，这比一次性评价更准确。
+    """
+    # 检查是否购买过（免费记忆也需先汲取）
     purchase = await db.execute(
         select(Purchase).where(
             and_(Purchase.buyer_agent_id == buyer_id, Purchase.memory_id == req.memory_id)
@@ -458,7 +619,7 @@ async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> Rate
     )
     if not purchase.scalar_one_or_none():
         raise PermissionError("未购买此记忆")
-    
+
     # 检查是否已评价 — 支持更新
     existing = await db.execute(
         select(Rating).where(
@@ -475,24 +636,21 @@ async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> Rate
         existing_rating.effectiveness = req.effectiveness
         existing_rating.created_at = datetime.now()
 
+        # 更新记忆评分统计
         memory = await db.execute(select(Memory).where(Memory.memory_id == req.memory_id))
         memory = memory.scalar_one_or_none()
         memory.total_score = memory.total_score - old_score + req.score
         memory.avg_score = memory.total_score / memory.score_count if memory.score_count > 0 else req.score
 
-        seller_id = memory.seller_agent_id
         await db.commit()
 
-        # 更新卖家信用分
-        try:
-            from app.services.agent_service import update_agent_reputation
-            await update_agent_reputation(db, seller_id)
-        except Exception:
-            pass
+        return RateResponse(
+            success=True,
+            message="评价已更新",
+            new_avg_score=memory.avg_score
+        )
 
-        return RateResponse(success=True, message="评价已更新", new_avg_score=memory.avg_score)
-
-    # 创建评价
+    # 创建新评价
     rating = Rating(
         rating_id=gen_id("rat"),
         memory_id=req.memory_id,
@@ -502,7 +660,7 @@ async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> Rate
         comment=req.comment
     )
     db.add(rating)
-    
+
     # 更新记忆评分
     memory = await db.execute(select(Memory).where(Memory.memory_id == req.memory_id))
     memory = memory.scalar_one_or_none()
@@ -510,22 +668,14 @@ async def rate_memory(db: AsyncSession, buyer_id: str, req: RateRequest) -> Rate
     memory.score_count += 1
     memory.avg_score = memory.total_score / memory.score_count
 
-    # 更新卖家的信用分
-    seller_id = memory.seller_agent_id
     await db.commit()
-
-    # 异步更新卖家信用分
-    try:
-        from app.services.agent_service import update_agent_reputation
-        await update_agent_reputation(db, seller_id)
-    except Exception:
-        pass  # 信用分更新失败不影响评价
 
     return RateResponse(
         success=True,
         message="评价成功",
         new_avg_score=memory.avg_score
     )
+
 
 def _calc_verification_score(data: dict) -> float:
     """计算验证分数（0-1）"""
@@ -539,6 +689,7 @@ def _calc_verification_score(data: dict) -> float:
     if data.get("test_period_days"):
         score += min(data["test_period_days"] / 30, 0.2)
     return round(min(score, 1.0), 2)
+
 
 async def update_memory(db: AsyncSession, memory_id: str, seller_id: str, updates: MemoryUpdate) -> Optional[MemoryResponse]:
     """更新记忆
@@ -587,11 +738,15 @@ async def update_memory(db: AsyncSession, memory_id: str, seller_id: str, update
     await create_memory_version(db, memory, changelog=changelog)
     await db.commit()
 
+    # 增量向量化更新
+    _vectorize_memory_async(memory)
+
     # 获取卖家信息
     seller = await db.execute(select(Agent).where(Agent.agent_id == seller_id))
     seller = seller.scalar_one_or_none()
 
     return memory_to_response(memory, seller.name if seller else "", seller.reputation_score if seller else 5.0)
+
 
 async def get_my_memories(
     db: AsyncSession,
@@ -646,6 +801,80 @@ async def get_my_memories(
             "total_earned": total_earned
         }
     }
+
+
+async def appreciate_memory(db: AsyncSession, buyer_id: str, memory_id: str, stardust: int, message: str = ""):
+    """随缘打赏 — 使用者根据体验价值自愿给星尘"""
+    from app.models.schemas import AppreciateResponse
+
+    # 获取记忆
+    result = await db.execute(select(Memory).where(Memory.memory_id == memory_id))
+    memory = result.scalar_one_or_none()
+    if not memory:
+        return AppreciateResponse(success=False, message="记忆不存在", stardust_given=0, remaining_balance=0)
+
+    # 不能打赏自己
+    if memory.seller_agent_id == buyer_id:
+        return AppreciateResponse(success=False, message="不能打赏自己的记忆", stardust_given=0, remaining_balance=0)
+
+    # 获取买家
+    buyer_result = await db.execute(select(Agent).where(Agent.agent_id == buyer_id))
+    buyer = buyer_result.scalar_one_or_none()
+    if not buyer:
+        return AppreciateResponse(success=False, message="用户不存在", stardust_given=0, remaining_balance=0)
+
+    if buyer.credits < stardust:
+        return AppreciateResponse(success=False, message=f"星尘不足（当前 {buyer.credits}，需要 {stardust}）", stardust_given=0, remaining_balance=buyer.credits)
+
+    # 计算分配（5%平台费，95%给作者）
+    COMMISSION_RATE = 0.05
+    platform_fee = int(stardust * COMMISSION_RATE)
+    seller_income = stardust - platform_fee
+
+    # 扣买家星尘
+    buyer.credits -= stardust
+    buyer.total_spent += stardust
+
+    # 加卖家星尘
+    seller_result = await db.execute(select(Agent).where(Agent.agent_id == memory.seller_agent_id))
+    seller = seller_result.scalar_one_or_none()
+    if seller:
+        seller.credits += seller_income
+        seller.total_earned += seller_income
+
+    # 创建打赏记录
+    purchase = Purchase(
+        purchase_id=gen_id("pur"),
+        buyer_agent_id=buyer_id,
+        seller_agent_id=memory.seller_agent_id,
+        memory_id=memory_id,
+        amount=stardust,
+        seller_income=seller_income,
+        platform_fee=platform_fee
+    )
+    db.add(purchase)
+
+    # 创建交易流水
+    tx = Transaction(
+        agent_id=buyer_id,
+        tx_type="appreciate",
+        amount=-stardust,
+        balance_after=buyer.credits,
+        related_id=memory_id,
+        description=f"随缘星尘: {memory.title}" + (f" — {message}" if message else ""),
+        commission=platform_fee
+    )
+    db.add(tx)
+
+    await db.commit()
+
+    return AppreciateResponse(
+        success=True,
+        message=f"已送出 {stardust} 星尘，感谢你的随缘 🙏",
+        stardust_given=stardust,
+        remaining_balance=buyer.credits
+    )
+
 
 async def verify_memory(
     db: AsyncSession,
@@ -751,6 +980,7 @@ async def verify_memory(
         reward_credits=REWARD_CREDITS
     )
 
+
 async def _update_platform_stats(db: AsyncSession, total_amount: int, commission: int):
     """更新平台统计信息
 
@@ -790,211 +1020,6 @@ async def _update_platform_stats(db: AsyncSession, total_amount: int, commission
             date=today
         )
         db.add(stats)
-
-
-async def _semantic_search(
-    db: AsyncSession,
-    query: str,
-    base_stmt,
-    page: int,
-    page_size: int,
-    sort_by: str
-) -> MemoryList:
-    """语义搜索"""
-    if not query:
-        # 无查询时返回所有结果
-        return await _execute_search(base_stmt, db, page, page_size, sort_by)
-
-    # 获取所有候选记忆
-    result = await db.execute(base_stmt)
-    all_memories = result.all()
-
-    if not all_memories:
-        return MemoryList(items=[], total=0, page=page, page_size=page_size)
-
-    # 准备语义搜索数据
-    memories_data = [
-        {
-            'id': row.Memory.memory_id,
-            'title': row.Memory.title,
-            'summary': row.Memory.summary
-        }
-        for row in all_memories
-    ]
-
-    # 索引记忆
-    engine = get_search_engine()
-    engine.batch_index_with_cache(memories_data)
-
-    # 语义搜索
-    search_results = engine.search(query, top_k=page_size * page)
-
-    # 按 ID 映射回记忆对象
-    memory_map = {row.Memory.memory_id: row for row in all_memories}
-    sorted_memories = []
-    for memory_id, score in search_results:
-        if memory_id in memory_map:
-            sorted_memories.append((memory_id, score, memory_map[memory_id]))
-
-    # 分页
-    start_idx = (page - 1) * page_size
-    end_idx = start_idx + page_size
-    paged_memories = sorted_memories[start_idx:end_idx]
-
-    # 转换为响应格式
-    items = []
-    for memory_id, score, row in paged_memories:
-        memory, seller_name, seller_reputation = row
-        items.append(memory_to_response(memory, seller_name, seller_reputation))
-
-    return MemoryList(
-        items=items,
-        total=len(sorted_memories),
-        page=page,
-        page_size=page_size
-    )
-
-
-async def _hybrid_search(
-    db: AsyncSession,
-    query: str,
-    base_stmt,
-    page: int,
-    page_size: int,
-    sort_by: str
-) -> MemoryList:
-    """混合搜索：语义 + 关键词"""
-    if not query:
-        # 无查询时返回所有结果
-        return await _execute_search(base_stmt, db, page, page_size, sort_by)
-
-    # 1. 获取关键词匹配结果
-    keyword_stmt = base_stmt
-    if query:
-        keyword_stmt = keyword_stmt.where(
-            or_(
-                Memory.title.ilike(f"%{query}%"),
-                Memory.summary.ilike(f"%{query}%")
-            )
-        )
-
-    keyword_result = await db.execute(keyword_stmt)
-    keyword_memories = keyword_result.all()
-    keyword_ids = {row.Memory.memory_id for row in keyword_memories}
-
-    # 2. 获取所有候选记忆用于语义搜索
-    all_result = await db.execute(base_stmt)
-    all_memories = all_result.all()
-
-    if not all_memories:
-        return MemoryList(items=[], total=0, page=page, page_size=page_size)
-
-    # 3. 准备语义搜索数据
-    memories_data = [
-        {
-            'id': row.Memory.memory_id,
-            'title': row.Memory.title,
-            'summary': row.Memory.summary
-        }
-        for row in all_memories
-    ]
-
-    # 4. 索引记忆
-    engine = get_search_engine()
-    engine.batch_index_with_cache(memories_data)
-
-    # 5. 混合搜索
-    search_results = engine.search_with_keywords(
-        query,
-        keyword_ids,
-        top_k=page_size * page,
-        semantic_weight=0.6  # 语义权重 60%，关键词 40%
-    )
-
-    # 6. 按 ID 映射回记忆对象
-    memory_map = {row.Memory.memory_id: row for row in all_memories}
-    sorted_memories = []
-    for memory_id, score in search_results:
-        if memory_id in memory_map:
-            sorted_memories.append((memory_id, score, memory_map[memory_id]))
-
-    # 7. 分页
-    start_idx = (page - 1) * page_size
-    end_idx = start_idx + page_size
-    paged_memories = sorted_memories[start_idx:end_idx]
-
-    # 8. 转换为响应格式
-    items = []
-    for memory_id, score, row in paged_memories:
-        memory, seller_name, seller_reputation = row
-        items.append(memory_to_response(memory, seller_name, seller_reputation))
-
-    return MemoryList(
-        items=items,
-        total=len(sorted_memories),
-        page=page,
-        page_size=page_size
-    )
-
-
-async def _execute_search(
-    stmt,
-    db: AsyncSession,
-    page: int,
-    page_size: int,
-    sort_by: str
-) -> MemoryList:
-    """执行搜索查询（通用逻辑）"""
-    # 计数
-    count_stmt = select(func.count()).select_from(stmt.subquery())
-    total = await db.execute(count_stmt)
-    total = total.scalar() or 0
-
-    # 排序逻辑
-    if sort_by == "created_at":
-        stmt = stmt.order_by(desc(Memory.created_at))
-    elif sort_by == "purchase_count":
-        stmt = stmt.order_by(desc(Memory.purchase_count))
-    elif sort_by == "price":
-        stmt = stmt.order_by(Memory.price)
-    elif sort_by == "rating":
-        stmt = stmt.order_by(desc(Memory.avg_score))
-    else:
-        # 综合评分排序（默认）
-        score_normalized = (Memory.avg_score / 5.0)
-        purchase_normalized = func.log10(Memory.purchase_count + 1) / func.log10(100)
-        verification_normalized = func.coalesce(Memory.verification_score, 0.5)
-        # 计算天数差（PostgreSQL兼容）
-        days_old = func.extract('epoch', func.now() - Memory.created_at) / 86400
-        time_decay = case(
-            (days_old <= 7, 1.0),
-            (days_old <= 30, 1.0 - (days_old - 7) / 23 * 0.5),
-            else_=0.5
-        )
-        favorite_normalized = func.log10(Memory.favorite_count + 1) / func.log10(50)
-
-        composite_score = (
-            score_normalized * 0.3 +
-            purchase_normalized * 0.2 +
-            verification_normalized * 0.25 +
-            time_decay * 0.15 +
-            favorite_normalized * 0.1
-        )
-
-        stmt = stmt.order_by(desc(composite_score))
-
-    # 分页
-    stmt = stmt.offset((page - 1) * page_size).limit(page_size)
-
-    result = await db.execute(stmt)
-    rows = result.all()
-
-    items = []
-    for row in rows:
-        memory, seller_name, seller_reputation = row
-        items.append(memory_to_response(memory, seller_name, seller_reputation))
-
-    return MemoryList(items=items, total=total, page=page, page_size=page_size)
 
 
 async def create_memory_version(
@@ -1166,3 +1191,582 @@ async def get_memory_version(
         created_at=version.created_at
     ).model_dump()
 
+
+def _vectorize_memory_async(memory: Memory):
+    """异步向量化记忆（非阻塞）
+
+    Args:
+        memory: 记忆对象
+    """
+    import threading
+
+    def vectorize():
+        try:
+            from app.search.qdrant_engine import get_qdrant_engine
+            engine = get_qdrant_engine()
+
+            memory_data = {
+                "id": memory.memory_id,
+                "title": memory.title,
+                "summary": memory.summary,
+                "category": memory.category,
+                "tags": memory.tags or [],
+                "price": memory.price,
+                "purchase_count": memory.purchase_count,
+                "avg_score": memory.avg_score or 0,
+                "created_at": memory.created_at.isoformat() if memory.created_at else "",
+            }
+
+            engine.index_memories([memory_data], batch_size=10)
+            print(f"[VectorSearch] Indexed memory: {memory.memory_id}")
+        except Exception as e:
+            print(f"[VectorSearch] Failed to index memory {memory.memory_id}: {e}")
+
+    # 在后台线程中执行，避免阻塞
+    thread = threading.Thread(target=vectorize, daemon=True)
+    thread.start()
+
+
+# ============ 团队记忆功能 ============
+
+async def _check_team_permission(
+    db: AsyncSession,
+    team_id: str,
+    agent_id: str,
+    min_role: str = "member"
+) -> Tuple[TeamMember, Team]:
+    """检查团队成员权限
+
+    Args:
+        db: 数据库会话
+        team_id: 团队ID
+        agent_id: Agent ID
+        min_role: 最低角色要求（member/admin/owner）
+
+    Returns:
+        (成员对象, 团队对象)
+
+    Raises:
+        PermissionError: 无权限
+        ValueError: 团队不存在
+    """
+    # 获取团队成员
+    result = await db.execute(
+        select(TeamMember).where(
+            and_(
+                TeamMember.team_id == team_id,
+                TeamMember.agent_id == agent_id,
+                TeamMember.is_active == True
+            )
+        )
+    )
+    member = result.scalar_one_or_none()
+
+    if not member:
+        raise PermissionError("不是团队成员")
+
+    # 检查角色
+    role_hierarchy = {"member": 0, "admin": 1, "owner": 2}
+    if role_hierarchy.get(member.role, 0) < role_hierarchy.get(min_role, 0):
+        raise PermissionError(f"需要 {min_role} 或更高权限")
+
+    # 获取团队
+    team_result = await db.execute(
+        select(Team).where(Team.team_id == team_id, Team.is_active == True)
+    )
+    team = team_result.scalar_one_or_none()
+
+    if not team:
+        raise ValueError("团队不存在")
+
+    return member, team
+
+
+async def create_team_memory(
+    db: AsyncSession,
+    team_id: str,
+    creator_agent_id: str,
+    req: TeamMemoryCreate
+) -> TeamMemoryResponse:
+    """创建团队共享记忆
+
+    Args:
+        db: 数据库会话
+        team_id: 团队ID
+        creator_agent_id: 创建者Agent ID
+        req: 记忆创建请求
+
+    Returns:
+        团队记忆响应
+
+    Raises:
+        PermissionError: 无权限
+        ValueError: 团队不存在
+    """
+    # 检查团队成员权限
+    await _check_team_permission(db, team_id, creator_agent_id, "member")
+
+    # 获取创建者
+    creator_result = await db.execute(
+        select(Agent).where(Agent.agent_id == creator_agent_id)
+    )
+    creator = creator_result.scalar_one_or_none()
+    if not creator:
+        raise ValueError("创建者不存在")
+
+    # 创建记忆
+    memory = Memory(
+        memory_id=gen_id("mem"),
+        seller_agent_id=creator_agent_id,  # 记录卖方（用于兼容个人记忆）
+        team_id=team_id,
+        team_access_level=req.team_access_level,
+        created_by_agent_id=creator_agent_id,
+        title=req.title,
+        category=req.category,
+        tags=req.tags,
+        summary=req.summary,
+        content=req.content,
+        format_type=req.format_type,
+        price=req.price,
+        verification_data=req.verification_data
+    )
+
+    # 计算验证分数
+    if req.verification_data:
+        memory.verification_score = _calc_verification_score(req.verification_data)
+
+    # 设置过期时间
+    if req.expires_days:
+        from datetime import datetime, timedelta
+        memory.expires_at = datetime.now() + timedelta(days=req.expires_days)
+
+    db.add(memory)
+
+    # 更新团队记忆统计
+    await db.execute(
+        update(Team)
+        .where(Team.team_id == team_id)
+        .values(memory_count=Team.memory_count + 1)
+    )
+
+    # 更新创建者统计
+    creator.memories_uploaded += 1
+
+    await db.commit()
+    await db.refresh(memory)
+
+    # 创建初始版本快照
+    await create_memory_version(db, memory, changelog="初始版本")
+    await db.commit()
+
+    # 增量向量化（异步）
+    _vectorize_memory_async(memory)
+
+    # 记录团队活动
+    await _log_team_activity(
+        db,
+        team_id,
+        creator_agent_id,
+        "memory_created",
+        f"创建了记忆: {memory.title}",
+        related_id=memory.memory_id
+    )
+
+    # 构建响应
+    team = await db.execute(select(Team).where(Team.team_id == team_id))
+    team = team.scalar_one_or_none()
+
+    return TeamMemoryResponse(
+        memory_id=memory.memory_id,
+        team_id=memory.team_id,
+        team_name=team.name if team else None,
+        created_by_agent_id=memory.created_by_agent_id,
+        created_by_name=creator.name,
+        title=memory.title,
+        category=memory.category,
+        tags=memory.tags or [],
+        summary=memory.summary,
+        format_type=memory.format_type,
+        price=memory.price,
+        purchase_count=memory.purchase_count,
+        favorite_count=memory.favorite_count,
+        avg_score=memory.avg_score,
+        verification_score=memory.verification_score,
+        team_access_level=memory.team_access_level,
+        created_at=memory.created_at,
+        updated_at=memory.updated_at
+    )
+
+
+async def get_team_memories(
+    db: AsyncSession,
+    team_id: str,
+    request_agent_id: str,
+    page: int = 1,
+    page_size: int = 20
+) -> TeamMemoryList:
+    """获取团队记忆列表
+
+    Args:
+        db: 数据库会话
+        team_id: 团队ID
+        request_agent_id: 请求者Agent ID
+        page: 页码
+        page_size: 每页数量
+
+    Returns:
+        团队记忆列表
+
+    Raises:
+        PermissionError: 无权限
+    """
+    # 检查团队成员权限
+    await _check_team_permission(db, team_id, request_agent_id, "member")
+
+    # 计算总数
+    count_stmt = select(func.count()).select_from(Memory).where(
+        and_(Memory.team_id == team_id, Memory.is_active == True)
+    )
+    total_result = await db.execute(count_stmt)
+    total = total_result.scalar() or 0
+
+    # 获取记忆列表
+    stmt = (
+        select(Memory, Agent, Team)
+        .join(Agent, Memory.created_by_agent_id == Agent.agent_id)
+        .outerjoin(Team, Memory.team_id == Team.team_id)
+        .where(
+            and_(Memory.team_id == team_id, Memory.is_active == True)
+        )
+        .order_by(desc(Memory.created_at))
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+    )
+
+    result = await db.execute(stmt)
+    items = []
+
+    for row in result:
+        memory = row[0]
+        creator = row[1]
+        team = row[2]
+
+        items.append(TeamMemoryResponse(
+            memory_id=memory.memory_id,
+            team_id=memory.team_id,
+            team_name=team.name if team else None,
+            created_by_agent_id=memory.created_by_agent_id,
+            created_by_name=creator.name if creator else "",
+            title=memory.title,
+            category=memory.category,
+            tags=memory.tags or [],
+            summary=memory.summary,
+            format_type=memory.format_type,
+            price=memory.price,
+            purchase_count=memory.purchase_count,
+            favorite_count=memory.favorite_count,
+            avg_score=memory.avg_score,
+            verification_score=memory.verification_score,
+            team_access_level=memory.team_access_level,
+            created_at=memory.created_at,
+            updated_at=memory.updated_at
+        ))
+
+    return TeamMemoryList(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size
+    )
+
+
+async def get_team_memory_detail(
+    db: AsyncSession,
+    team_id: str,
+    memory_id: str,
+    request_agent_id: str
+) -> TeamMemoryDetail:
+    """获取团队记忆详情
+
+    Args:
+        db: 数据库会话
+        team_id: 团队ID
+        memory_id: 记忆ID
+        request_agent_id: 请求者Agent ID
+
+    Returns:
+        团队记忆详情
+
+    Raises:
+        PermissionError: 无权限
+        ValueError: 记忆不存在
+    """
+    # 检查团队成员权限
+    await _check_team_permission(db, team_id, request_agent_id, "member")
+
+    # 获取记忆
+    result = await db.execute(
+        select(Memory, Agent, Team)
+        .join(Agent, Memory.created_by_agent_id == Agent.agent_id)
+        .outerjoin(Team, Memory.team_id == Team.team_id)
+        .where(
+            and_(
+                Memory.memory_id == memory_id,
+                Memory.team_id == team_id,
+                Memory.is_active == True
+            )
+        )
+    )
+    row = result.first()
+
+    if not row:
+        raise ValueError("记忆不存在")
+
+    memory, creator, team = row
+
+    # 处理 content 字段
+    content = memory.content
+    if isinstance(content, str):
+        try:
+            content = json.loads(content)
+        except JSONDecodeError:
+            content = {"raw": content}
+
+    # 处理 verification_data 字段
+    verification_data = memory.verification_data
+    if verification_data and isinstance(verification_data, str):
+        try:
+            verification_data = json.loads(verification_data)
+        except JSONDecodeError:
+            verification_data = {"raw": verification_data}
+
+    return TeamMemoryDetail(
+        memory_id=memory.memory_id,
+        team_id=memory.team_id,
+        team_name=team.name if team else None,
+        created_by_agent_id=memory.created_by_agent_id,
+        created_by_name=creator.name if creator else "",
+        title=memory.title,
+        category=memory.category,
+        tags=memory.tags or [],
+        summary=memory.summary,
+        format_type=memory.format_type,
+        price=memory.price,
+        purchase_count=memory.purchase_count,
+        favorite_count=memory.favorite_count,
+        avg_score=memory.avg_score,
+        verification_score=memory.verification_score,
+        team_access_level=memory.team_access_level,
+        created_at=memory.created_at,
+        updated_at=memory.updated_at,
+        content=content,
+        verification_data=verification_data
+    )
+
+
+async def update_team_memory(
+    db: AsyncSession,
+    team_id: str,
+    memory_id: str,
+    request_agent_id: str,
+    req: TeamMemoryUpdate
+) -> TeamMemoryResponse:
+    """更新团队记忆
+
+    Args:
+        db: 数据库会话
+        team_id: 团队ID
+        memory_id: 记忆ID
+        request_agent_id: 请求者Agent ID
+        req: 更新请求
+
+    Returns:
+        更新后的团队记忆
+
+    Raises:
+        PermissionError: 无权限
+        ValueError: 记忆不存在
+    """
+    # 检查团队成员权限（admin及以上可以修改）
+    member, _ = await _check_team_permission(db, team_id, request_agent_id, "admin")
+
+    # 获取记忆
+    result = await db.execute(
+        select(Memory).where(
+            and_(
+                Memory.memory_id == memory_id,
+                Memory.team_id == team_id,
+                Memory.is_active == True
+            )
+        )
+    )
+    memory = result.scalar_one_or_none()
+
+    if not memory:
+        raise ValueError("记忆不存在")
+
+    # 提取 changelog
+    changelog = req.changelog
+
+    # 更新字段
+    if req.summary is not None:
+        memory.summary = req.summary
+    if req.content is not None:
+        memory.content = req.content
+    if req.tags is not None:
+        memory.tags = req.tags
+
+    # 更新时间戳
+    from datetime import datetime
+    memory.updated_at = datetime.now()
+
+    await db.commit()
+    await db.refresh(memory)
+
+    # 创建版本快照
+    await create_memory_version(db, memory, changelog=changelog)
+    await db.commit()
+
+    # 增量向量化更新
+    _vectorize_memory_async(memory)
+
+    # 记录团队活动
+    await _log_team_activity(
+        db,
+        team_id,
+        request_agent_id,
+        "memory_updated",
+        f"更新了记忆: {memory.title}",
+        related_id=memory.memory_id
+    )
+
+    # 构建响应
+    creator_result = await db.execute(
+        select(Agent).where(Agent.agent_id == memory.created_by_agent_id)
+    )
+    creator = creator_result.scalar_one_or_none()
+    team_result = await db.execute(select(Team).where(Team.team_id == team_id))
+    team = team_result.scalar_one_or_none()
+
+    return TeamMemoryResponse(
+        memory_id=memory.memory_id,
+        team_id=memory.team_id,
+        team_name=team.name if team else None,
+        created_by_agent_id=memory.created_by_agent_id,
+        created_by_name=creator.name if creator else "",
+        title=memory.title,
+        category=memory.category,
+        tags=memory.tags or [],
+        summary=memory.summary,
+        format_type=memory.format_type,
+        price=memory.price,
+        purchase_count=memory.purchase_count,
+        favorite_count=memory.favorite_count,
+        avg_score=memory.avg_score,
+        verification_score=memory.verification_score,
+        team_access_level=memory.team_access_level,
+        created_at=memory.created_at,
+        updated_at=memory.updated_at
+    )
+
+
+async def delete_team_memory(
+    db: AsyncSession,
+    team_id: str,
+    memory_id: str,
+    request_agent_id: str
+) -> None:
+    """删除团队记忆
+
+    Args:
+        db: 数据库会话
+        team_id: 团队ID
+        memory_id: 记忆ID
+        request_agent_id: 请求者Agent ID
+
+    Raises:
+        PermissionError: 无权限
+        ValueError: 记忆不存在
+    """
+    # 检查团队成员权限（admin及以上可以删除）
+    member, _ = await _check_team_permission(db, team_id, request_agent_id, "admin")
+
+    # 获取记忆
+    result = await db.execute(
+        select(Memory).where(
+            and_(
+                Memory.memory_id == memory_id,
+                Memory.team_id == team_id,
+                Memory.is_active == True
+            )
+        )
+    )
+    memory = result.scalar_one_or_none()
+
+    if not memory:
+        raise ValueError("记忆不存在")
+
+    # 软删除
+    memory.is_active = False
+    await db.commit()
+
+    # 更新团队记忆统计
+    await db.execute(
+        update(Team)
+        .where(Team.team_id == team_id)
+        .values(memory_count=Team.memory_count - 1)
+    )
+    await db.commit()
+
+    # 记录团队活动
+    await _log_team_activity(
+        db,
+        team_id,
+        request_agent_id,
+        "memory_deleted",
+        f"删除了记忆: {memory.title}",
+        related_id=memory.memory_id
+    )
+
+
+async def _log_team_activity(
+    db: AsyncSession,
+    team_id: str,
+    agent_id: str,
+    activity_type: str,
+    description: str,
+    related_id: Optional[str] = None,
+    extra_data: Optional[dict] = None
+) -> None:
+    """记录团队活动（内部函数）
+
+    Args:
+        db: 数据库会话
+        team_id: 团队ID
+        agent_id: 操作者Agent ID
+        activity_type: 活动类型
+        description: 活动描述
+        related_id: 关联ID
+        extra_data: 额外信息
+    """
+    # 创建活动记录（如果活动日志表存在）
+    try:
+        from app.models.tables import TeamActivityLog
+
+        activity = TeamActivityLog(
+            activity_id=gen_id("act"),
+            team_id=team_id,
+            agent_id=agent_id,
+            activity_type=activity_type,
+            description=description,
+            related_id=related_id,
+            extra_data=extra_data
+        )
+        db.add(activity)
+        await db.commit()
+    except ImportError:
+        # 表不存在，跳过
+        pass
+    except Exception:
+        # 其他错误，跳过
+        pass

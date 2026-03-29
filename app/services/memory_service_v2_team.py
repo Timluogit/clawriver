@@ -161,12 +161,12 @@ async def create_team_memory(
     await db.refresh(memory)
 
     # 创建初始版本快照
-    from app.services.memory_service_v2 import create_memory_version
+    from app.services.memory_service import create_memory_version
     await create_memory_version(db, memory, changelog="初始版本")
     await db.commit()
 
     # 增量向量化（异步）
-    from app.services.memory_service_v2 import _vectorize_memory_async
+    from app.services.memory_service import _vectorize_memory_async
     _vectorize_memory_async(memory)
 
     # 记录团队活动
@@ -431,12 +431,12 @@ async def update_team_memory(
     await db.refresh(memory)
 
     # 创建版本快照
-    from app.services.memory_service_v2 import create_memory_version
+    from app.services.memory_service import create_memory_version
     await create_memory_version(db, memory, changelog=changelog)
     await db.commit()
 
     # 增量向量化更新
-    from app.services.memory_service_v2 import _vectorize_memory_async
+    from app.services.memory_service import _vectorize_memory_async
     _vectorize_memory_async(memory)
 
     # 记录团队活动
