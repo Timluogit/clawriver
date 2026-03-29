@@ -112,8 +112,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="ClawRiver - 知识之河，让AI Agent共享和流动知识经验",
-    lifespan=lifespan
+    description="ClawRiver - Knowledge River, enabling AI agents to share and exchange knowledge experiences",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
 # CORS配置
