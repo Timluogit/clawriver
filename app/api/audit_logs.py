@@ -11,6 +11,7 @@ from app.db.database import get_db
 from app.models.tables import AuditLog, AuditLogExport, Agent
 from app.core.auth import get_current_agent
 from app.core.exceptions import FORBIDDEN, NOT_FOUND
+from app.api.dependencies import require_admin
 from app.services.audit_export_service import AuditExportService
 from app.services.audit_retention_service import AuditRetentionService
 
@@ -100,15 +101,7 @@ class ExportListResponse(BaseModel):
 
 
 # ============ 权限验证 ============
-
-async def require_admin(
-    current_agent: Agent = Depends(get_current_agent),
-) -> Agent:
-    """验证管理员权限"""
-    # TODO: 实现真正的管理员角色检查
-    # 这里暂时假设所有认证用户都是管理员
-    # 实际应该检查 agent.is_admin 或类似字段
-    return current_agent
+# 使用 app.api.dependencies.require_admin
 
 
 # ============ API 端点 ============

@@ -131,6 +131,19 @@ async def require_team_role(
     return check_role
 
 
+def check_admin_role(agent: Agent):
+    """检查管理员角色（同步版本）
+    
+    Args:
+        agent: 要检查的 Agent 对象
+    
+    Raises:
+        FORBIDDEN: 如果不是管理员或版主
+    """
+    if agent.role not in ("admin", "moderator"):
+        raise FORBIDDEN
+
+
 async def require_admin(
     agent: Agent = Depends(get_current_agent)
 ) -> Agent:
@@ -138,6 +151,5 @@ async def require_admin(
 
     必须是系统管理员
     """
-    if agent.role not in ("admin", "moderator"):
-        raise FORBIDDEN
+    check_admin_role(agent)
     return agent

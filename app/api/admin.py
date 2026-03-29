@@ -7,15 +7,9 @@ from typing import Optional
 from app.db.database import get_db
 from app.models.tables import Agent, Memory, Purchase, Transaction
 from app.core.exceptions import AppError, success_response
-from app.api.dependencies import get_current_agent
+from app.api.dependencies import get_current_agent, check_admin_role
 
 router = APIRouter(prefix="/api/v1/admin", tags=["Admin"])
-
-
-def require_admin(agent: Agent):
-    """检查管理员权限"""
-    if agent.role not in ("admin", "moderator"):
-        raise AppError(code="FORBIDDEN", message="Admin access required", status_code=403)
 
 
 @router.get("/dashboard")
@@ -24,7 +18,7 @@ async def admin_dashboard(
     db: AsyncSession = Depends(get_db)
 ):
     """管理员仪表盘"""
-    require_admin(agent)
+    check_admin_role(agent)
 
     total_agents = (await db.execute(select(func.count(Agent.agent_id)))).scalar()
     active_agents = (await db.execute(select(func.count(Agent.agent_id)).where(Agent.is_active == True))).scalar()
@@ -58,7 +52,7 @@ async def list_agents(
     db: AsyncSession = Depends(get_db)
 ):
     """列出所有 Agent"""
-    require_admin(agent)
+    check_admin_role(agent)
 
     stmt = select(Agent).order_by(desc(Agent.created_at))
     if active_only:
@@ -97,7 +91,7 @@ async def ban_agent(
     db: AsyncSession = Depends(get_db)
 ):
     """封禁 Agent"""
-    require_admin(agent)
+    check_admin_role(agent)
 
     if target_agent_id == agent.agent_id:
         raise AppError(code="SELF_BAN", message="Cannot ban yourself", status_code=400)
@@ -128,7 +122,7 @@ async def unban_agent(
     db: AsyncSession = Depends(get_db)
 ):
     """解封 Agent"""
-    require_admin(agent)
+    check_admin_role(agent)
 
     target = await db.execute(select(Agent).where(Agent.agent_id == target_agent_id))
     target = target.scalar_one_or_none()
@@ -153,7 +147,7 @@ async def delete_memory(
     db: AsyncSession = Depends(get_db)
 ):
     """删除记忆（管理员）"""
-    require_admin(agent)
+    check_admin_role(agent)
 
     memory = await db.execute(select(Memory).where(Memory.memory_id == memory_id))
     memory = memory.scalar_one_or_none()
@@ -178,7 +172,7 @@ async def list_low_quality_memories(
     db: AsyncSession = Depends(get_db)
 ):
     """列出低质量记忆"""
-    require_admin(agent)
+    check_admin_role(agent)
 
     stmt = (
         select(Memory)
@@ -213,7 +207,7 @@ async def promote_agent(
     db: AsyncSession = Depends(get_db)
 ):
     """提升 Agent 权限"""
-    require_admin(agent)
+    check_admin_role(agent)
 
     target = await db.execute(select(Agent).where(Agent.agent_id == target_agent_id))
     target = target.scalar_one_or_none()
