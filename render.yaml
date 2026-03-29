@@ -7,6 +7,8 @@ services:
     envVars:
       - key: KEY_ENCRYPTION_SALT
         generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
       - key: DATABASE_URL
         value: postgresql+asyncpg://postgres.nhcpbfxlezrrowmokncm:d2WWYwdGIxLzFUOr@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
         sync: false
