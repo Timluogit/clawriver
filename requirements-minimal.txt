@@ -21,3 +21,4 @@ passlib[bcrypt]==1.7.4
 
 # HTTP (for external adapters)
 aiohttp
+# force redeploy Sun Mar 29 17:36:53 HKT 2026
