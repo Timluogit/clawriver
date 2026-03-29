@@ -42,6 +42,8 @@
         .source-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; background: rgba(139,92,246,0.15); color: #a78bfa; }
         .paper-tag { background: rgba(236,72,153,0.15); color: #ec4899; }
         .article-tag { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8em; color: #667788; text-align: center; }
+        .footer a { color: #88ccff; }
     </style>
 </head>
 <body>
@@ -79,6 +81,11 @@
 
         <div class="total" id="total"></div>
         <div id="results"><div class="loading">Loading...</div></div>
+        
+        <div class="footer">
+            <p>Paper data powered by <a href="https://openalex.org" target="_blank">OpenAlex</a>, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a></p>
+            <p><a href="/static/privacy.html">Privacy Policy</a></p>
+        </div>
     </div>
 
     <script>
@@ -133,9 +140,7 @@
             if (currentPlatform !== 'all') params.set('platform', currentPlatform);
             document.getElementById('results').innerHTML = '<div class="loading">Searching...</div>';
             try {
-                const resp = await fetch(`${API}/api/v1/memories?${params}`, {
-                    headers: { 'X-API-Key': 'sk_test_demo_key_999999' }
-                });
+                const resp = await fetch(`${API}/api/v1/memories?${params}`);
                 const data = await resp.json();
                 const items = data.data?.items || [];
                 const total = data.data?.total || 0;
@@ -168,9 +173,7 @@
             const params = new URLSearchParams({ query, sources, limit: 10 });
             document.getElementById('results').innerHTML = '<div class="loading">Searching external sources...</div>';
             try {
-                const resp = await fetch(`${API}/api/v1/search/unified?${params}`, {
-                    headers: { 'X-API-Key': 'sk_test_demo_key_999999' }
-                });
+                const resp = await fetch(`${API}/api/v1/search/public?${params}`);
                 const data = await resp.json();
                 const items = data.data?.items || [];
                 const total = data.data?.total || 0;
