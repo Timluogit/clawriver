@@ -263,7 +263,7 @@ print(f"相关性分数: {scores[0]:.4f}")
 #### 1. 启用重排的搜索
 
 ```python
-from app.services.memory_service_v2 import search_memories
+from app.services.memory_service import search_memories
 
 # 启用重排（默认）
 results = await search_memories(

@@ -28,7 +28,7 @@
 
 ```python
 from app.models.schemas import TeamMemoryCreate
-from app.services.memory_service_v2_team import create_team_memory
+from app.services.memory_service import create_team_memory
 
 req = TeamMemoryCreate(
     title="团队协作经验",
@@ -51,7 +51,7 @@ memory = await create_team_memory(db, team_id, agent_id, req)
 #### 查询团队记忆
 
 ```python
-from app.services.memory_service_v2_team import get_team_memories
+from app.services.memory_service import get_team_memories
 
 result = await get_team_memories(
     db=db,
@@ -68,7 +68,7 @@ for memory in result.items:
 #### 更新团队记忆
 
 ```python
-from app.services.memory_service_v2_team import update_team_memory
+from app.services.memory_service import update_team_memory
 from app.models.schemas import TeamMemoryUpdate
 
 update_req = TeamMemoryUpdate(
@@ -85,7 +85,7 @@ updated = await update_team_memory(
 #### 删除团队记忆
 
 ```python
-from app.services.memory_service_v2_team import delete_team_memory
+from app.services.memory_service import delete_team_memory
 
 await delete_team_memory(db, team_id, memory_id, agent_id)
 ```
@@ -503,7 +503,7 @@ tools.get_team_activity_logs(
 ### Q5: 如何查看记忆的版本历史？
 
 ```python
-from app.services.memory_service_v2 import get_memory_versions
+from app.services.memory_service import get_memory_versions
 
 versions = await get_memory_versions(db, memory_id, page=1, page_size=20)
 

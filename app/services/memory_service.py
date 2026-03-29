@@ -1192,6 +1192,66 @@ async def get_memory_version(
     ).model_dump()
 
 
+async def _execute_search(
+    stmt,
+    db: AsyncSession,
+    page: int,
+    page_size: int,
+    sort_by: str
+) -> MemoryList:
+    """执行搜索查询（通用逻辑）"""
+    # 计数
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    total = await db.execute(count_stmt)
+    total = total.scalar() or 0
+
+    # 排序逻辑
+    if sort_by == "created_at":
+        stmt = stmt.order_by(desc(Memory.created_at))
+    elif sort_by == "purchase_count":
+        stmt = stmt.order_by(desc(Memory.purchase_count))
+    elif sort_by == "price":
+        stmt = stmt.order_by(Memory.price)
+    elif sort_by == "rating":
+        stmt = stmt.order_by(desc(Memory.avg_score))
+    else:
+        # 综合评分排序（默认）
+        score_normalized = (Memory.avg_score / 5.0)
+        purchase_normalized = func.log10(Memory.purchase_count + 1) / func.log10(100)
+        verification_normalized = func.coalesce(Memory.verification_score, 0.5)
+        # 计算天数差（PostgreSQL兼容）
+        days_old = func.extract('epoch', func.now() - Memory.created_at) / 86400
+        time_decay = case(
+            (days_old <= 7, 1.0),
+            (days_old <= 30, 1.0 - (days_old - 7) / 23 * 0.5),
+            else_=0.5
+        )
+        favorite_normalized = func.log10(Memory.favorite_count + 1) / func.log10(50)
+
+        composite_score = (
+            score_normalized * 0.3 +
+            purchase_normalized * 0.2 +
+            verification_normalized * 0.25 +
+            time_decay * 0.15 +
+            favorite_normalized * 0.1
+        )
+
+        stmt = stmt.order_by(desc(composite_score))
+
+    # 分页
+    stmt = stmt.offset((page - 1) * page_size).limit(page_size)
+
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    items = []
+    for row in rows:
+        memory, seller_name, seller_reputation = row
+        items.append(memory_to_response(memory, seller_name, seller_reputation))
+
+    return MemoryList(items=items, total=total, page=page, page_size=page_size)
+
+
 def _vectorize_memory_async(memory: Memory):
     """异步向量化记忆（非阻塞）
 
