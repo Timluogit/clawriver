@@ -518,51 +518,53 @@ async def get_memory_detail(db: AsyncSession, memory_id: str, buyer_id: str = No
 
 async def purchase_memory(db: AsyncSession, buyer_id: str, memory_id: str) -> PurchaseResponse:
     """购买记忆"""
-    # 获取记忆
-    result = await db.execute(select(Memory).where(Memory.memory_id == memory_id))
-    memory = result.scalar_one_or_none()
-    if not memory:
-        return PurchaseResponse(success=False, message="记忆不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
+    # Use a transaction to prevent race conditions
+    async with db.begin():
+        # 获取记忆 (with FOR UPDATE lock to prevent race conditions)
+        result = await db.execute(select(Memory).where(Memory.memory_id == memory_id).with_for_update())
+        memory = result.scalar_one_or_none()
+        if not memory:
+            return PurchaseResponse(success=False, message="记忆不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # 检查是否已购买
-    existing = await db.execute(
-        select(Purchase).where(
-            and_(Purchase.buyer_agent_id == buyer_id, Purchase.memory_id == memory_id)
+        # 检查是否已购买
+        existing = await db.execute(
+            select(Purchase).where(
+                and_(Purchase.buyer_agent_id == buyer_id, Purchase.memory_id == memory_id)
+            )
         )
-    )
-    if existing.scalar_one_or_none():
-        return PurchaseResponse(success=False, message="已购买此记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
+        if existing.scalar_one_or_none():
+            return PurchaseResponse(success=False, message="已购买此记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # 检查是否是自己的记忆
-    if memory.seller_agent_id == buyer_id:
-        return PurchaseResponse(success=False, message="不能购买自己的记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
+        # 检查是否是自己的记忆
+        if memory.seller_agent_id == buyer_id:
+            return PurchaseResponse(success=False, message="不能购买自己的记忆", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # 获取买家
-    buyer = await db.execute(select(Agent).where(Agent.agent_id == buyer_id))
-    buyer = buyer.scalar_one_or_none()
-    if not buyer:
-        return PurchaseResponse(success=False, message="买家不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
+        # 获取买家 (with FOR UPDATE lock)
+        buyer = await db.execute(select(Agent).where(Agent.agent_id == buyer_id).with_for_update())
+        buyer = buyer.scalar_one_or_none()
+        if not buyer:
+            return PurchaseResponse(success=False, message="买家不存在", memory_id=memory_id, credits_spent=0, remaining_credits=0)
 
-    # 随缘模式：所有记忆免费汲取
-    price = 0
+        # 随缘模式：所有记忆免费汲取
+        price = 0
 
-    # 更新记忆统计
-    memory.purchase_count += 1
+        # 更新记忆统计
+        memory.purchase_count += 1
 
-    # 创建汲取记录
-    purchase = Purchase(
-        purchase_id=gen_id("pur"),
-        buyer_agent_id=buyer_id,
-        seller_agent_id=memory.seller_agent_id,
-        memory_id=memory_id,
-        amount=0,
-        seller_income=0,
-        platform_fee=0
-    )
-    db.add(purchase)
+        # 创建汲取记录
+        purchase = Purchase(
+            purchase_id=gen_id("pur"),
+            buyer_agent_id=buyer_id,
+            seller_agent_id=memory.seller_agent_id,
+            memory_id=memory_id,
+            amount=0,
+            seller_income=0,
+            platform_fee=0
+        )
+        db.add(purchase)
 
-    # 更新买家统计
-    buyer.total_purchases += 1
+        # 更新买家统计
+        buyer.total_purchases += 1
 
     await db.commit()
 
