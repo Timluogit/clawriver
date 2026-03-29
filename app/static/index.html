@@ -28,24 +28,53 @@
         .loading { text-align: center; color: #667788; padding: 40px; }
         .total { font-size: 0.85em; color: #667788; margin-bottom: 16px; }
         a { color: #40c9ff; text-decoration: none; }
+        .tabs { display: flex; gap: 0; margin-bottom: 20px; }
+        .tab { padding: 10px 24px; border-radius: 8px 8px 0 0; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #667788; cursor: pointer; font-size: 0.9em; font-weight: 600; }
+        .tab.active { background: rgba(255,255,255,0.05); color: #40c9ff; border-bottom-color: transparent; }
+        .source-filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .source-badge { padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #88ccff; cursor: pointer; font-size: 0.75em; }
+        .source-badge.active { background: rgba(64,201,255,0.15); border-color: #40c9ff; color: #40c9ff; }
+        .external-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 18px; margin-bottom: 12px; transition: border-color 0.2s; }
+        .external-card:hover { border-color: rgba(64,201,255,0.3); }
+        .external-title { font-size: 1em; font-weight: 600; color: #ccddee; margin-bottom: 6px; }
+        .external-meta { font-size: 0.8em; color: #667788; display: flex; gap: 12px; flex-wrap: wrap; }
+        .external-summary { font-size: 0.85em; color: #8899aa; margin-top: 6px; }
+        .source-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .paper-tag { background: rgba(236,72,153,0.15); color: #ec4899; }
+        .article-tag { background: rgba(245,158,11,0.15); color: #f59e0b; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>✦ ClawRiver <a href="/">← Home</a></h1>
 
-        <div class="search-bar">
-            <input type="text" id="query" placeholder="Search experiences... (e.g. python, API, viral)" autofocus>
-            <button onclick="search()">Search</button>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('experiences',this)">🎯 Experiences</button>
+            <button class="tab" onclick="switchTab('research',this)">📚 Research & Articles</button>
         </div>
 
-        <div class="filters">
+        <div class="search-bar">
+            <input type="text" id="query" placeholder="Search knowledge..." autofocus>
+            <button onclick="doSearch()">Search</button>
+        </div>
+
+        <!-- Experience filters -->
+        <div class="filters" id="exp-filters">
             <button class="filter-btn active" onclick="filterPlatform('all',this)">All</button>
             <button class="filter-btn" onclick="filterPlatform('douyin',this)">Douyin</button>
             <button class="filter-btn" onclick="filterPlatform('xiaohongshu',this)">Xiaohongshu</button>
             <button class="filter-btn" onclick="filterPlatform('wechat',this)">WeChat</button>
             <button class="filter-btn" onclick="filterPlatform('bilibili',this)">Bilibili</button>
             <button class="filter-btn" onclick="filterPlatform('general',this)">General</button>
+        </div>
+
+        <!-- Research filters -->
+        <div class="source-filters" id="src-filters" style="display:none">
+            <button class="source-badge active" data-src="all" onclick="toggleSource('all',this)">All Sources</button>
+            <button class="source-badge" data-src="openalex" onclick="toggleSource('openalex',this)">📄 Papers (OpenAlex)</button>
+            <button class="source-badge" data-src="arxiv" onclick="toggleSource('arxiv',this)">📝 arXiv</button>
+            <button class="source-badge" data-src="hackernews" onclick="toggleSource('hackernews',this)">💡 Hacker News</button>
+            <button class="source-badge" data-src="semantic_scholar" onclick="toggleSource('semantic_scholar',this)">🔬 Semantic Scholar</button>
         </div>
 
         <div class="total" id="total"></div>
@@ -55,33 +84,64 @@
     <script>
         const API = window.location.origin;
         let currentPlatform = 'all';
+        let currentTab = 'experiences';
+        let currentSources = ['openalex', 'hackernews'];
 
-        async function search() {
-            const query = document.getElementById('query').value || '';
+        function switchTab(tab, btn) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('exp-filters').style.display = tab === 'experiences' ? 'flex' : 'none';
+            document.getElementById('src-filters').style.display = tab === 'research' ? 'flex' : 'none';
+            document.getElementById('query').placeholder = tab === 'experiences'
+                ? 'Search experiences... (e.g. python, API, viral)'
+                : 'Search papers & articles... (e.g. transformer, LLM, CRISPR)';
+            doSearch();
+        }
+
+        function toggleSource(src, btn) {
+            btn.classList.toggle('active');
+            const active = document.querySelectorAll('.source-badge.active');
+            currentSources = Array.from(active).map(b => b.dataset.src).filter(s => s !== 'all');
+            // If "all" is active or nothing selected, use defaults
+            const allBtn = document.querySelector('.source-badge[data-src="all"]');
+            if (allBtn && allBtn.classList.contains('active')) {
+                currentSources = ['openalex', 'arxiv', 'hackernews', 'semantic_scholar'];
+            }
+            if (currentSources.length === 0) {
+                allBtn.classList.add('active');
+                currentSources = ['openalex', 'arxiv', 'hackernews', 'semantic_scholar'];
+            }
+            doSearch();
+        }
+
+        function doSearch() {
+            if (currentTab === 'experiences') searchExperiences();
+            else searchResearch();
+        }
+
+        async function searchExperiences() {
+            const query = document.getElementById('query').value;
             const params = new URLSearchParams({ query, limit: 20 });
             if (currentPlatform !== 'all') params.set('platform', currentPlatform);
-
             document.getElementById('results').innerHTML = '<div class="loading">Searching...</div>';
             try {
                 const resp = await fetch(`${API}/api/v1/memories?${params}`);
                 const data = await resp.json();
                 const items = data.data?.items || [];
                 const total = data.data?.total || 0;
-
-                document.getElementById('total').textContent = `${total} memories found`;
-
+                document.getElementById('total').textContent = `${total} experiences found`;
                 if (!items.length) {
-                    document.getElementById('results').innerHTML = '<div class="loading">No memories found.</div>';
+                    document.getElementById('results').innerHTML = '<div class="loading">No experiences found.</div>';
                     return;
                 }
-
                 document.getElementById('results').innerHTML = items.map(m => `
                     <div class="memory-card" onclick="location.href='/static/memory-detail.html?id=${m.memory_id}'">
                         <div class="memory-title">${esc(m.title)}</div>
                         <div class="memory-meta">
                             <span class="badge">${esc(m.format_type || 'knowledge')}</span>
                             <span class="badge free-tag">Free</span>
-                            <span>⭐ ${ (m.avg_score||0).toFixed(1)}</span>
+                            <span>⭐ ${(m.avg_score||0).toFixed(1)}</span>
                             <span>📖 ${m.purchase_count||0} draws</span>
                             <span>${esc(m.category)}</span>
                         </div>
@@ -89,21 +149,60 @@
                     </div>
                 `).join('');
             } catch(e) {
-                document.getElementById('results').innerHTML = '<div class="loading">Error loading data.</div>';
+                document.getElementById('results').innerHTML = '<div class="loading">Error loading.</div>';
             }
         }
 
+        async function searchResearch() {
+            const query = document.getElementById('query').value;
+            const sources = currentSources.join(',');
+            const params = new URLSearchParams({ query, sources, limit: 10 });
+            document.getElementById('results').innerHTML = '<div class="loading">Searching external sources...</div>';
+            try {
+                const resp = await fetch(`${API}/api/v1/search/unified?${params}`);
+                const data = await resp.json();
+                const items = data.data?.items || [];
+                const total = data.data?.total || 0;
+                const srcUsed = (data.data?.sources_used || []).join(', ');
+                document.getElementById('total').textContent = `${total} results from: ${srcUsed || 'none'}`;
+                if (!items.length) {
+                    document.getElementById('results').innerHTML = '<div class="loading">No results found. Try different keywords or sources.</div>';
+                    return;
+                }
+                document.getElementById('results').innerHTML = items.map(item => {
+                    const tagClass = item.source_type === 'paper' ? 'paper-tag' : 'article-tag';
+                    const tagLabel = item.source_type === 'paper' ? '📄 Paper' : '📰 Article';
+                    return `
+                        <div class="external-card" onclick="window.open('${esc(item.url)}', '_blank')">
+                            <div class="external-title">${esc(item.title)}</div>
+                            <div class="external-meta">
+                                <span class="source-tag ${tagClass}">${tagLabel}</span>
+                                <span class="source-tag">${esc(item.source)}</span>
+                                ${item.published ? '<span>📅 ' + esc(item.published) + '</span>' : ''}
+                                ${item.authors?.length ? '<span>👤 ' + esc(item.authors.slice(0,3).join(', ')) + (item.authors.length > 3 ? ' et al.' : '') + '</span>' : ''}
+                            </div>
+                            ${item.summary ? '<div class="external-summary">' + esc(item.summary.slice(0, 200)) + (item.summary.length > 200 ? '...' : '') + '</div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                document.getElementById('results').innerHTML = '<div class="loading">Error loading. Please try again.</div>';
+            }
+        }
+
+        function search() { doSearch(); }
+
         function filterPlatform(p, btn) {
             currentPlatform = p;
-            document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            search();
+            searchExperiences();
         }
 
         function esc(t) { if(!t) return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
-        document.getElementById('query').addEventListener('keydown', e => { if(e.key==='Enter') search(); });
-        search();
+        document.getElementById('query').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+        searchExperiences();
     </script>
 </body>
 </html>
