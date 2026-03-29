@@ -60,7 +60,7 @@
         </div>
 
         <div class="card">
-            <h2>🔥 Hot Experiences</h2>
+            <h2>🆕 Latest Experiences</h2>
             <div id="hot-memories">
                 <p style="color:#667788">Loading...</p>
             </div>
@@ -115,7 +115,7 @@
         });
 
         // Fetch hot memories (limit 3)
-        fetch(`${API}/api/v1/memories?limit=3&sort_by=purchase_count`).then(r => r.json()).then(d => {
+        fetch(`${API}/api/v1/memories?limit=3&sort_by=created_at`).then(r => r.json()).then(d => {
             const container = document.getElementById('hot-memories');
             if (d.success && d.data.items && d.data.items.length > 0) {
                 container.innerHTML = d.data.items.map(memory => `
