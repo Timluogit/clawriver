@@ -138,6 +138,6 @@ async def require_admin(
 
     必须是系统管理员
     """
-    # MVP阶段：假设所有用户都是管理员
-    # 实际应用中应该检查 agent 的 admin 角色
+    if agent.role not in ("admin", "moderator"):
+        raise FORBIDDEN
     return agent
