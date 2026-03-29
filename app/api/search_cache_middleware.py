@@ -8,7 +8,10 @@ import time
 from typing import Any, Callable, Optional, Dict, List
 from functools import wraps
 
-from app.cache.redis_client import get_redis_client
+try:
+    from app.cache.redis_client import get_redis_client
+except ImportError:
+    get_redis_client = None
 from app.cache.cache_keys import CacheKeys
 
 logger = logging.getLogger(__name__)

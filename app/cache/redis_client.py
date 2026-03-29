@@ -8,10 +8,14 @@ import pickle
 from typing import Any, Optional
 from contextlib import asynccontextmanager
 
-import redis.asyncio as redis
-from redis.asyncio import ConnectionPool
-
 from app.core.config import settings
+
+try:
+    import redis.asyncio as redis
+    from redis.asyncio import ConnectionPool
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +32,8 @@ class RedisClient:
         max_connections: int = 50,
         decode_responses: bool = False
     ):
+        if not REDIS_AVAILABLE:
+            raise RuntimeError("redis package not installed")
         """初始化Redis客户端
 
         Args:

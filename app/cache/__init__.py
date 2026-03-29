@@ -1,10 +1,12 @@
-"""缓存模块
+"""缓存模块"""
 
-提供Redis客户端、缓存键生成、缓存统计等功能
-"""
-
-from .redis_client import RedisClient, get_redis_client
-from .cache_keys import CacheKeys
+try:
+    from .redis_client import RedisClient, get_redis_client
+    from .cache_keys import CacheKeys
+except ImportError:
+    RedisClient = None
+    get_redis_client = None
+    CacheKeys = None
 
 __all__ = [
     "RedisClient",
