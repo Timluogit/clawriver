@@ -437,7 +437,7 @@ async def classify_memory(title: str, summary: str, content: dict) -> dict:
     Returns:
         Suggested category and confidence info
     """
-    from app.services.memory_service_v2 import auto_classify, CATEGORY_KEYWORDS
+    from app.services.memory_service import auto_classify, CATEGORY_KEYWORDS
 
     category = auto_classify(title, summary, content)
     text = f"{title} {summary} {json.dumps(content, ensure_ascii=False)}".lower()

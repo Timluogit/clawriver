@@ -34,7 +34,7 @@ async def get_team_activity_logs(
         page_size: 每页数量
     """
     # 检查团队成员权限
-    from app.services.memory_service_v2_team import _check_team_permission
+    from app.services.memory_service import _check_team_permission
     try:
         await _check_team_permission(db, team_id, current_agent.agent_id, "member")
     except PermissionError:
@@ -108,7 +108,7 @@ async def get_activity_types(
         team_id: 团队ID
     """
     # 检查团队成员权限
-    from app.services.memory_service_v2_team import _check_team_permission
+    from app.services.memory_service import _check_team_permission
     try:
         await _check_team_permission(db, team_id, current_agent.agent_id, "member")
     except PermissionError:
@@ -156,7 +156,7 @@ async def log_custom_activity(
         extra_data: 额外信息（可选）
     """
     # 检查团队成员权限
-    from app.services.memory_service_v2_team import _check_team_permission
+    from app.services.memory_service import _check_team_permission
     try:
         await _check_team_permission(db, team_id, current_agent.agent_id, "member")
     except PermissionError:

@@ -25,7 +25,7 @@ async def get_team_stats(
     包括：成员数、记忆数、购买统计、积分统计、活跃度
     """
     # 检查团队成员权限
-    from app.services.memory_service_v2_team import _check_team_permission
+    from app.services.memory_service import _check_team_permission
     try:
         await _check_team_permission(db, team_id, current_agent.agent_id, "member")
     except PermissionError:
@@ -127,7 +127,7 @@ async def get_member_activity_stats(
         days: 统计天数
     """
     # 检查团队成员权限
-    from app.services.memory_service_v2_team import _check_team_permission
+    from app.services.memory_service import _check_team_permission
     try:
         await _check_team_permission(db, team_id, current_agent.agent_id, "member")
     except PermissionError:
@@ -230,7 +230,7 @@ async def get_credits_usage_stats(
         days: 统计天数
     """
     # 检查团队成员权限
-    from app.services.memory_service_v2_team import _check_team_permission
+    from app.services.memory_service import _check_team_permission
     try:
         await _check_team_permission(db, team_id, current_agent.agent_id, "member")
     except PermissionError:

@@ -32,7 +32,7 @@ async def unified_search(
     # 内部搜索
     if "internal" in source_list:
         async def search_internal():
-            from app.services.memory_service_v2 import search_memories
+            from app.services.memory_service import search_memories
             try:
                 internal = await search_memories(
                     db, query=query, page=1, page_size=limit,

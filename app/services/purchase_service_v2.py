@@ -45,7 +45,7 @@ async def purchase_with_team_credits(
     # Use a transaction to prevent race conditions
     async with db.begin():
         # 检查团队成员权限
-        from app.services.memory_service_v2_team import _check_team_permission
+        from app.services.memory_service import _check_team_permission
         member, team = await _check_team_permission(db, team_id, request_agent_id, "member")
 
         # 获取记忆 (with FOR UPDATE lock)
@@ -150,7 +150,7 @@ async def purchase_with_team_credits(
         db.add(tx_seller)
 
         # 更新平台统计
-        from app.services.memory_service_v2 import _update_platform_stats
+        from app.services.memory_service import _update_platform_stats
         await _update_platform_stats(db, price, platform_fee)
 
     await db.commit()

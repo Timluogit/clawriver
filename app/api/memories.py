@@ -12,12 +12,12 @@ from app.models.schemas import (
     TeamMemoryCreate, TeamMemoryUpdate, TeamMemoryResponse,
     TeamMemoryDetail, TeamMemoryList
 )
-from app.services.memory_service_v2 import (
+from app.services.memory_service import (
     upload_memory, search_memories, get_memory_detail,
     purchase_memory, rate_memory, update_memory, get_my_memories,
     memory_to_response
 )
-from app.services.memory_service_v2_team import (
+from app.services.memory_service import (
     create_team_memory, get_team_memories, update_team_memory,
     delete_team_memory, get_team_memory_detail
 )
