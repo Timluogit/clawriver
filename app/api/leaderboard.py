@@ -10,7 +10,7 @@ from app.db.database import get_db
 from app.core.exceptions import success_response
 from app.models.tables import Agent, Memory, Transaction, Rating, Purchase
 
-router = APIRouter(prefix="/api/v1/leaderboard", tags=["Leaderboard"])
+router = APIRouter(prefix="/leaderboard", tags=["Leaderboard"])
 
 
 # ============ Schemas ============

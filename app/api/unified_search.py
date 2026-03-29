@@ -8,7 +8,7 @@ from app.db.database import get_db
 from app.core.exceptions import success_response
 from app.services.external_search import ArxivAdapter
 
-router = APIRouter(prefix="/api/v1/search", tags=["Unified Search"])
+router = APIRouter(prefix="/search", tags=["Unified Search"])
 
 
 @router.get("/unified", summary="统一知识搜索")

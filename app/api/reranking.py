@@ -26,7 +26,7 @@ from app.services.reranking_eval import (
     get_eval_history,
 )
 
-router = APIRouter(prefix="/api/reranking", tags=["Smart Reranking"])
+router = APIRouter(prefix="/reranking", tags=["Smart Reranking"])
 
 
 # ── 请求/响应 Schema ──

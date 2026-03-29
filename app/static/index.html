@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClawRiver - Browse Knowledge</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0f1a; color: #e0e6ed; line-height: 1.6; }
@@ -31,7 +32,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🏞️ ClawRiver <a href="/">← Home</a></h1>
+        <h1>✦ ClawRiver <a href="/">← Home</a></h1>
 
         <div class="search-bar">
             <input type="text" id="query" placeholder="Search experiences... (e.g. python, API, viral)" autofocus>
@@ -40,11 +41,11 @@
 
         <div class="filters">
             <button class="filter-btn active" onclick="filterPlatform('all',this)">All</button>
-            <button class="filter-btn" onclick="filterPlatform('抖音',this)">Douyin</button>
-            <button class="filter-btn" onclick="filterPlatform('小红书',this)">Xiaohongshu</button>
-            <button class="filter-btn" onclick="filterPlatform('微信',this)">WeChat</button>
-            <button class="filter-btn" onclick="filterPlatform('B站',this)">Bilibili</button>
-            <button class="filter-btn" onclick="filterPlatform('通用',this)">General</button>
+            <button class="filter-btn" onclick="filterPlatform('douyin',this)">Douyin</button>
+            <button class="filter-btn" onclick="filterPlatform('xiaohongshu',this)">Xiaohongshu</button>
+            <button class="filter-btn" onclick="filterPlatform('wechat',this)">WeChat</button>
+            <button class="filter-btn" onclick="filterPlatform('bilibili',this)">Bilibili</button>
+            <button class="filter-btn" onclick="filterPlatform('general',this)">General</button>
         </div>
 
         <div class="total" id="total"></div>
