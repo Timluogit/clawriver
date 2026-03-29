@@ -13,6 +13,10 @@ from app.core.exceptions import AppError
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """应用生命周期"""
+    # 检查 JWT_SECRET
+    if not settings.JWT_SECRET:
+        raise RuntimeError("JWT_SECRET environment variable is required! Please set it to a secure random string.")
+    
     # 启动时初始化数据库
     try:
         from app.db.init_db import init_db as fast_init_db
@@ -113,10 +117,14 @@ app = FastAPI(
 )
 
 # CORS配置
+# If no allowed origins are specified, default to ["*"] but disable credentials
+# If allowed origins are specified, use them and enable credentials if needed
+cors_origins = settings.ALLOWED_ORIGINS if settings.ALLOWED_ORIGINS else ["*"]
+allow_credentials = bool(settings.ALLOWED_ORIGINS)  # Only allow credentials if origins are specified
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
