@@ -304,12 +304,14 @@ async def _fallback_search(
     page_size: int = 10,
     sort_by: str = "relevance"
 ) -> dict:
-    """纯 SQL 关键词搜索（无 Qdrant 回退方案）"""
+    """纯 SQL 关键词搜索 — 单次 JOIN 查询（避免 N+1）"""
     from app.models.tables import Agent
 
-    stmt = base_stmt
+    # ===== 修复: 使用 JOIN 避免 N+1 =====
+    stmt = base_stmt  # base_stmt 已包含 .join(Agent)
 
     # 关键词匹配（大小写不敏感）
+    search_filter = None
     if query:
         q = query.lower()
         search_filter = or_(
@@ -327,35 +329,35 @@ async def _fallback_search(
     elif sort_by == "price":
         stmt = stmt.order_by(Memory.price)
     else:
-        # 默认：综合评分
         stmt = stmt.order_by(desc(Memory.avg_score), desc(Memory.purchase_count))
+
+    # 获取总数
+    count_stmt = select(func.count(Memory.memory_id)).select_from(Memory).where(
+        Memory.is_active == True
+    )
+    if search_filter:
+        count_stmt = count_stmt.where(search_filter)
+    total = (await db.execute(count_stmt)).scalar() or 0
 
     # 分页
     offset = (page - 1) * page_size
     stmt = stmt.offset(offset).limit(page_size)
 
+    # 单次 JOIN 查询获取记忆 + 卖家信息
     result = await db.execute(stmt)
-    memories = result.scalars().all()
+    rows = result.all()
 
-    # 获取总数
-    count_stmt = select(func.count(Memory.memory_id)).where(Memory.is_active == True)
-    if query:
-        count_stmt = count_stmt.where(search_filter)
-    count_result = await db.execute(count_stmt)
-    total = count_result.scalar() or 0
-
-    # 获取卖家信息
     items = []
-    for mem in memories:
-        seller_result = await db.execute(
-            select(Agent.name, Agent.reputation_score).where(Agent.agent_id == mem.seller_agent_id)
-        )
-        seller = seller_result.first()
+    for row in rows:
+        mem = row[0]   # Memory 对象
+        seller_name = row[1] if len(row) > 1 else "unknown"
+        seller_rep = row[2] if len(row) > 2 else 5.0
+
         items.append({
             "memory_id": mem.memory_id,
             "seller_agent_id": mem.seller_agent_id,
-            "seller_name": seller.name if seller else "unknown",
-            "seller_reputation": seller.reputation_score if seller else 5.0,
+            "seller_name": seller_name or "unknown",
+            "seller_reputation": seller_rep or 5.0,
             "title": mem.title,
             "category": mem.category,
             "tags": mem.tags or [],
@@ -367,7 +369,7 @@ async def _fallback_search(
             "favorite_count": mem.favorite_count,
             "avg_score": mem.avg_score,
             "verification_score": mem.verification_score,
-            "executability_score": 0,
+            "executability_score": getattr(mem, 'executability_score', 0) or 0,
             "created_at": mem.created_at.isoformat() if mem.created_at else None,
         })
 

@@ -22,6 +22,7 @@ from app.services.memory_service_v2_team import (
     delete_team_memory, get_team_memory_detail
 )
 from app.core.exceptions import AppError
+from app.core.validators import validate_memory_id, validate_team_id
 
 
 router = APIRouter(prefix="/memories", tags=["memories"])
@@ -90,6 +91,7 @@ async def get_memory(
     db: AsyncSession = Depends(get_db)
 ):
     """获取记忆详情（需要已购买）"""
+    memory_id = validate_memory_id(memory_id)
     try:
         return await get_memory_detail(db, memory_id, current_agent.agent_id)
     except PermissionError:
@@ -119,6 +121,7 @@ async def update(
     db: AsyncSession = Depends(get_db)
 ):
     """更新记忆"""
+    memory_id = validate_memory_id(memory_id)
     try:
         result = await update_memory(db, memory_id, current_agent.agent_id, req)
         if not result:
@@ -138,6 +141,7 @@ async def create_team_mem(
     db: AsyncSession = Depends(get_db)
 ):
     """创建团队共享记忆"""
+    team_id = validate_team_id(team_id)
     try:
         return await create_team_memory(db, team_id, current_agent.agent_id, req)
     except ValueError as e:
@@ -157,6 +161,7 @@ async def list_team_memories(
     db: AsyncSession = Depends(get_db)
 ):
     """获取团队记忆列表"""
+    team_id = validate_team_id(team_id)
     try:
         return await get_team_memories(db, team_id, current_agent.agent_id, page, page_size)
     except PermissionError:
@@ -173,6 +178,8 @@ async def get_team_memory(
     db: AsyncSession = Depends(get_db)
 ):
     """获取团队记忆详情"""
+    team_id = validate_team_id(team_id)
+    memory_id = validate_memory_id(memory_id)
     try:
         return await get_team_memory_detail(db, team_id, memory_id, current_agent.agent_id)
     except PermissionError:
@@ -190,6 +197,8 @@ async def update_team_mem(
     db: AsyncSession = Depends(get_db)
 ):
     """更新团队记忆（需要权限）"""
+    team_id = validate_team_id(team_id)
+    memory_id = validate_memory_id(memory_id)
     try:
         return await update_team_memory(db, team_id, memory_id, current_agent.agent_id, req)
     except PermissionError:
@@ -206,6 +215,8 @@ async def delete_team_mem(
     db: AsyncSession = Depends(get_db)
 ):
     """删除团队记忆（需要权限）"""
+    team_id = validate_team_id(team_id)
+    memory_id = validate_memory_id(memory_id)
     try:
         await delete_team_memory(db, team_id, memory_id, current_agent.agent_id)
         return {"success": True, "message": "记忆已删除"}
