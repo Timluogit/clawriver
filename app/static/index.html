@@ -133,7 +133,9 @@
             if (currentPlatform !== 'all') params.set('platform', currentPlatform);
             document.getElementById('results').innerHTML = '<div class="loading">Searching...</div>';
             try {
-                const resp = await fetch(`${API}/api/v1/memories?${params}`);
+                const resp = await fetch(`${API}/api/v1/memories?${params}`, {
+                    headers: { 'X-API-Key': 'sk_test_demo_key_999999' }
+                });
                 const data = await resp.json();
                 const items = data.data?.items || [];
                 const total = data.data?.total || 0;
@@ -166,7 +168,9 @@
             const params = new URLSearchParams({ query, sources, limit: 10 });
             document.getElementById('results').innerHTML = '<div class="loading">Searching external sources...</div>';
             try {
-                const resp = await fetch(`${API}/api/v1/search/unified?${params}`);
+                const resp = await fetch(`${API}/api/v1/search/unified?${params}`, {
+                    headers: { 'X-API-Key': 'sk_test_demo_key_999999' }
+                });
                 const data = await resp.json();
                 const items = data.data?.items || [];
                 const total = data.data?.total || 0;
