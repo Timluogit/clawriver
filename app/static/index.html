@@ -96,21 +96,28 @@
             document.getElementById('query').placeholder = tab === 'experiences'
                 ? 'Search experiences... (e.g. python, API, viral)'
                 : 'Search papers & articles... (e.g. transformer, LLM, CRISPR)';
+            // Reset sources for research tab
+            if (tab === 'research') {
+                document.querySelectorAll('.source-badge').forEach(b => b.classList.remove('active'));
+                document.querySelector('.source-badge[data-src="all"]').classList.add('active');
+                currentSources = ['openalex', 'arxiv', 'hackernews', 'semantic_scholar'];
+            }
             doSearch();
         }
 
         function toggleSource(src, btn) {
-            btn.classList.toggle('active');
-            const active = document.querySelectorAll('.source-badge.active');
-            currentSources = Array.from(active).map(b => b.dataset.src).filter(s => s !== 'all');
-            // If "all" is active or nothing selected, use defaults
-            const allBtn = document.querySelector('.source-badge[data-src="all"]');
-            if (allBtn && allBtn.classList.contains('active')) {
+            if (src === 'all') {
+                document.querySelectorAll('.source-badge').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 currentSources = ['openalex', 'arxiv', 'hackernews', 'semantic_scholar'];
-            }
-            if (currentSources.length === 0) {
-                allBtn.classList.add('active');
-                currentSources = ['openalex', 'arxiv', 'hackernews', 'semantic_scholar'];
+            } else {
+                document.querySelector('.source-badge[data-src="all"]').classList.remove('active');
+                btn.classList.toggle('active');
+                currentSources = Array.from(document.querySelectorAll('.source-badge.active')).map(b => b.dataset.src).filter(s => s !== 'all');
+                if (currentSources.length === 0) {
+                    btn.classList.add('active');
+                    currentSources = ['openalex', 'arxiv', 'hackernews', 'semantic_scholar'];
+                }
             }
             doSearch();
         }
