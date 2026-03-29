@@ -18,3 +18,7 @@ models/
 .ruff_cache/
 .coverage
 htmlcov/
+
+demo-multi-agent/
+.github/
+*.bak
