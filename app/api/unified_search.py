@@ -6,7 +6,7 @@ import asyncio
 
 from app.db.database import get_db
 from app.core.exceptions import success_response
-from app.services.external_search import ArxivAdapter
+from app.services.external_search import ArxivAdapter, OpenAlexAdapter, HackerNewsAdapter, SemanticScholarAdapter
 
 router = APIRouter(prefix="/search", tags=["Unified Search"])
 
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/search", tags=["Unified Search"])
 @router.get("/unified", summary="统一知识搜索")
 async def unified_search(
     query: str = Query(..., description="搜索关键词"),
-    sources: str = Query("internal,arxiv", description="数据源: internal,arxiv"),
+    sources: str = Query("internal,openalex,hackernews", description="数据源: internal,arxiv,openalex,hackernews,semantic_scholar"),
     limit: int = Query(5, ge=1, le=20, description="每源返回数量"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -54,6 +54,39 @@ async def unified_search(
             results = await adapter.search(query, max_results=limit)
             return ("arxiv", [r.to_dict() for r in results])
         tasks.append(search_arxiv())
+
+    # OpenAlex 搜索（全学科论文）
+    if "openalex" in source_list:
+        async def search_openalex():
+            try:
+                adapter = OpenAlexAdapter()
+                results = await adapter.search(query, max_results=limit)
+                return ("openalex", [r.to_dict() for r in results])
+            except Exception:
+                return ("openalex", [])
+        tasks.append(search_openalex())
+
+    # Hacker News 搜索（技术文章）
+    if "hackernews" in source_list:
+        async def search_hackernews():
+            try:
+                adapter = HackerNewsAdapter()
+                results = await adapter.search(query, max_results=limit)
+                return ("hackernews", [r.to_dict() for r in results])
+            except Exception:
+                return ("hackernews", [])
+        tasks.append(search_hackernews())
+
+    # Semantic Scholar 搜索（学术论文+引用）
+    if "semantic_scholar" in source_list or "semantic" in source_list:
+        async def search_s2():
+            try:
+                adapter = SemanticScholarAdapter()
+                results = await adapter.search(query, max_results=limit)
+                return ("semantic_scholar", [r.to_dict() for r in results])
+            except Exception:
+                return ("semantic_scholar", [])
+        tasks.append(search_s2())
 
     # 并发执行
     if tasks:
