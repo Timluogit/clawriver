@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from datetime import datetime
+from .base import SearchResult, BaseSearchAdapter
 
 
 @dataclass
@@ -40,16 +41,17 @@ class ArxivResult:
         }
 
 
-class ArxivAdapter:
+class ArxivAdapter(BaseSearchAdapter):
     """arXiv API 适配器
 
     arXiv API 文档: https://info.arxiv.org/help/api/index.html
     完全免费，无需 API Key
     """
 
+    source_name: str = "arxiv"
     BASE_URL = "https://export.arxiv.org/api/query"
 
-    async def search(
+    async def search_arxiv(
         self,
         query: str,
         max_results: int = 5,
@@ -57,7 +59,7 @@ class ArxivAdapter:
         sort_order: str = "descending",
         categories: Optional[List[str]] = None,
     ) -> List[ArxivResult]:
-        """搜索 arXiv 论文
+        """搜索 arXiv 论文 (返回 ArxivResult objects)
 
         Args:
             query: 搜索关键词
@@ -87,6 +89,29 @@ class ArxivAdapter:
         except Exception as e:
             print(f"arXiv 搜索失败: {e}")
             return []
+
+    async def search(self, query: str, max_results: int = 5, **kwargs) -> List[SearchResult]:
+        """Search arXiv and return SearchResult objects (BaseSearchAdapter interface)"""
+        # Pass any extra kwargs to search_arxiv
+        arxiv_results = await self.search_arxiv(query, max_results, **kwargs)
+        return [
+            SearchResult(
+                source=self.source_name,
+                source_type="paper",
+                title=ar.title,
+                authors=ar.authors,
+                summary=ar.abstract,
+                url=ar.abs_url,
+                published=ar.published,
+                extra={
+                    "arxiv_id": ar.arxiv_id,
+                    "pdf_url": ar.pdf_url,
+                    "doi": ar.doi,
+                    "categories": ar.categories
+                }
+            )
+            for ar in arxiv_results
+        ]
 
     def _parse_response(self, xml_text: str) -> List[ArxivResult]:
         """解析 arXiv API XML 响应"""
