@@ -7,8 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc g++ libffi-dev libpq-dev curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements-prod.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements-prod.txt
+COPY requirements-minimal.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements-minimal.txt
 
 # ---- Runtime ----
 FROM python:3.12-slim
