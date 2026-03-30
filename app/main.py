@@ -4,11 +4,45 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import os
+import asyncio
+import httpx
+from typing import Optional
 
 from app.core.config import settings
 from app.db.database import init_db
 from app.api.routes import router
 from app.core.exceptions import AppError
+
+# Self-ping 任务引用，用于关闭时清理
+_self_ping_task: Optional[asyncio.Task] = None
+
+
+async def self_ping_loop():
+    """
+    Self-ping 循环 - 防止 Render 免费版应用休眠
+    每 10 分钟 ping 一次自己的 /health 端点
+    """
+    # 确定自己的 URL
+    base_url = os.getenv("SELF_URL", "https://clawriver.onrender.com")
+    health_url = f"{base_url}/health"
+    interval = int(os.getenv("SELF_PING_INTERVAL", "600"))  # 默认 10 分钟
+    
+    print(f"🔄 Self-ping 任务启动: {health_url} (间隔 {interval}秒)")
+    
+    while True:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(health_url)
+                if response.status_code == 200:
+                    print(f"✅ Self-ping 成功: {health_url}")
+                else:
+                    print(f"⚠️  Self-ping 状态码: {response.status_code}")
+        except Exception as e:
+            print(f"❌ Self-ping 失败: {str(e)}")
+        
+        # 等待下一次 ping
+        await asyncio.sleep(interval)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -91,10 +125,26 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️  外部数据源适配器注册失败: {e}")
 
+    # 启动 Self-ping 任务（防止 Render 免费版休眠）
+    if os.getenv("ENABLE_SELF_PING", "true").lower() == "true":
+        global _self_ping_task
+        _self_ping_task = asyncio.create_task(self_ping_loop())
+        print("✅ Self-ping 任务已启动")
+
     print(f"🚀 {settings.APP_NAME} v{settings.APP_VERSION} 启动完成")
     yield
     # 关闭时清理
     print("👋 应用关闭")
+
+    # 停止 Self-ping 任务
+    global _self_ping_task
+    if _self_ping_task and not _self_ping_task.done():
+        _self_ping_task.cancel()
+        try:
+            await _self_ping_task
+        except asyncio.CancelledError:
+            print("✅ Self-ping 任务已停止")
+        _self_ping_task = None
 
     # 停止遗忘调度器
     if settings.AUTO_FORGET_ENABLED:
@@ -142,6 +192,10 @@ app.add_middleware(AntiCrawlerMiddleware)
 # API限流中间件（每分钟最多100次请求）
 from app.api.rate_limit_middleware import RateLimitMiddleware
 app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
+
+# 响应时间记录中间件（添加 X-Response-Time 头部）
+from app.api.response_time_middleware import ResponseTimeMiddleware
+app.add_middleware(ResponseTimeMiddleware)
 
 from app.api.health import router as health_router
 app.include_router(health_router)

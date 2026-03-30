@@ -342,8 +342,43 @@ async def _fallback_search(
         stmt = stmt.order_by(desc(Memory.purchase_count))
     elif sort_by == "price":
         stmt = stmt.order_by(Memory.price)
+    elif sort_by == "rating":
+        stmt = stmt.order_by(desc(Memory.avg_score))
     else:
-        stmt = stmt.order_by(desc(Memory.avg_score), desc(Memory.purchase_count))
+        # 相关度排序（默认）：关键词匹配位置 > 标题匹配 > 摘要匹配 > 评分 > 购买数
+        if query:
+            q_lower = query.lower()
+            # 计算相关度分数：
+            # - 标题完全匹配：3分
+            # - 标题包含：2分
+            # - 摘要包含：1分
+            # - 加上评分和购买数的权重
+            title_exact = case(
+                (func.lower(Memory.title) == q_lower, 3),
+                else_=0
+            )
+            title_contains = case(
+                (func.lower(Memory.title).contains(q_lower), 2),
+                else_=0
+            )
+            summary_contains = case(
+                (func.lower(Memory.summary).contains(q_lower), 1),
+                else_=0
+            )
+            score_normalized = (Memory.avg_score / 5.0) * 1.5
+            purchase_normalized = func.log10(Memory.purchase_count + 1) / func.log10(100)
+            
+            relevance_score = (
+                title_exact + 
+                title_contains + 
+                summary_contains + 
+                score_normalized + 
+                purchase_normalized
+            )
+            stmt = stmt.order_by(desc(relevance_score))
+        else:
+            # 无查询时，使用综合评分排序
+            stmt = stmt.order_by(desc(Memory.avg_score), desc(Memory.purchase_count))
 
     # 获取总数
     count_stmt = select(func.count(Memory.memory_id)).select_from(Memory).where(
