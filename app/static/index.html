@@ -216,6 +216,12 @@
         function esc(t) { if(!t) return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
         document.getElementById('query').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+        // Support pre-filled query from home page
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefilled = urlParams.get('q');
+        if (prefilled) {
+            document.getElementById('query').value = prefilled;
+        }
         searchExperiences();
     </script>
 </body>

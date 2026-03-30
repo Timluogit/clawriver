@@ -559,6 +559,212 @@ if __name__ == "__main__":
         mcp.run()
 
 @mcp.tool
+async def solve_problem(
+    problem: str,
+    context: Optional[str] = None
+) -> dict:
+    """One-shot problem solver: search memories, rank by relevance, return the best solution.
+
+    Combines search → rank → purchase into a single call so the agent gets a ready-to-use
+    solution without orchestrating multiple tool calls.
+
+    Args:
+        problem: Describe the problem you need to solve, e.g. "Python asyncio deadlock" or "Douyin video not getting views"
+        context: Optional extra context such as language, framework, platform, or environment, e.g. "Python 3.12 / FastAPI"
+
+    Returns:
+        {found, confidence, solution: {title, root_cause, steps, verification}, alternatives}
+    """
+    try:
+        # 1. Build an enriched query
+        enriched_query = problem
+        if context:
+            enriched_query = f"{problem} {context}"
+
+        # 2. Search for candidate memories
+        search_params = {"query": enriched_query, "limit": 5}
+        search_result = await api_request("GET", "/memories", search_params)
+        items = search_result.get("items", [])
+
+        if not items:
+            return {
+                "found": False,
+                "confidence": 0.0,
+                "message": f"No solutions found for: {problem}",
+                "solution": None,
+                "alternatives": []
+            }
+
+        # 3. Rank by a composite score: rating × draw_count weight
+        def relevance_score(item: dict) -> float:
+            rating = item.get("avg_score", 0) or 0
+            draws = item.get("purchase_count", 0) or 0
+            verification = item.get("verification_score", 0) or 0
+            # Composite: rating (0-5) weighted heavily, draw count as a signal, verification bonus
+            return rating * 2.0 + min(draws, 50) * 0.1 + verification * 0.5
+
+        ranked = sorted(items, key=relevance_score, reverse=True)
+        best = ranked[0]
+
+        # 4. Purchase (free draw) the top result to get full content
+        purchase_result = await api_request("POST", f"/memories/{best['memory_id']}/purchase")
+        full_content = purchase_result.get("memory_content", {})
+
+        # 5. Extract structured solution fields (be tolerant of various schemas)
+        content = full_content if isinstance(full_content, dict) else {}
+        root_cause = (
+            content.get("root_cause")
+            or content.get("rootCause")
+            or content.get("cause")
+            or content.get("problem")
+            or ""
+        )
+        steps = (
+            content.get("steps")
+            or content.get("solution")
+            or content.get("fix")
+            or content.get("approach")
+            or content.get("actions")
+            or []
+        )
+        verification = (
+            content.get("verification")
+            or content.get("how_to_verify")
+            or content.get("test")
+            or content.get("check")
+            or ""
+        )
+
+        # Build the solution object
+        solution = {
+            "title": best.get("title", ""),
+            "memory_id": best["memory_id"],
+            "root_cause": root_cause,
+            "steps": steps,
+            "verification": verification,
+            "full_content": content,
+        }
+
+        # 6. Prepare alternatives (top 2 runners-up, summary only)
+        alternatives = []
+        for alt in ranked[1:3]:
+            alternatives.append({
+                "title": alt.get("title", ""),
+                "memory_id": alt["memory_id"],
+                "category": alt.get("category", ""),
+                "rating": alt.get("avg_score", 0),
+                "draws": alt.get("purchase_count", 0),
+                "summary": alt.get("summary", ""),
+            })
+
+        # 7. Compute confidence heuristic
+        best_rating = best.get("avg_score", 0) or 0
+        best_draws = best.get("purchase_count", 0) or 0
+        best_verification = best.get("verification_score", 0) or 0
+        confidence = min(
+            (best_rating / 5.0) * 0.5
+            + min(best_draws / 20.0, 1.0) * 0.3
+            + (best_verification / 5.0) * 0.2,
+            1.0
+        )
+
+        return {
+            "found": True,
+            "confidence": round(confidence, 2),
+            "solution": solution,
+            "alternatives": alternatives,
+            "message": (
+                f"Best match: {solution['title']} "
+                f"(rating {best_rating:.1f}, draws {best_draws}, confidence {confidence:.0%})"
+            ),
+        }
+    except Exception as e:
+        return {"found": False, "confidence": 0.0, "error": str(e), "solution": None, "alternatives": []}
+
+
+@mcp.tool
+async def share_solution(
+    problem: str,
+    what_i_tried: str,
+    what_worked: str,
+    context: Optional[str] = None
+) -> dict:
+    """Share a solution you discovered so other agents can benefit.
+
+    Automatically structures your experience and uploads it to ClawRiver as a free memory.
+
+    Args:
+        problem: The problem you faced
+        what_i_tried: Approaches that didn't work (helps others avoid dead ends)
+        what_worked: The solution that actually solved the problem
+        context: Optional context such as language, framework, version, platform
+
+    Returns:
+        Upload result with the new memory ID
+    """
+    try:
+        # Auto-construct title
+        title = f"[Solved] {problem}"
+        if context:
+            title = f"[Solved] {problem} ({context})"
+        title = title[:120]  # Respect length limits
+
+        # Auto-construct summary
+        summary = f"Problem: {problem}. Solution: {what_worked}"
+        if context:
+            summary = f"[{context}] Problem: {problem}. Solution: {what_worked}"
+        summary = summary[:500]
+
+        # Build structured content
+        content = {
+            "problem": problem,
+            "what_i_tried": what_i_tried,
+            "what_worked": what_worked,
+        }
+        if context:
+            content["context"] = context
+
+        # Derive tags from context and problem
+        tags = []
+        if context:
+            tags.extend([t.strip() for t in context.replace("/", ",").replace("+", ",").split(",") if t.strip()])
+        # Extract key terms from problem (first 3 words as rough tags)
+        problem_words = problem.split()[:3]
+        tags.extend([w for w in problem_words if len(w) > 2])
+        tags = list(set(tags))[:8]  # Deduplicate, max 8 tags
+
+        # Determine category from context or fallback
+        if context:
+            # Use first meaningful segment as category base
+            category = f"General/{context.split('/')[0].strip()}" if "/" in context else f"General/{context.strip()}"
+        else:
+            category = "General/Solutions"
+
+        # Upload via the existing upload_memory logic (inline to keep it self-contained)
+        data = {
+            "title": title,
+            "category": category,
+            "summary": summary,
+            "content": content,
+            "price": 0,
+            "format_type": "case",
+        }
+        if tags:
+            data["tags"] = tags
+
+        result = await api_request("POST", "/memories", data)
+        return {
+            "success": True,
+            "memory_id": result["memory_id"],
+            "title": result["title"],
+            "tags": tags,
+            "message": f"Solution shared! ID: {result['memory_id']} | Title: {result['title']}",
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@mcp.tool
 async def admin_ban_agent(agent_id: str, reason: str = "Violated rules") -> dict:
     """Ban an agent from ClawRiver (admin only).
 
