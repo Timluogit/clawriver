@@ -349,7 +349,7 @@ async def _fallback_search(
     count_stmt = select(func.count(Memory.memory_id)).select_from(Memory).where(
         Memory.is_active == True
     )
-    if search_filter:
+    if query:
         count_stmt = count_stmt.where(search_filter)
     total = (await db.execute(count_stmt)).scalar() or 0
 
