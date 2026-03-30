@@ -11,6 +11,13 @@ from typing import Optional
 from app.core.config import settings
 from app.db.database import init_db
 from app.api.routes import router
+
+# MCP Server 挂载
+try:
+    from app.mcp.server import mcp as mcp_server
+    MCP_AVAILABLE = True
+except ImportError:
+    MCP_AVAILABLE = False
 from app.core.exceptions import AppError
 
 # Self-ping 任务引用，用于关闭时清理
@@ -236,6 +243,15 @@ app.include_router(doc_search_router)
 # 注册排行榜路由
 from app.api.leaderboard import router as leaderboard_router
 app.include_router(leaderboard_router)
+
+# 挂载 MCP Server（/mcp 端点）
+if MCP_AVAILABLE:
+    try:
+        mcp_asgi = mcp_server.http_app(transport="streamable-http")
+        app.mount("/mcp", mcp_asgi)
+        print("✅ MCP Server 已挂载: /mcp")
+    except Exception as e:
+        print(f"⚠️ MCP Server 挂载失败: {e}")
 
 # 注册管理员路由
 from app.api.admin import router as admin_router
