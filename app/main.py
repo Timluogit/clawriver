@@ -54,6 +54,7 @@ async def self_ping_loop():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """应用生命周期"""
+    global _self_ping_task
     # 检查 JWT_SECRET
     if not settings.JWT_SECRET:
         raise RuntimeError("JWT_SECRET environment variable is required! Please set it to a secure random string.")
@@ -134,7 +135,6 @@ async def lifespan(app: FastAPI):
 
     # 启动 Self-ping 任务（防止 Render 免费版休眠）
     if os.getenv("ENABLE_SELF_PING", "true").lower() == "true":
-        global _self_ping_task
         _self_ping_task = asyncio.create_task(self_ping_loop())
         print("✅ Self-ping 任务已启动")
 
@@ -144,7 +144,6 @@ async def lifespan(app: FastAPI):
     print("👋 应用关闭")
 
     # 停止 Self-ping 任务
-    global _self_ping_task
     if _self_ping_task and not _self_ping_task.done():
         _self_ping_task.cancel()
         try:
