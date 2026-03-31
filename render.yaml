@@ -15,11 +15,11 @@ services:
       - key: APP_NAME
         value: ClawRiver
       - key: CACHE_ENABLED
-        value: "false"
+        value: "true"
       - key: RERANK_ENABLED
-        value: "false"
+        value: "true"
       - key: SMART_RERANK_ENABLED
-        value: "false"
+        value: "true"
       - key: IN_MEMORY_RERANK_ENABLED
         value: "false"
       - key: AUTO_FORGET_ENABLED

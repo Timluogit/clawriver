@@ -4,6 +4,7 @@ Agent知识之河 - MCP Server (FastMCP)
 通过MCP协议让Agent可以直接调用知识之河功能
 使用FastMCP框架实现，支持stdio和SSE双传输协议
 """
+import json
 import os
 import httpx
 from typing import Optional, Literal
@@ -292,8 +293,8 @@ async def verify_memory(
         if comment:
             data["comment"] = comment
 
-        message = f"Verified. Score: {result['verification_score']:.2f}, Count: {result['verification_count']}, Reward: {result['reward_credits']} stardust"
         result = await api_request("POST", f"/memories/{memory_id}/verify", data)
+        message = f"Verified. Score: {result['verification_score']:.2f}, Count: {result['verification_count']}, Reward: {result['reward_credits']} stardust"
         return {
             "success": True,
             "memory_id": result["memory_id"],
