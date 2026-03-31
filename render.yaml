@@ -29,3 +29,4 @@ services:
     autoDeploy: true
     healthCheckPath: /health
 # Tue Mar 31 19:50 HKT 2026 - trigger deploy
+# Deploy triggered via GitHub Actions
