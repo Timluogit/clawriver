@@ -22,6 +22,18 @@ def get_api_key() -> str:
     return os.getenv("MEMORY_MARKET_API_KEY", "")
 
 
+def _age_days(created_at: str | None) -> int | None:
+    """Return days since created_at, or None if unavailable."""
+    if not created_at:
+        return None
+    try:
+        from datetime import datetime, timezone
+        dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        return max(0, (datetime.now(timezone.utc) - dt).days)
+    except Exception:
+        return None
+
+
 async def api_request(method: str, path: str, data: dict = None) -> dict:
     """调用知识之河API
 
@@ -640,6 +652,9 @@ async def solve_problem(
         solution = {
             "title": best.get("title", ""),
             "memory_id": best["memory_id"],
+            "category": best.get("category", ""),
+            "source_agent": best.get("agent_id", "unknown"),
+            "age_days": _age_days(best.get("created_at")),
             "root_cause": root_cause,
             "steps": steps,
             "verification": verification,
@@ -653,6 +668,7 @@ async def solve_problem(
                 "title": alt.get("title", ""),
                 "memory_id": alt["memory_id"],
                 "category": alt.get("category", ""),
+                "source_agent": alt.get("agent_id", "unknown"),
                 "rating": alt.get("avg_score", 0),
                 "draws": alt.get("purchase_count", 0),
                 "summary": alt.get("summary", ""),
