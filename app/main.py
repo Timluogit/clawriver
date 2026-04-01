@@ -13,11 +13,18 @@ from app.db.database import init_db
 from app.api.routes import router
 
 # MCP Server 挂载
+MCP_AVAILABLE = False
+MCP_ERROR = None
 try:
     from app.mcp.server import mcp as mcp_server
     MCP_AVAILABLE = True
-except ImportError:
-    MCP_AVAILABLE = False
+    print(f"✅ MCP Server 模块导入成功: {mcp_server.name}")
+except ImportError as e:
+    MCP_ERROR = f"ImportError: {e}"
+    print(f"❌ MCP Server 导入失败: {e}")
+except Exception as e:
+    MCP_ERROR = f"Error: {e}"
+    print(f"❌ MCP Server 加载异常: {e}")
 from app.core.exceptions import AppError
 
 # Self-ping 任务引用，用于关闭时清理
@@ -248,9 +255,20 @@ if MCP_AVAILABLE:
     try:
         mcp_asgi = mcp_server.http_app(transport="streamable-http")
         app.mount("/mcp", mcp_asgi)
-        print("✅ MCP Server 已挂载: /mcp")
+        print("✅ MCP Server 已挂载: /mcp (streamable-http)")
     except Exception as e:
         print(f"⚠️ MCP Server 挂载失败: {e}")
+        MCP_AVAILABLE = False
+        MCP_ERROR = str(e)
+
+# MCP 健康检查端点（无论 MCP 是否可用都提供）
+@app.get("/mcp/health")
+async def mcp_health():
+    return {
+        "mcp_available": MCP_AVAILABLE,
+        "error": MCP_ERROR,
+        "tools_endpoint": "/mcp" if MCP_AVAILABLE else None,
+    }
 
 # 注册管理员路由
 from app.api.admin import router as admin_router
