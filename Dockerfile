@@ -3,6 +3,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 COPY requirements-minimal.txt .
+# cache bust: 2026-04-01-mcp-fix
 RUN pip install --no-cache-dir -r requirements-minimal.txt
 
 COPY app/ ./app/

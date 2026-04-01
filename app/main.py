@@ -16,6 +16,8 @@ from app.api.routes import router
 MCP_AVAILABLE = False
 MCP_ERROR = None
 try:
+    import fastmcp as _fm
+    print(f"📦 fastmcp version: {_fm.__version__}")
     from app.mcp.server import mcp as mcp_server
     MCP_AVAILABLE = True
     print(f"✅ MCP Server 模块导入成功: {mcp_server.name}")
