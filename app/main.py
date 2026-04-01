@@ -252,25 +252,18 @@ app.include_router(doc_search_router)
 from app.api.leaderboard import router as leaderboard_router
 app.include_router(leaderboard_router)
 
-# 挂载 MCP Server（/mcp 端点）
-if MCP_AVAILABLE:
-    try:
-        mcp_asgi = mcp_server.http_app(transport="streamable-http")
-        app.mount("/mcp", mcp_asgi)
-        print("✅ MCP Server 已挂载: /mcp (streamable-http)")
-    except Exception as e:
-        print(f"⚠️ MCP Server 挂载失败: {e}")
-        MCP_AVAILABLE = False
-        MCP_ERROR = str(e)
-
-# MCP 健康检查端点（无论 MCP 是否可用都提供）
-@app.get("/mcp/health")
-async def mcp_health():
-    return {
-        "mcp_available": MCP_AVAILABLE,
-        "error": MCP_ERROR,
-        "tools_endpoint": "/mcp" if MCP_AVAILABLE else None,
-    }
+# 挂载 MCP Server（/mcp 端点）- 使用自定义 HTTP 端点，不依赖 fastmcp http_app
+try:
+    from app.mcp.http_endpoint import router as mcp_router
+    app.include_router(mcp_router)
+    # 注册 MCP 工具到 HTTP 端点
+    from app.mcp.bridge import register_mcp_tools
+    register_mcp_tools()
+    print("✅ MCP HTTP 端点已挂载: /mcp")
+    MCP_AVAILABLE = True
+except Exception as e:
+    print(f"⚠️ MCP HTTP 端点挂载失败: {e}")
+    MCP_ERROR = str(e)
 
 # 注册管理员路由
 from app.api.admin import router as admin_router
