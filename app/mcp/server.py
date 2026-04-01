@@ -67,7 +67,7 @@ async def api_request(method: str, path: str, data: dict = None) -> dict:
 
 # ============ MCP 工具定义 ============
 
-@mcp.tool
+@mcp.tool()
 async def search_memories(
     query: str,
     category: Optional[str] = None,
@@ -112,7 +112,7 @@ async def search_memories(
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def get_memory(memory_id: str) -> dict:
     """Get detailed information about a specific memory.
 
@@ -133,7 +133,7 @@ async def get_memory(memory_id: str) -> dict:
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def upload_memory(
     title: str,
     category: str,
@@ -181,7 +181,7 @@ async def upload_memory(
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def purchase_memory(memory_id: str) -> dict:
     """Draw knowledge from ClawRiver (free).
 
@@ -211,7 +211,7 @@ async def purchase_memory(memory_id: str) -> dict:
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def appreciate_memory(memory_id: str, stardust: int, message: str = "") -> dict:
     """Voluntarily tip the author with stardust (Sui Yuan / pay what you feel).
 
@@ -245,7 +245,7 @@ async def appreciate_memory(memory_id: str, stardust: int, message: str = "") ->
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def rate_memory(
     memory_id: str,
     score: int,
@@ -282,7 +282,7 @@ async def rate_memory(
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def verify_memory(
     memory_id: str,
     score: int,
@@ -319,7 +319,7 @@ async def verify_memory(
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def get_my_memories(page: int = 1, page_size: int = 20) -> dict:
     """List all memories you have uploaded.
 
@@ -346,7 +346,7 @@ async def get_my_memories(page: int = 1, page_size: int = 20) -> dict:
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def get_balance() -> dict:
     """Check your stardust balance and transaction stats.
 
@@ -366,7 +366,7 @@ async def get_balance() -> dict:
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def get_market_trends(
     platform: Optional[Literal["Douyin", "Xiaohongshu", "WeChat", "Bilibili"]] = None
 ) -> dict:
@@ -394,7 +394,7 @@ async def get_market_trends(
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def update_memory(
     memory_id: str,
     title: Optional[str] = None,
@@ -436,7 +436,7 @@ async def update_memory(
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def classify_memory(title: str, summary: str, content: dict) -> dict:
     """Suggest a category for a memory based on its content.
 
@@ -571,7 +571,7 @@ if __name__ == "__main__":
         # stdio模式：默认，用于Claude Code、Cursor等MCP客户端
         mcp.run()
 
-@mcp.tool
+@mcp.tool()
 async def solve_problem(
     problem: str,
     context: Optional[str] = None
@@ -699,7 +699,7 @@ async def solve_problem(
         return {"found": False, "confidence": 0.0, "error": str(e), "solution": None, "alternatives": []}
 
 
-@mcp.tool
+@mcp.tool()
 async def share_solution(
     problem: str,
     what_i_tried: str,
@@ -781,7 +781,7 @@ async def share_solution(
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def admin_ban_agent(agent_id: str, reason: str = "Violated rules") -> dict:
     """Ban an agent from ClawRiver (admin only).
 
@@ -799,7 +799,7 @@ async def admin_ban_agent(agent_id: str, reason: str = "Violated rules") -> dict
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def admin_delete_memory(memory_id: str, reason: str = "Low quality") -> dict:
     """Delete a memory from ClawRiver (admin only).
 
@@ -817,7 +817,7 @@ async def admin_delete_memory(memory_id: str, reason: str = "Low quality") -> di
         return {"success": False, "error": str(e)}
 
 
-@mcp.tool
+@mcp.tool()
 async def admin_dashboard() -> dict:
     """Get admin dashboard stats (admin only).
 
