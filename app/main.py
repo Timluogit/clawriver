@@ -1,4 +1,4 @@
-"""ClawRiver - 知识之河"""
+"""ClawRiver - 知识之河（简化版）"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -38,10 +38,9 @@ async def self_ping_loop():
     Self-ping 循环 - 防止 Render 免费版应用休眠
     每 10 分钟 ping 一次自己的 /health 端点
     """
-    # 确定自己的 URL
     base_url = os.getenv("SELF_URL", "https://clawriver.onrender.com")
     health_url = f"{base_url}/health"
-    interval = int(os.getenv("SELF_PING_INTERVAL", "600"))  # 默认 10 分钟
+    interval = int(os.getenv("SELF_PING_INTERVAL", "600"))
     
     print(f"🔄 Self-ping 任务启动: {health_url} (间隔 {interval}秒)")
     
@@ -56,7 +55,6 @@ async def self_ping_loop():
         except Exception as e:
             print(f"❌ Self-ping 失败: {str(e)}")
         
-        # 等待下一次 ping
         await asyncio.sleep(interval)
 
 
@@ -64,17 +62,9 @@ async def self_ping_loop():
 async def lifespan(app: FastAPI):
     """应用生命周期"""
     global _self_ping_task
-    # 检查 JWT_SECRET
-    if not settings.JWT_SECRET:
-        raise RuntimeError("JWT_SECRET environment variable is required! Please set it to a secure random string.")
     
     # 启动时初始化数据库
-    try:
-        from app.db.init_db import init_db as fast_init_db
-        await fast_init_db()
-    except Exception as e:
-        print(f"⚠️ 快速初始化失败，尝试标准初始化: {e}")
-        await init_db()
+    await init_db()
 
     # 导入种子数据（如果数据库为空）
     try:
@@ -88,10 +78,9 @@ async def lifespan(app: FastAPI):
     # 设置管理员账号
     try:
         from app.db.database import async_session
-        from app.models.tables import Agent
-        from sqlalchemy import select, update
+        from app.models.core import Agent
+        from sqlalchemy import select
         async with async_session() as db:
-            # 设置 OpenClaw-Admin 为管理员
             result = await db.execute(
                 select(Agent).where(Agent.name == "OpenClaw-Admin")
             )
@@ -104,45 +93,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️  管理员设置跳过: {e}")
 
-    # 初始化缓存系统
-    if settings.CACHE_ENABLED:
-        from app.api.search_cache_middleware import get_search_cache_middleware
-        from app.services.cache_invalidation_service import get_cache_invalidation_service
-
-        try:
-            # 初始化搜索缓存中间件
-            cache_middleware = await get_search_cache_middleware()
-            print(f"✅ 搜索缓存中间件初始化成功 (TTL: {settings.CACHE_TTL}s)")
-
-            # 初始化缓存失效服务
-            invalidation_service = await get_cache_invalidation_service()
-            print(f"✅ 缓存失效服务初始化成功")
-
-        except Exception as e:
-            print(f"⚠️  缓存系统初始化失败: {e}")
-            print(f"💡 请确保Redis已启动: {settings.REDIS_URL}")
-
-    # 初始化自动遗忘系统
-    if settings.AUTO_FORGET_ENABLED:
-        from app.services.forget_scheduler import get_forget_scheduler
-
-        try:
-            forget_scheduler = get_forget_scheduler()
-            await forget_scheduler.start()
-            print(f"✅ 自动遗忘系统启动成功 (间隔: {settings.AUTO_FORGET_SCHEDULE_MINUTES}分钟)")
-
-        except Exception as e:
-            print(f"⚠️  自动遗忘系统启动失败: {e}")
-
-    # 注册外部数据源适配器
-    try:
-        from app.services.external_source_service import register_all_adapters
-        register_all_adapters()
-        print("✅ 外部数据源适配器注册成功 (6个)")
-    except Exception as e:
-        print(f"⚠️  外部数据源适配器注册失败: {e}")
-
-    # 启动 Self-ping 任务（防止 Render 免费版休眠）
+    # 启动 Self-ping 任务
     if os.getenv("ENABLE_SELF_PING", "true").lower() == "true":
         _self_ping_task = asyncio.create_task(self_ping_loop())
         print("✅ Self-ping 任务已启动")
@@ -157,21 +108,10 @@ async def lifespan(app: FastAPI):
         _self_ping_task.cancel()
         try:
             await _self_ping_task
-        except asyncio.CancelledError:
+        except asyncio.CancelledException:
             print("✅ Self-ping 任务已停止")
         _self_ping_task = None
 
-    # 停止遗忘调度器
-    if settings.AUTO_FORGET_ENABLED:
-        from app.services.forget_scheduler import get_forget_scheduler
-
-        try:
-            forget_scheduler = get_forget_scheduler()
-            await forget_scheduler.stop()
-            print("✅ 自动遗忘系统已停止")
-
-        except Exception as e:
-            print(f"⚠️  停止自动遗忘系统时出错: {e}")
 
 # 创建FastAPI应用
 app = FastAPI(
@@ -184,10 +124,8 @@ app = FastAPI(
 )
 
 # CORS配置
-# If no allowed origins are specified, default to ["*"] but disable credentials
-# If allowed origins are specified, use them and enable credentials if needed
 cors_origins = settings.ALLOWED_ORIGINS if settings.ALLOWED_ORIGINS else ["*"]
-allow_credentials = bool(settings.ALLOWED_ORIGINS)  # Only allow credentials if origins are specified
+allow_credentials = bool(settings.ALLOWED_ORIGINS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
@@ -196,67 +134,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 审计日志中间件
-from app.api.audit_middleware import AuditMiddleware
-app.add_middleware(AuditMiddleware)
-
-# 反爬虫中间件（屏蔽爬虫，人类只看，Agent 用 API）
-from app.api.anti_crawler_middleware import AntiCrawlerMiddleware
-app.add_middleware(AntiCrawlerMiddleware)
-
-# API限流中间件（每分钟最多100次请求）
+# API限流中间件
 from app.api.rate_limit_middleware import RateLimitMiddleware
 app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
 
-# 响应时间记录中间件（添加 X-Response-Time 头部）
+# 响应时间记录中间件
 from app.api.response_time_middleware import ResponseTimeMiddleware
 app.add_middleware(ResponseTimeMiddleware)
 
+# 注册健康检查路由
 from app.api.health import router as health_router
 app.include_router(health_router)
 
-
-# 注册路由
+# 注册主路由
 app.include_router(router, prefix="/api/v1")
-
-# 注册流动记录路由
-from app.api.transactions import router as transactions_router
-app.include_router(transactions_router)
-
-# 注册团队管理路由
-from app.api.teams import router as teams_router
-from app.api.team_members import router as team_members_router
-from app.api.team_credits import router as team_credits_router
-
-app.include_router(teams_router, prefix="/api")
-app.include_router(team_members_router, prefix="/api")
-app.include_router(team_credits_router, prefix="/api")
-
-# 注册自动遗忘路由
-from app.api.auto_forget import router as auto_forget_router
-app.include_router(auto_forget_router, prefix="/api")
-
-# 注册外部数据源路由
-from app.api.external_sources import router as external_sources_router
-app.include_router(external_sources_router, prefix="/api")
-
-# 注册评估框架路由
-from app.api.evaluation import router as evaluation_router
-app.include_router(evaluation_router)
-
-# 注册技术文档检索路由
-from app.api.doc_search import router as doc_search_router
-app.include_router(doc_search_router)
 
 # 注册排行榜路由
 from app.api.leaderboard import router as leaderboard_router
 app.include_router(leaderboard_router)
 
-# 挂载 MCP Server（/mcp 端点）- 使用自定义 HTTP 端点，不依赖 fastmcp http_app
+# 挂载 MCP Server
 try:
     from app.mcp.http_endpoint import router as mcp_router
     app.include_router(mcp_router)
-    # 注册 MCP 工具到 HTTP 端点
     from app.mcp.bridge import register_mcp_tools
     register_mcp_tools()
     print("✅ MCP HTTP 端点已挂载: /mcp")
@@ -303,7 +203,6 @@ async def root():
 @app.get("/robots.txt")
 async def robots_txt():
     """返回 robots.txt 屏蔽所有爬虫"""
-    import os
     path = os.path.join(os.path.dirname(__file__), "static", "robots.txt")
     return FileResponse(path, media_type="text/plain")
 
@@ -316,11 +215,10 @@ async def ai_plugin_manifest():
         "name_for_human": "ClawRiver 知识之河",
         "name_for_model": "clawriver",
         "description_for_human": "AI Agent 知识共享和交易市场，让 Agent 共享知识经验",
-        "description_for_model": "ClawRiver 是 Agent 知识基础设施。搜索知识、购买知识、上传知识、评价知识。支持技术文档检索和网页搜索。",
+        "description_for_model": "ClawRiver 是 Agent 知识基础设施。搜索知识、购买知识、上传知识、评价知识。",
         "auth": {
             "type": "none"
         },
-        "description_for_model": "ClawRiver is a free agent knowledge base. Search memories without authentication. Upload requires a free API key (POST /api/v1/agents).",
         "api": {
             "type": "openapi",
             "url": "https://clawriver.onrender.com/openapi.json"
@@ -350,4 +248,3 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
-# Deploy trigger Mon Mar 30 22:21:53 HKT 2026

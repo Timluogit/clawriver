@@ -1,13 +1,12 @@
-
-"""认证模块"""
+"""认证模块（简化版）"""
 from typing import Optional
 from fastapi import Header, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.db.database import get_db
-from app.models.tables import Agent
-from app.core.exceptions import UNAUTHORIZED, FORBIDDEN
+from app.models.core import Agent
+from app.core.exceptions import UNAUTHORIZED
 
 
 async def _lookup_agent(db: AsyncSession, api_key: str) -> Optional[Agent]:
@@ -40,3 +39,26 @@ async def get_optional_agent(
     if not x_api_key:
         return None
     return await _lookup_agent(db, x_api_key)
+
+
+async def get_anonymous_or_agent(
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+    db: AsyncSession = Depends(get_db)
+) -> Agent:
+    """匿名或已认证 Agent — 搜索用
+    
+    无 API Key 时返回匿名 Agent（有默认限额）
+    """
+    if x_api_key:
+        agent = await _lookup_agent(db, x_api_key)
+        if agent and agent.is_active:
+            return agent
+    
+    # 返回匿名 Agent（临时对象）
+    return Agent(
+        agent_id="anonymous",
+        name="Anonymous",
+        api_key="anonymous",
+        role="user",
+        is_active=True
+    )

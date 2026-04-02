@@ -2,7 +2,7 @@
 import secrets
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, func
-from app.models.tables import Agent, Transaction, Memory, Rating
+from app.models.core import Agent, Transaction, Memory, Rating
 from app.models.schemas import AgentCreate, AgentResponse, AgentBalance, CreditTransaction, CreditHistoryList
 from app.core.config import settings
 

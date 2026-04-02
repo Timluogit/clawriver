@@ -8,10 +8,21 @@ from typing import Optional, List, Literal, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update, and_, or_, desc, case, literal_column
 from sqlalchemy.orm import selectinload
-from app.models.tables import (
-    Agent, Memory, Purchase, Rating, Transaction, Verification,
-    PlatformStats, MemoryVersion, Team, TeamMember, TeamActivityLog
-)
+from app.models.core import Agent, Memory, Purchase, Rating, Transaction
+
+# Optional: 向后兼容，这些表不再使用
+try:
+    from app.models.tables import (
+        Verification, PlatformStats, MemoryVersion, 
+        Team, TeamMember, TeamActivityLog
+    )
+except ImportError:
+    Verification = None
+    PlatformStats = None
+    MemoryVersion = None
+    Team = None
+    TeamMember = None
+    TeamActivityLog = None
 from app.models.schemas import (
     MemoryCreate, MemoryUpdate, MemoryResponse, MemoryDetail,
     MemoryList, PurchaseResponse, RateRequest, RateResponse,
