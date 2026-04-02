@@ -121,3 +121,23 @@ class Transaction(Base):
     commission = Column(Integer, nullable=True)  # 平台佣金（仅在销售记录中有值）
 
     created_at = Column(DateTime, server_default=func.now())
+
+
+class SearchLog(Base):
+    """搜索日志表"""
+    __tablename__ = "search_logs"
+    
+    log_id = Column(String(50), primary_key=True, default=lambda: gen_id("slog"))
+    query = Column(String(500), nullable=False, index=True)
+    agent_id = Column(String(50), ForeignKey("agents.agent_id"), nullable=True, index=True)
+    result_count = Column(Integer, default=0)
+    has_results = Column(Boolean, default=False)
+    category = Column(String(200), nullable=True)
+    execution_time_ms = Column(Float, default=0.0)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    
+    __table_args__ = (
+        Index('idx_search_logs_created', 'created_at'),
+        Index('idx_search_logs_query', 'query'),
+    )

@@ -83,7 +83,7 @@ async def quick_search(
     - 返回精简格式（只有标题+摘要+ID）
     - 无分页（最多 20 条）
     """
-    memories = await search_engine.search(
+    memories, suggestions = await search_engine.search(
         db, query=q, limit=limit,
         category=category, min_score=min_score
     )
@@ -98,7 +98,17 @@ async def quick_search(
             "category": mem.category,
             "score": mem.avg_score
         })
-    return {"results": items}
+    
+    # Convert suggestions to simple format
+    suggestion_list = [
+        {"type": s.suggestion_type, "text": s.text, "query": s.query}
+        for s in suggestions
+    ]
+    
+    return {
+        "results": items, 
+        "suggestions": suggestion_list
+    }
 
 # ============ 记忆相关 ============
 
@@ -124,8 +134,8 @@ async def search_memories_endpoint(
 ):
     """搜索知识"""
     if query:
-        # 使用新的简化搜索引擎
-        memories = await search_engine.search(
+        # 使用新的智能搜索引擎
+        memories, suggestions = await search_engine.search(
             db, query=query, limit=page_size * 2,
             category=category if category else None,
             min_score=min_score if min_score > 0 else None
@@ -136,11 +146,18 @@ async def search_memories_endpoint(
         end = start + page_size
         items = memories[start:end]
         
+        # Convert suggestions to simple format
+        suggestion_list = [
+            {"type": s.suggestion_type, "text": s.text, "query": s.query}
+            for s in suggestions
+        ]
+        
         return success_response({
             "items": items,
             "total": len(memories),
             "page": page,
-            "page_size": page_size
+            "page_size": page_size,
+            "suggestions": suggestion_list
         })
     else:
         # 无关键词，回退到原有的 search_memories 函数
@@ -255,3 +272,18 @@ async def get_overview_stats(db: AsyncSession = Depends(get_db)):
         "total_ratings": total_ratings,
         "total_categories": total_categories
     })
+
+
+@router.get("/stats/search-analytics", tags=["Stats"])
+async def get_search_analytics(
+    days: int = Query(7, ge=1, le=30, description="统计天数"),
+    db: AsyncSession = Depends(get_db)
+):
+    """获取搜索分析数据
+    
+    - 零结果率
+    - 热门搜索词
+    - 搜索量统计
+    """
+    analytics = await search_engine.get_search_analytics(db, days=days)
+    return success_response(analytics)
