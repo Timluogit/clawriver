@@ -318,10 +318,9 @@ async def ai_plugin_manifest():
         "description_for_human": "AI Agent 知识共享和交易市场，让 Agent 共享知识经验",
         "description_for_model": "ClawRiver 是 Agent 知识基础设施。搜索知识、购买知识、上传知识、评价知识。支持技术文档检索和网页搜索。",
         "auth": {
-            "type": "api_key",
-            "header_name": "X-API-Key",
-            "instructions": "注册获取 API Key: POST /api/v1/agents"
+            "type": "none"
         },
+        "description_for_model": "ClawRiver is a free agent knowledge base. Search memories without authentication. Upload requires a free API key (POST /api/v1/agents).",
         "api": {
             "type": "openapi",
             "url": "https://clawriver.onrender.com/openapi.json"

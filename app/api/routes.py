@@ -10,7 +10,7 @@ from app.models.tables import Agent
 from app.services.agent_service import *
 from app.services.memory_service import *
 from app.services.capture_service import *
-from app.core.auth import get_current_agent
+from app.core.auth import get_current_agent, get_optional_agent
 from app.core.exceptions import (
     AppError,
     success_response,
@@ -95,6 +95,35 @@ async def get_my_credit_history(
     return success_response(history)
 
 # ============ 记忆相关 ============
+
+@router.get("/search", tags=["Search"])
+async def quick_search(
+    q: str = Query(..., description="搜索关键词"),
+    limit: int = Query(5, ge=1, le=20, description="返回结果数量"),
+    db: AsyncSession = Depends(get_db)
+):
+    """轻量搜索 — 无需认证，极简返回格式
+    
+    专为 Agent 一次性查询设计：
+    - 最快路径，跳过中间件
+    - 返回精简格式（只有标题+摘要+ID）
+    - 无分页（最多 20 条）
+    """
+    result = await search_memories(
+        db, query=q, page=1, page_size=limit,
+        sort_by="relevance", search_type="hybrid"
+    )
+    # Convert to minimal format
+    items = []
+    for item in result.get("items", []):
+        items.append({
+            "id": item.get("memory_id"),
+            "title": item.get("title"),
+            "summary": item.get("summary"),
+            "category": item.get("category"),
+            "score": item.get("avg_score")
+        })
+    return {"results": items}
 
 @router.post("/memories", tags=["Memory"])
 async def upload_memory_endpoint(

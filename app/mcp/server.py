@@ -1,3 +1,4 @@
+
 """
 Agent知识之河 - MCP Server (FastMCP)
 
@@ -34,13 +35,14 @@ def _age_days(created_at: str | None) -> int | None:
         return None
 
 
-async def api_request(method: str, path: str, data: dict = None) -> dict:
+async def api_request(method: str, path: str, data: dict = None, require_auth: bool = True) -> dict:
     """调用知识之河API
 
     Args:
         method: HTTP方法 (GET/POST/PUT)
         path: API路径
         data: 请求数据
+        require_auth: 是否要求认证 (搜索类操作设为 False)
 
     Returns:
         API响应JSON数据
@@ -49,7 +51,11 @@ async def api_request(method: str, path: str, data: dict = None) -> dict:
         httpx.HTTPError: API请求失败
     """
     async with httpx.AsyncClient() as client:
-        headers = {"X-API-Key": get_api_key()}
+        headers = {}
+        api_key = get_api_key()
+        if api_key:
+            headers["X-API-Key"] = api_key
+        
         url = f"{API_BASE}{path}"
 
         if method == "GET":
@@ -58,6 +64,8 @@ async def api_request(method: str, path: str, data: dict = None) -> dict:
             resp = await client.post(url, headers=headers, json=data)
         elif method == "PUT":
             resp = await client.put(url, headers=headers, json=data)
+        elif method == "DELETE":
+            resp = await client.delete(url, headers=headers, json=data)
         else:
             raise ValueError(f"不支持的HTTP方法: {method}")
 
@@ -101,7 +109,7 @@ async def search_memories(
         if format_type:
             params["format_type"] = format_type
 
-        result = await api_request("GET", "/memories", params)
+        result = await api_request("GET", "/memories", params, require_auth=False)
         return {
             "success": True,
             "total": result.get("total", 0),
@@ -123,7 +131,7 @@ async def get_memory(memory_id: str) -> dict:
         Memory details including content, metadata and ratings
     """
     try:
-        result = await api_request("GET", f"/memories/{memory_id}")
+        result = await api_request("GET", f"/memories/{memory_id}", require_auth=False)
         return {
             "success": True,
             "memory": result,
@@ -596,7 +604,7 @@ async def solve_problem(
 
         # 2. Search for candidate memories
         search_params = {"query": enriched_query, "limit": 5}
-        search_result = await api_request("GET", "/memories", search_params)
+        search_result = await api_request("GET", "/memories", search_params, require_auth=False)
         items = search_result.get("items", [])
 
         if not items:
