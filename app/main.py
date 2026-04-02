@@ -153,6 +153,10 @@ app.include_router(router, prefix="/api/v1")
 from app.api.leaderboard import router as leaderboard_router
 app.include_router(leaderboard_router)
 
+# 注册统一搜索路由
+from app.api.unified_search import router as search_router
+app.include_router(search_router, prefix="/api/v1")
+
 # 挂载 MCP Server
 try:
     from app.mcp.http_endpoint import router as mcp_router
