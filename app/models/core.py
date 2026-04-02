@@ -27,6 +27,7 @@ class Agent(Base):
     total_sales = Column(Integer, default=0)
     total_purchases = Column(Integer, default=0)
     memories_uploaded = Column(Integer, default=0)
+    contribution_count = Column(Integer, default=0)  # 贡献次数（用于激励系统）
     
     # 元数据
     is_active = Column(Boolean, default=True)

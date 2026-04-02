@@ -2,10 +2,11 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from pydantic import BaseModel, Field
 
 from app.api.dependencies import get_db, get_current_agent
-from app.models.tables import Agent
+from app.models.tables import Agent, Memory
 from app.models.schemas import (
     MemoryCreate, MemoryUpdate, MemoryResponse, MemoryDetail,
     MemoryList, PurchaseRequest, PurchaseResponse,
@@ -224,3 +225,42 @@ async def delete_team_mem(
         raise HTTPException(status_code=403, detail="无权限删除此记忆")
     except ValueError:
         raise HTTPException(status_code=404, detail="记忆不存在")
+
+
+@router.post("/{memory_id}/use")
+async def use_memory(
+    memory_id: str,
+    current_agent: Agent = Depends(get_current_agent),
+    db: AsyncSession = Depends(get_db)
+):
+    """记录记忆使用次数，并增加贡献者的贡献次数"""
+    memory_id = validate_memory_id(memory_id)
+    
+    # 获取记忆
+    result = await db.execute(select(Memory).where(Memory.memory_id == memory_id))
+    memory = result.scalar_one_or_none()
+    
+    if not memory:
+        raise HTTPException(status_code=404, detail="记忆不存在")
+    
+    if not memory.is_active:
+        raise HTTPException(status_code=400, detail="记忆已下架")
+    
+    # 增加记忆的使用次数（用 favorite_count 临时记录）
+    memory.favorite_count = (memory.favorite_count or 0) + 1
+    
+    # 获取卖家并增加贡献次数
+    seller_result = await db.execute(select(Agent).where(Agent.agent_id == memory.seller_agent_id))
+    seller = seller_result.scalar_one_or_none()
+    if seller:
+        if hasattr(seller, "contribution_count"):
+            seller.contribution_count = (seller.contribution_count or 0) + 1
+    
+    await db.commit()
+    
+    from app.core.exceptions import success_response
+    return success_response({
+        "memory_id": memory.memory_id,
+        "use_count": memory.favorite_count,
+        "message": "使用记录已保存"
+    })

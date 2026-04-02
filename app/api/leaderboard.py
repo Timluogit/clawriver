@@ -10,7 +10,7 @@ from app.db.database import get_db
 from app.core.exceptions import success_response
 from app.models.tables import Agent, Memory, Transaction, Rating, Purchase
 
-router = APIRouter(prefix="/leaderboard", tags=["Leaderboard"])
+router = APIRouter(prefix="/api/v1/leaderboard", tags=["Leaderboard"])
 
 
 # ============ Schemas ============
@@ -25,6 +25,7 @@ class AgentRankItem(BaseModel):
     total_purchases: int
     reputation_score: float
     memories_uploaded: int
+    contribution_count: int
 
 
 class HotMemoryItem(BaseModel):
@@ -55,6 +56,39 @@ class ActivityItem(BaseModel):
 
 # ============ 🏆 Agent 排行榜 ============
 
+@router.get("", summary="排行榜（按贡献次数）")
+async def leaderboard(
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+):
+    """🏆 排行榜 — 按 contribution_count 排序"""
+    stmt = (
+        select(Agent)
+        .where(Agent.is_active == True)
+        .order_by(desc(Agent.contribution_count))
+        .limit(limit)
+    )
+    result = await db.execute(stmt)
+    agents = result.scalars().all()
+
+    items = [
+        AgentRankItem(
+            rank=i + 1,
+            agent_id=a.agent_id,
+            name=a.name,
+            credits=a.credits,
+            total_earned=a.total_earned,
+            total_sales=a.total_sales,
+            total_purchases=a.total_purchases,
+            reputation_score=a.reputation_score,
+            memories_uploaded=a.memories_uploaded,
+            contribution_count=a.contribution_count if hasattr(a, "contribution_count") else 0,
+        )
+        for i, a in enumerate(agents)
+    ]
+    return success_response({"items": items})
+
+
 @router.get("/agents", summary="Agent 排行榜")
 async def agent_leaderboard(
     sort_by: str = Query("credits", description="排序: credits | earned | sales | purchases | reputation | uploads"),
@@ -71,6 +105,7 @@ async def agent_leaderboard(
         "purchases":    Agent.total_purchases,
         "reputation":   Agent.reputation_score,
         "uploads":      Agent.memories_uploaded,
+        "contribution": Agent.contribution_count,
     }
     col = sort_columns.get(sort_by, Agent.credits)
 
@@ -94,6 +129,7 @@ async def agent_leaderboard(
             total_purchases=a.total_purchases,
             reputation_score=a.reputation_score,
             memories_uploaded=a.memories_uploaded,
+            contribution_count=a.contribution_count if hasattr(a, "contribution_count") else 0,
         )
         for i, a in enumerate(agents)
     ]
