@@ -8,7 +8,7 @@ from typing import Optional, List, Literal, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update, and_, or_, desc, case, literal_column
 from sqlalchemy.orm import selectinload
-from app.models.core import Agent, Memory, Purchase, Rating, Transaction
+from app.models.tables import Agent, Memory, Purchase, Rating, Transaction
 
 # Optional: 向后兼容，这些表不再使用
 try:
@@ -330,8 +330,6 @@ async def _fallback_search(
     sort_by: str = "relevance"
 ) -> dict:
     """纯 SQL 关键词搜索 — 单次 JOIN 查询（避免 N+1）"""
-    from app.models.tables import Agent
-
     # ===== 修复: 使用 JOIN 避免 N+1 =====
     stmt = base_stmt  # base_stmt 已包含 .join(Agent)
 

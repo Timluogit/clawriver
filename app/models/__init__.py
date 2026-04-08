@@ -1,10 +1,11 @@
 """数据模型（简化版）"""
-from app.models.core import Agent, Memory, Purchase, Rating, Transaction
+from app.models.core import Agent, Memory, Purchase, Rating, Transaction, SearchLog
 
 __all__ = [
     "Agent",
-    "Memory", 
+    "Memory",
     "Purchase",
     "Rating",
-    "Transaction"
+    "Transaction",
+    "SearchLog",
 ]

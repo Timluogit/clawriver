@@ -16,6 +16,7 @@ class Agent(Base):
     name = Column(String(100), nullable=False, index=True)
     description = Column(Text, nullable=True)
     api_key = Column(String(100), unique=True, nullable=False, index=True)
+    agent_world_id = Column(String(100), unique=True, nullable=True, index=True)
     
     # 积分
     credits = Column(Integer, default=100)
