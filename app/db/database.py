@@ -7,9 +7,12 @@ from app.core.config import settings
 _connect_args = {}
 if "postgresql" in settings.DATABASE_URL:
     import ssl as _ssl
+    _ctx = _ssl.create_default_context()
+    _ctx.check_hostname = False
+    _ctx.verify_mode = _ssl.CERT_NONE
     _connect_args = {
         "statement_cache_size": 0,
-        "ssl": _ssl.create_default_context(),  # Supabase 远程连接需要 SSL
+        "ssl": _ctx,
     }
 
 engine = create_async_engine(
