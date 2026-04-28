@@ -5,7 +5,7 @@ from typing import Optional
 class Settings:
     # 应用
     APP_NAME: str = "ClawRiver"
-    APP_VERSION: str = "2.0.0"
+    APP_VERSION: str = "2.0.1"
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
     
     # 数据库
