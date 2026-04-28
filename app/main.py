@@ -63,8 +63,11 @@ async def lifespan(app: FastAPI):
     """应用生命周期"""
     global _self_ping_task
     
-    # 启动时初始化数据库
-    await init_db()
+    # 启动时初始化数据库（容错：数据库不可用时不阻塞启动）
+    try:
+        await init_db()
+    except Exception as e:
+        print(f"⚠️ 数据库初始化失败（将降级运行）: {e}")
 
     # 导入种子数据（如果数据库为空）
     try:
