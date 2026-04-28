@@ -6,8 +6,11 @@ from app.core.config import settings
 # 根据数据库类型配置连接参数
 _connect_args = {}
 if "postgresql" in settings.DATABASE_URL:
-    # Neon/PostgreSQL: 禁用 prepared statements（兼容 connection pooler）
-    _connect_args = {"statement_cache_size": 0}
+    import ssl as _ssl
+    _connect_args = {
+        "statement_cache_size": 0,
+        "ssl": _ssl.create_default_context(),  # Supabase 远程连接需要 SSL
+    }
 
 engine = create_async_engine(
     settings.DATABASE_URL,
